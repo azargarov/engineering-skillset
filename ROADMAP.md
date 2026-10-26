@@ -36,8 +36,8 @@ The always-applicable Core Policy preserves scope, correctness, proportionate QA
 |---|---|---|
 | **M00 — Engineering Foundation** | Principles, Core Policy, modular composition requirements, and evaluation plan | **Completed** |
 | **M01 — Module Composition** | Validate a minimal composable set of policy modules | **Completed (verified supported scope)** |
-| **M02 — Bash Installer** | Safe, repeatable local and remote installation and reconfiguration | **Next active (implementation not started)** |
-| **M03 — Engineering Skills** | Implement selected task workflows with QA integrated throughout | Planned |
+| **M02 — Bash Installer** | Safe, repeatable local and remote installation and reconfiguration | **Completed (verified supported scope)** |
+| **M03 — Workflow Skills** | Implement selected task workflows with QA integrated throughout | **Next active** |
 | **M04 — Evaluation & Qualification** | Evaluate modules and Skills against actual Codex behavior | Planned |
 | **M05 — Release v1.0** | Package, document, verify, and publish the usable system | Planned |
 
@@ -107,16 +107,21 @@ The plan defines baseline, Core-only, and composed comparisons; controlled condi
 
 **Goal:** Implement safe delivery of tested configurations with no permanent setup clutter in target repositories.
 
-**Status:** Next active; implementation has not started.
+**Status:** Completed for the verified supported scope.
 
-- **M02.1 — Local install:** Support a local source checkout, target directory, explicit arguments or interactive defaults, and a readable proposed-output preview.
-- **M02.2 — Remote acquisition:** Retrieve a specified trusted release/revision into `mktemp` storage, validate the download as appropriate, and clean temporary data via controlled cleanup/traps. Do not make unreviewed `curl | bash` the recommended installation path.
-- **M02.3 — Safe writes:** Provide `--dry-run`, identify existing files and ownership, avoid silent overwrites/deletes, use safe temporary writes, and report incomplete operations. Do not claim that individual atomic renames make a multi-file installation transactional.
-- **M02.4 — Reconfiguration:** Recompose on repeated runs; preserve version/selection/managed-file hash metadata as needed; show diffs and stop on locally modified managed files rather than attempting a complex automatic merge.
+- **M02.1 — Minimal local installer:** Completed in commit `dfe813a0cf5759e6a462e994c3e1e7a648eca177`. Added explicit selections, dry-run, composer reuse, and no-overwrite first installation.
+- **M02.2 — Remote bootstrap:** Completed in commit `b93b640ca987bbc968d584e5e45fd91dd9b286fa`. Added pinned-revision archive download, caller-provided SHA-256 checking, archive path/type validation, extraction in temporary storage, and installer delegation.
+- **M02.3 — Installation safety and idempotency:** Completed in commit `99292301baae323c8ac0d9f2a43a328493ab9f82`. Added ownership metadata, integrity checks, safe repeated installation, dry-run, and refusal of unmanaged or modified files.
+- **M02.4 — Safe reconfiguration:** Completed in commit `5919d5ddef8603d3e5a2ddef467be7383057d357`. Added explicit `--reconfigure`, validated replacement staging and rollback, bootstrap forwarding, and reconfiguration tests.
+- **M02.5 — Final integration review:** Completed in commit `a46ba85517e178c349827a0291a4b51ccd7bd5bd`. Rejected unsafe target paths in bootstrap, made cleanup failures return nonzero without masking an earlier status, expanded controlled archive integration coverage, and documented recovery steps.
 
-**Acceptance:** Installation works in empty and existing repositories; repeated identical installs are safe; failure does not silently damage existing files; changing configuration is reviewable; only selected effective artifacts and minimal required metadata remain in the target. Bash is the chosen initial delivery mechanism; another runtime is not required unless a proven constraint demands it.
+**Acceptance:** Accepted for the verified supported scope. Controlled archive integration exercised bootstrap → installer → composer for initial installation, exact repeat, dry-run, authorized reconfiguration, policy equality, manifest updates, and preservation of user-owned files. Component and integration tests cover failure handling, malformed or modified managed state, target/archive path validation, and temporary cleanup. Shell syntax, ShellCheck, and whitespace checks passed. This evidence establishes tested structural and filesystem behavior for current supported selections; it does not establish behavioral effectiveness.
 
-## 7. M03 — Engineering Skills
+**Limitations:** Live GitHub download is **NOT ESTABLISHED**. Trusted SHA-256 digest provenance is **NOT ESTABLISHED**; the bootstrap checks a caller-provided digest but does not authenticate its provenance. Policy and manifest publication are separate filesystem operations and are not atomic as a pair. Successful optional-module paths remain untested because no optional modules are currently supported. Concurrent filesystem modifications were not qualified. Behavioral effectiveness remains unverified and belongs to M04. M02.5 received agent self-review and deterministic verification, not independent assurance.
+
+**M02 exit:** M02.1–M02.5 are committed and verified for the supported scope above. M02 is complete; the listed limitations remain open.
+
+## 7. M03 — Workflow Skills
 
 **Goal:** Add workflows when evaluations or concrete needs show they provide value beyond Core Policy.
 
@@ -179,8 +184,8 @@ The underlying record layout is still an open implementation decision. Avoid man
 
 ## 12. Immediate next actions
 
-1. **M02 — Bash Installer** is the next active milestone; implementation has not started.
-2. Use the verified local composer as the composition input for M02, while preserving the documented limitations and safe integration requirements.
-3. Do not treat M01 structural acceptance as evidence of behavioral effectiveness; that remains for M04 evaluation.
+1. **M03 — Workflow Skills** is the next active milestone; implementation has not started.
+2. Preserve the distinction between policy modules and reusable workflow Skills.
+3. Do not treat M01 structural or M02 installation verification as evidence of behavioral effectiveness; that remains for M04 evaluation.
 
 **Roadmap change rule:** This document may be updated as evidence arrives. Preserve important decisions and explicitly revise future milestones when learning warrants it; do not expand approved scope silently.
