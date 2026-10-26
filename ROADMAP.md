@@ -34,14 +34,14 @@ The always-applicable Core Policy preserves scope, correctness, proportionate QA
 
 | Milestone | Objective | Current status |
 |---|---|---|
-| **M00 — Engineering Foundation** | Principles, Core Policy, modular composition requirements, and evaluation plan | **In progress** |
-| **M01 — Module Composition** | Validate a minimal composable set of policy modules | Planned |
+| **M00 — Engineering Foundation** | Principles, Core Policy, modular composition requirements, and evaluation plan | **Completed** |
+| **M01 — Module Composition** | Validate a minimal composable set of policy modules | **Next active (implementation not started)** |
 | **M02 — Bash Installer** | Safe, repeatable local and remote installation and reconfiguration | Planned |
 | **M03 — Engineering Skills** | Implement selected task workflows with QA integrated throughout | Planned |
 | **M04 — Evaluation & Qualification** | Evaluate modules and Skills against actual Codex behavior | Planned |
 | **M05 — Release v1.0** | Package, document, verify, and publish the usable system | Planned |
 
-**Status convention:** Planned / In progress / Blocked / Completed / Accepted. Completion requires evidence against milestone acceptance conditions; documentation drafts alone do not establish behavioral effectiveness.
+**Status convention:** Planned / Next active / In progress / Blocked / Completed / Accepted. Completion requires evidence against milestone acceptance conditions; documentation deliverables alone do not establish behavioral effectiveness.
 
 ## 4. M00 — Engineering Foundation
 
@@ -49,7 +49,7 @@ The always-applicable Core Policy preserves scope, correctness, proportionate QA
 
 ### M00.1 — Engineering Principles v1
 
-**Status:** Completed (reported).\
+**Status:** Completed.\
 **Artifact:** `docs/requirements/engineering-principles-v1.md`\
 **Reported commit:** `52cc28576acaf648eef3518729eea1bc7b9d27b5`
 
@@ -77,11 +77,15 @@ The design defines Core / one level / zero or more priorities / zero or more opt
 
 ### M00.4 — Minimal Evaluation Plan
 
-Define baseline comparisons, small real-task fixtures, independent acceptance conditions, negative activation cases, overhead measurements, and known limits of small samples. Prioritize actual Codex failures observed in existing projects, including SpeechPlatform and Infera where available and confirmed.
+**Status:** Completed.\
+**Artifact:** `docs/development/evaluation-plan.md`\
+**Commit:** `dce458a88122fe7d225fc573b9422c23a2ac70eb`
 
-**Exit:** A feasible evaluation protocol that does not predetermine the winning Skill structure or the overall result.
+The plan defines baseline, Core-only, and composed comparisons; controlled conditions; independent criteria; hypothetical initial scenarios pending evidence of specific real-project incidents; and marginal-benefit review. Behavioral effectiveness has not been tested, and the final release policy remains open.
 
-**M00 exit:** Authoritative principles, reviewed core policy, composition requirements, and an evaluation plan are available. Unresolved decisions remain explicit.
+**Exit:** A lightweight evaluation methodology is committed. It does not predetermine results, pass thresholds, or the final release policy.
+
+**M00 exit:** M00.1–M00.4 deliverables are committed and verified. The final release policy and other identified decisions remain open.
 
 ## 5. M01 — Module Composition
 
@@ -168,8 +172,8 @@ The underlying record layout is still an open implementation decision. Avoid man
 
 ## 12. Immediate next actions
 
-1. Complete **M00.4** with credible minimal evaluation criteria before implementing broad sets of modules.
-2. After M00 is complete, start **M01** with a few representative configurations and validate the fixed-section recommendation against named slots.
+1. **M01 — Module Composition** is the next active milestone; implementation has not started.
+2. Validate the fixed-section recommendation against representative configurations and named slots after M01 implementation is approved.
 3. Keep the actual installer until composition proves useful and tractable.
 
 **Roadmap change rule:** This document may be updated as evidence arrives. Preserve important decisions and explicitly revise future milestones when learning warrants it; do not expand approved scope silently.
