@@ -132,12 +132,15 @@ The plan defines baseline, Core-only, and composed comparisons; controlled condi
 - **M03.5 — Project Handover Skill:** Completed in commit `9b0a530`. Added the concise history, current-state, and backlog workflow.
 - **M03.6 — Project Handover runtime verification:** Completed for the observed fixture scope. A fresh session invoked the Skill and preserved history, verified state, unresolved questions, deferred work, and authorization boundaries. Instruction loading was not observable in the task trace; no correction or commit was necessary.
 - **M03.7 — Final Skills integration review:** Accepted for its verified supported scope. One controlled scenario exercised all three workflows in sequence; the review, failing integration check, and handover records were consistent. No correction was justified, so no commit was necessary.
+- **M03.8 — Software Design Skill:** Completed in commit `db5c9d8`. Added a concise design workflow for new systems and changes to existing architectures, with proportionate design and implementation planning. The Skill was structurally validated, discovered natively, and explicitly invoked in two controlled read-only design scenarios; traces showed its instructions being read.
 
 **Acceptance:** M03 is complete for the verified supported scope: the three Skills have valid structure, distinct responsibilities, and were exercised individually and together on controlled scenarios. The integration scenario preserved the concrete defect, the passing component check, the failing integration check, an unresolved design question, a deferred improvement, and the authorized next action. The proposed correction was not applied or claimed as verified.
 
 **Limitations:** Only controlled scenarios were exercised. Skill instruction loading was not observable in every runtime test. No independent assurance was performed. Behavioral effectiveness relative to baseline Codex remains unverified and belongs to M04. These smoke tests do not establish general effectiveness or superiority.
 
 **M03 exit:** M03.1–M03.7 are complete for the verified supported scope. Continue to preserve the distinction between policy modules and reusable workflow Skills.
+
+**M03.8 extension:** The two controlled scenarios exercised a small CLI change and a larger webhook integration design. They support that the Skill can produce actionable, proportionate designs in those examples; they do not establish general behavioral effectiveness or superiority over baseline Codex. No independent assurance was performed.
 
 ## 8. M04 — Evaluation & Qualification
 
