@@ -1,6 +1,6 @@
 # Behavioral Evaluation Protocol
 
-**Status:** M04.1 experimental design; no evaluation runs performed
+**Status:** M04.1 design; the M04.3 nine-run pilot is recorded in [its results](evaluation-runs/m04.3/README.md)
 
 ## Purpose and limits
 

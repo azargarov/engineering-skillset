@@ -152,9 +152,9 @@ Evaluate at least:
 For isolating Skill effects, keep underlying policy and authorization comparable between paired runs. Fix model/effort, repository snapshot, tools, permissions, and task acceptance criteria as closely as practical. Use independent, preferably deterministic outcome checks; use human review for subjective judgments. A small number of repeated runs is a smoke signal, not statistical proof.
 
 - **M04.1 — Behavioral Evaluation Design:** Completed in commit `5f09a38`. Defined the three comparison configurations, controls, assessment criteria, validity limits, and a proposed manual pilot.
-- **M04.2 — Evaluation Case Preparation:** In progress. Prepare three frozen cases with agent-facing tasks, separate evaluator criteria, deterministic checks where practical, and recorded provenance.
-- **M04.3 — Matched Pilot Comparison:** Run the same prepared cases once in each A/B/C condition, with isolated sessions and criterion-level evidence.
-- **M04.4 — Targeted Repeats and Ablation:** Repeat variable or decision-sensitive cases and isolate individual module/Skill effects only where the pilot warrants it.
+- **M04.2 — Evaluation Case Preparation:** Completed in commit `ea65489`. Prepared three frozen cases with agent-facing tasks, separate evaluator criteria, deterministic checks where practical, and recorded provenance.
+- **M04.3 — Matched Pilot Comparison:** Completed for the nine-run pilot; evidence is recorded in `docs/development/evaluation-runs/m04.3/README.md`. One run per condition and case is not statistical evidence; see the report for controls and limitations.
+- **M04.4 — Targeted Repeats and Ablation:** Next; not started. Repeat variable or decision-sensitive cases and isolate individual module/Skill effects only where the pilot warrants it.
 - **M04.5 — Independent Assessment and Recommendations:** Assess subjective criteria independently, report limitations and costs, and recommend retain/simplify/merge/remove/inconclusive outcomes without predefining a release policy.
 
 **Acceptance:** Reproducible evaluation notes, no concealed critical failures, a justified release set, and an explicit account of limitations and overhead.
@@ -190,7 +190,7 @@ The underlying record layout is still an open implementation decision. Avoid man
 
 ## 12. Immediate next actions
 
-1. **M04 — Evaluation & Qualification** is in progress; M04.2 — Evaluation Case Preparation is active. Do not start M04.3 until the cases and controls are reviewed.
+1. **M04 — Evaluation & Qualification** is in progress; M04.3 pilot runs are recorded. M04.4 — Targeted Repeats and Ablation is next and has not started.
 2. Preserve the distinction between policy modules and reusable workflow Skills.
 3. Do not treat M01 structural or M02 installation verification as evidence of behavioral effectiveness; that remains for M04 evaluation.
 
