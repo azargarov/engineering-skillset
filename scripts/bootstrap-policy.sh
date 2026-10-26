@@ -109,9 +109,22 @@ done
   fail "--revision must be a full 40-character hexadecimal commit SHA"
 [[ $expected_sha256 =~ ^[[:xdigit:]]{64}$ ]] || \
   fail "--sha256 must be a 64-character hexadecimal digest"
+case "/$target_dir/" in
+  */../*) fail "target path must not contain a '..' component" ;;
+esac
+target_path=$target_dir
+while [[ $target_path == */ && $target_path != / ]]; do
+  target_path=${target_path%/}
+done
+[[ ! -L $target_path ]] || fail "target directory must not be a symbolic link"
 [[ -d $target_dir ]] || fail "target directory does not exist: '$target_dir'"
+target_logical=$(CDPATH='' cd -L -- "$target_dir" && pwd -L) || \
+  fail "cannot resolve target directory"
 target_dir=$(CDPATH='' cd -- "$target_dir" && pwd -P) || \
   fail "cannot resolve target directory"
+[[ $target_logical == "$target_dir" ]] || \
+  fail "target path must not traverse a symbolic link"
+[[ $target_dir != / ]] || fail "target directory must not be the filesystem root"
 source_repo=${source_repo%/}
 revision=${revision,,}
 expected_sha256=${expected_sha256,,}
@@ -133,7 +146,17 @@ esac
 temp_dir=$(mktemp -d "$temp_parent/engineering-skillset-bootstrap.XXXXXX") || \
   fail "cannot create temporary bootstrap directory"
 
-trap 'if ! rm -rf -- "$temp_dir"; then error "failed to remove temporary bootstrap directory: $temp_dir"; fi' EXIT
+# shellcheck disable=SC2329 # Invoked by the EXIT trap below.
+cleanup() {
+  local status=$?
+  trap - EXIT
+  if ! rm -rf -- "$temp_dir"; then
+    error "failed to remove temporary bootstrap directory: $temp_dir"
+    ((status != 0)) || status=1
+  fi
+  exit "$status"
+}
+trap 'cleanup' EXIT
 
 archive_file=$temp_dir/source.tar.gz
 member_list=$temp_dir/archive-members

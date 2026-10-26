@@ -10,8 +10,8 @@ Usage:
 Install a composed policy as DIR/AGENTS.md using the local Engineering
 Skillset composer. The target directory must already exist. A first install
 creates AGENTS.md and .engineering-skillset-manifest. Repeating the same
-configuration leaves managed files unchanged; changed or locally modified
-installations are refused.
+configuration leaves managed files unchanged. A different selection requires
+--reconfigure; a locally modified policy or inconsistent manifest is refused.
 
 Add --reconfigure to explicitly replace a verified managed configuration. Use
 --dry-run to validate the selection and display the plan without changing
