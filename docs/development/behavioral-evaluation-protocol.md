@@ -1,6 +1,6 @@
 # Behavioral Evaluation Protocol
 
-**Status:** M04.1 design; the M04.3 nine-run pilot is recorded in [its results](evaluation-runs/m04.3/README.md)
+**Status:** M04.1 design; the M04.3 pilot is recorded in [its results](evaluation-runs/m04.3/README.md) and [analysis](evaluation-runs/m04.3-analysis.md)
 
 ## Purpose and limits
 
@@ -190,5 +190,5 @@ this design; the remaining operational stages are:
 
 No evaluation runs are part of M04.1. The exact task repositories and
 revisions, verified historical incidents (if any), reviewer availability,
-model/runtime and metric availability, repeat count, roadmap label alignment,
-and evidence required for a final release decision remain unresolved.
+model/runtime and metric availability, repeat count, and evidence required for
+a final release decision remain unresolved.
