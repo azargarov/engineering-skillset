@@ -35,8 +35,8 @@ The always-applicable Core Policy preserves scope, correctness, proportionate QA
 | Milestone | Objective | Current status |
 |---|---|---|
 | **M00 — Engineering Foundation** | Principles, Core Policy, modular composition requirements, and evaluation plan | **Completed** |
-| **M01 — Module Composition** | Validate a minimal composable set of policy modules | **Next active (implementation not started)** |
-| **M02 — Bash Installer** | Safe, repeatable local and remote installation and reconfiguration | Planned |
+| **M01 — Module Composition** | Validate a minimal composable set of policy modules | **Completed (verified supported scope)** |
+| **M02 — Bash Installer** | Safe, repeatable local and remote installation and reconfiguration | **Next active (implementation not started)** |
 | **M03 — Engineering Skills** | Implement selected task workflows with QA integrated throughout | Planned |
 | **M04 — Evaluation & Qualification** | Evaluate modules and Skills against actual Codex behavior | Planned |
 | **M05 — Release v1.0** | Package, document, verify, and publish the usable system | Planned |
@@ -91,16 +91,23 @@ The plan defines baseline, Core-only, and composed comparisons; controlled condi
 
 **Goal:** Validate predictable, comprehensible composition before building a full installer.
 
-- **M01.1 — Module contract:** Define the simplest source format for policy modules; identify any metadata truly needed for selection and compatibility.
-- **M01.2 — Composition prototype:** Exercise Core with representative level, priority, and optional modules. Suggested initial candidates: levels `personal` and `production`; priorities `readability` and `development-speed`; option `educational`. These are experimental candidates, not a locked product taxonomy.
-- **M01.3 — Structural checks:** Check deterministic output for identical inputs, supported combinations, missing references, rendering defects, duplicate universal rules, and obvious policy conflicts.
-- **M01.4 — Review:** Assess whether the selected priorities meaningfully influence the effective guidance without weakening Core. Compare fixed sections and slots only if both solve an observed need.
+- **M01.1 — Minimal module contract:** Completed in commit `eefdab4`. Established readable Markdown modules, path-based identity, categories, fixed ordering, and minimal selection checks.
+- **M01.2 — First policy modules:** Completed in commit `f297d32`. Added the `personal` level and `development-speed` priority alongside the existing `readability` priority.
+- **M01.3 — Minimal policy composer:** Completed in commit `ef70236`. Added the local Bash composer, CLI, deterministic composition, and focused tests.
+- **M01.4 — Sorting and structural verification:** Completed in commit `0cb548e`. Simplified stable C-locale sorting and verified Core preservation, ordering, duplicate sections, output publication, and cleanup.
+- **M01.5 — Final integration review:** Completed in commit `5b4677d`. Fixed hidden sorter failures and added regression coverage proving failure is reported without publishing partial output.
 
-**Acceptance:** At least three distinct example configurations can be rendered and reviewed. The chosen format is minimal, auditable, and suitable for Codex. This milestone does not prove behavior improvement.
+**Acceptance:** Accepted for the verified supported scope: standalone compositions using the Core Policy, the `personal` level, and zero or more of the `readability` and `development-speed` priorities. Representative outputs were rendered and reviewed; automated checks cover deterministic ordering, Core preservation, invalid selections, duplicate sections, and output failure handling. This structural verification does not establish behavioral effectiveness.
+
+**Limitations:** No optional modules are currently supplied, so successful optional-module composition is not demonstrated. No explicitly incompatible module pairs are defined; the composer does not implement pairwise incompatibility rules or semantic conflict detection. Only currently supported modules and selections were reviewed. Behavioral effectiveness remains untested and belongs to the evaluation milestone.
+
+**M01 exit:** M01.1–M01.5 are committed and verified for the scope above. Installer behavior, remote downloads, Skills, optional-module examples, and behavioral qualification are not part of this acceptance.
 
 ## 6. M02 — Bash Installer
 
 **Goal:** Implement safe delivery of tested configurations with no permanent setup clutter in target repositories.
+
+**Status:** Next active; implementation has not started.
 
 - **M02.1 — Local install:** Support a local source checkout, target directory, explicit arguments or interactive defaults, and a readable proposed-output preview.
 - **M02.2 — Remote acquisition:** Retrieve a specified trusted release/revision into `mktemp` storage, validate the download as appropriate, and clean temporary data via controlled cleanup/traps. Do not make unreviewed `curl | bash` the recommended installation path.
@@ -172,8 +179,8 @@ The underlying record layout is still an open implementation decision. Avoid man
 
 ## 12. Immediate next actions
 
-1. **M01 — Module Composition** is the next active milestone; implementation has not started.
-2. Validate the fixed-section recommendation against representative configurations and named slots after M01 implementation is approved.
-3. Keep the actual installer until composition proves useful and tractable.
+1. **M02 — Bash Installer** is the next active milestone; implementation has not started.
+2. Use the verified local composer as the composition input for M02, while preserving the documented limitations and safe integration requirements.
+3. Do not treat M01 structural acceptance as evidence of behavioral effectiveness; that remains for M04 evaluation.
 
 **Roadmap change rule:** This document may be updated as evidence arrives. Preserve important decisions and explicitly revise future milestones when learning warrants it; do not expand approved scope silently.
