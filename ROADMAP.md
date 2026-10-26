@@ -37,8 +37,8 @@ The always-applicable Core Policy preserves scope, correctness, proportionate QA
 | **M00 — Engineering Foundation** | Principles, Core Policy, modular composition requirements, and evaluation plan | **Completed** |
 | **M01 — Module Composition** | Validate a minimal composable set of policy modules | **Completed (verified supported scope)** |
 | **M02 — Bash Installer** | Safe, repeatable local and remote installation and reconfiguration | **Completed (verified supported scope)** |
-| **M03 — Workflow Skills** | Implement selected task workflows with QA integrated throughout | **Next active** |
-| **M04 — Evaluation & Qualification** | Evaluate modules and Skills against actual Codex behavior | Planned |
+| **M03 — Workflow Skills** | Implement and verify the selected task workflows | **Completed (verified supported scope)** |
+| **M04 — Evaluation & Qualification** | Evaluate modules and Skills against actual Codex behavior | **Next active** |
 | **M05 — Release v1.0** | Package, document, verify, and publish the usable system | Planned |
 
 **Status convention:** Planned / Next active / In progress / Blocked / Completed / Accepted. Completion requires evidence against milestone acceptance conditions; documentation deliverables alone do not establish behavioral effectiveness.
@@ -123,16 +123,21 @@ The plan defines baseline, Core-only, and composed comparisons; controlled condi
 
 ## 7. M03 — Workflow Skills
 
-**Goal:** Add workflows when evaluations or concrete needs show they provide value beyond Core Policy.
+**Goal:** Provide practical, reusable workflows for implementation review, verification, and project handover.
 
-Candidate workflows, subject to validation:
+- **M03.1 — Skill contract and Implementation Review:** Completed in commit `46df7bb`. Added the minimal Skill contract and the first review workflow.
+- **M03.2 — Implementation Review runtime verification:** Completed; a fresh Codex session discovered and invoked the Skill, and task trace showed the Skill instructions being read. No correction was needed, so no commit was necessary.
+- **M03.3 — Verification & QA Skill:** Completed in commit `171caed`. Added hierarchical verification reasoning, assurance distinctions, and evidence reporting.
+- **M03.4 — Verification & QA runtime verification:** Completed for the observed smoke-test scope. A fresh session invoked the Skill and produced correctly scoped findings and evidence categories. The trace did not expose Skill file-read events; no correction or commit was necessary.
+- **M03.5 — Project Handover Skill:** Completed in commit `9b0a530`. Added the concise history, current-state, and backlog workflow.
+- **M03.6 — Project Handover runtime verification:** Completed for the observed fixture scope. A fresh session invoked the Skill and preserved history, verified state, unresolved questions, deferred work, and authorization boundaries. Instruction loading was not observable in the task trace; no correction or commit was necessary.
+- **M03.7 — Final Skills integration review:** Accepted for its verified supported scope. One controlled scenario exercised all three workflows in sequence; the review, failing integration check, and handover records were consistent. No correction was justified, so no commit was necessary.
 
-- **M03.1 — Plan:** Requirements, architecture, contracts, bounded planning, preliminary compositional test design, and proportionate pre-implementation QA.
-- **M03.2 — Implement:** Authorized scope, idiomatic code, justified abstractions, error handling, and implementation/scope review.
-- **M03.3 — Verify:** Relevant tests and evidence, test levels, truthful observed/interpreted/not-established reporting, and acceptance assessment.
-- **M03.4 — Continuity assessment:** Test whether compact current state, stage history, and backlog work reliably through these instructions. Introduce a dedicated handover Skill only if useful evidence supports it.
+**Acceptance:** M03 is complete for the verified supported scope: the three Skills have valid structure, distinct responsibilities, and were exercised individually and together on controlled scenarios. The integration scenario preserved the concrete defect, the passing component check, the failing integration check, an unresolved design question, a deferred improvement, and the authorized next action. The proposed correction was not applied or claimed as verified.
 
-**Acceptance:** Candidate workflows have distinct responsibilities, do not conflict with Core, do not impose undue ceremony on trivial changes, and can operate under more than one module configuration. Their behavioral quality is subsequently qualified in M04.
+**Limitations:** Only controlled scenarios were exercised. Skill instruction loading was not observable in every runtime test. No independent assurance was performed. Behavioral effectiveness relative to baseline Codex remains unverified and belongs to M04. These smoke tests do not establish general effectiveness or superiority.
+
+**M03 exit:** M03.1–M03.7 are complete for the verified supported scope. Continue to preserve the distinction between policy modules and reusable workflow Skills.
 
 ## 8. M04 — Evaluation & Qualification
 
@@ -184,7 +189,7 @@ The underlying record layout is still an open implementation decision. Avoid man
 
 ## 12. Immediate next actions
 
-1. **M03 — Workflow Skills** is the next active milestone; implementation has not started.
+1. **M04 — Evaluation & Qualification** is the next active milestone; implementation has not started.
 2. Preserve the distinction between policy modules and reusable workflow Skills.
 3. Do not treat M01 structural or M02 installation verification as evidence of behavioral effectiveness; that remains for M04 evaluation.
 
