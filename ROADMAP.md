@@ -38,7 +38,7 @@ The always-applicable Core Policy preserves scope, correctness, proportionate QA
 | **M01 — Module Composition** | Validate a minimal composable set of policy modules | **Completed (verified supported scope)** |
 | **M02 — Bash Installer** | Safe, repeatable local and remote installation and reconfiguration | **Completed (verified supported scope)** |
 | **M03 — Workflow Skills** | Implement and verify the selected task workflows | **Completed (verified supported scope)** |
-| **M04 — Evaluation & Qualification** | Evaluate modules and Skills against actual Codex behavior | **Next active** |
+| **M04 — Evaluation & Qualification** | Evaluate modules and Skills against actual Codex behavior | **In progress** |
 | **M05 — Release v1.0** | Package, document, verify, and publish the usable system | Planned |
 
 **Status convention:** Planned / Next active / In progress / Blocked / Completed / Accepted. Completion requires evidence against milestone acceptance conditions; documentation deliverables alone do not establish behavioral effectiveness.
@@ -151,10 +151,11 @@ Evaluate at least:
 
 For isolating Skill effects, keep underlying policy and authorization comparable between paired runs. Fix model/effort, repository snapshot, tools, permissions, and task acceptance criteria as closely as practical. Use independent, preferably deterministic outcome checks; use human review for subjective judgments. A small number of repeated runs is a smoke signal, not statistical proof.
 
-- **M04.1 — Cases:** Real observed failures where available; independent bug-fix, API/architecture, and cross-component scenarios; some hold-out cases.
-- **M04.2 — Comparison:** Correctness, regressions, scope violations, unnecessary abstractions, truthful reporting, needless escalation, time/tokens, and artifact overhead.
-- **M04.3 — Regression/composition:** Positive and negative Skill activation, combinations of policies, changed instructions, unexpected extra work, and instruction conflicts.
-- **M04.4 — Acceptance:** Retain, simplify, combine, or remove each module/Skill based on results; report uncertainty and untested cases clearly.
+- **M04.1 — Behavioral Evaluation Design:** Completed in commit `5f09a38`. Defined the three comparison configurations, controls, assessment criteria, validity limits, and a proposed manual pilot.
+- **M04.2 — Evaluation Case Preparation:** In progress. Prepare three frozen cases with agent-facing tasks, separate evaluator criteria, deterministic checks where practical, and recorded provenance.
+- **M04.3 — Matched Pilot Comparison:** Run the same prepared cases once in each A/B/C condition, with isolated sessions and criterion-level evidence.
+- **M04.4 — Targeted Repeats and Ablation:** Repeat variable or decision-sensitive cases and isolate individual module/Skill effects only where the pilot warrants it.
+- **M04.5 — Independent Assessment and Recommendations:** Assess subjective criteria independently, report limitations and costs, and recommend retain/simplify/merge/remove/inconclusive outcomes without predefining a release policy.
 
 **Acceptance:** Reproducible evaluation notes, no concealed critical failures, a justified release set, and an explicit account of limitations and overhead.
 
@@ -189,7 +190,7 @@ The underlying record layout is still an open implementation decision. Avoid man
 
 ## 12. Immediate next actions
 
-1. **M04 — Evaluation & Qualification** is the next active milestone; implementation has not started.
+1. **M04 — Evaluation & Qualification** is in progress; M04.2 — Evaluation Case Preparation is active. Do not start M04.3 until the cases and controls are reviewed.
 2. Preserve the distinction between policy modules and reusable workflow Skills.
 3. Do not treat M01 structural or M02 installation verification as evidence of behavioral effectiveness; that remains for M04 evaluation.
 

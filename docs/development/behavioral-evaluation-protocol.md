@@ -172,9 +172,8 @@ protocol does not define a final release policy.
 
 ## Minimal execution plan after M04.1
 
-The current roadmap has four broad M04 work items. This protocol proposes
-these four operational stages; reconcile the roadmap labels before activating
-M04.2 rather than treating this design as a silent status change:
+The canonical roadmap has been reconciled to these five M04 stages. M04.1 is
+this design; the remaining operational stages are:
 
 1. **M04.2 — Select and freeze cases:** choose the three task instances,
    verify any claimed historical source, define acceptance and evaluator
