@@ -1,0 +1,19 @@
+---
+name: software-design
+description: Design new software systems or plan nontrivial changes to existing architecture, including responsibilities, boundaries, trade-offs, and implementation steps.
+---
+
+# Software Design
+
+Use this workflow when the user requests software design or a nontrivial change needs architectural decisions. Keep trivial or obvious changes lightweight. Follow Core Policy and project instructions; these steps focus on early design and planning.
+
+1. **Clarify the design target.** Translate the authorized outcome into responsibilities, constraints, non-goals, and acceptance criteria. Surface only ambiguities that could change the design; do not invent requirements or widen scope.
+2. **Inspect before changing boundaries.** For an existing system, inspect the relevant code, contracts, dependencies, and project guidance. Preserve established responsibilities and interfaces unless a concrete need justifies changing them. For a new system, derive only the boundaries needed by its requirements.
+3. **Choose the simplest adequate design.** Describe components, interfaces, dependencies, and data flow where they clarify ownership or interaction. Apply KISS, SOLID, DRY, YAGNI, cohesion, and coupling as practical heuristics, not required patterns. Avoid unnecessary layers, interfaces, abstractions, configuration, dependencies, and speculative generalization.
+4. **Separate invariants from environmental choices.** Keep stable domain rules and protocol constants explicit. Use existing configuration mechanisms for values that legitimately vary by environment, deployment, or user choice; handle secrets through established secret mechanisms. Do not hard-code environment assumptions or add configuration options without a real need.
+5. **Assess proportionate risks.** Consider failure behavior, data integrity, security, compatibility, maintainability, and operational needs where relevant to the system and its risk. Optimize performance only for a concrete requirement or measured need; account for extensibility only where a plausible change justifies it.
+6. **Assign verification responsibilities.** Identify component guarantees that need component-level checks and interactions or emergent properties that need integration or system checks. Do not duplicate lower-level coverage without distinct evidence. Leave detailed check selection, execution, and result assessment to Verification & QA when available.
+7. **Give an executable implementation strategy.** Order the necessary changes, show real dependencies, and identify material risks or assumptions. Put a verification checkpoint at meaningful boundaries. Scale the steps to the work; a small change may need only one concise step.
+8. **Record decisions proportionately.** State the chosen design and important trade-offs, plus unresolved questions that affect implementation. Use existing project records when a durable decision is needed; do not require an ADR or create new files by default.
+
+Present the design and plan concisely without a fixed template. Stop after design when that is the requested scope or an unresolved decision requires authorization. Proceed to implementation only when the user has authorized it. Implementation Review evaluates resulting changes; Project Handover records verified progress and deferred work. Do not turn this design workflow into either procedure.
