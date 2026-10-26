@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-export LC_ALL=C
-
 program=${0##*/}
 
 usage() {
@@ -48,6 +46,12 @@ already_selected() {
     [[ $selected == "$wanted" ]] && return 0
   done
   return 1
+}
+
+sort_ids() {
+  if (($#)); then
+    printf '%s\n' "$@" | LC_ALL=C sort
+  fi
 }
 
 if (($# == 1)) && [[ $1 == --help ]]; then
@@ -114,15 +118,18 @@ core_file=$root_dir/AGENTS.md
 [[ -f $core_file && -r $core_file ]] || fail "Core Policy file is missing or unreadable: AGENTS.md"
 
 level_file=$root_dir/modules/levels/$level_id.md
+[[ ! -L $level_file ]] || fail "symlinked project level '$level_id' is not supported"
 [[ -f $level_file && -r $level_file ]] || fail "unknown or unreadable project level '$level_id'"
 
 for id in "${priority_ids[@]}"; do
   file=$root_dir/modules/priorities/$id.md
+  [[ ! -L $file ]] || fail "symlinked priority module '$id' is not supported"
   [[ -f $file && -r $file ]] || fail "unknown or unreadable priority '$id'"
 done
 
 for id in "${optional_ids[@]}"; do
   file=$root_dir/modules/optional/$id.md
+  [[ ! -L $file ]] || fail "symlinked optional module '$id' is not supported"
   [[ -f $file && -r $file ]] || fail "unknown or unreadable optional module '$id'"
 done
 
@@ -164,32 +171,31 @@ fi
 
 module_files=("$level_file")
 
-sorted_priority_ids=("${priority_ids[@]}")
-for ((i = 0; i < ${#sorted_priority_ids[@]}; i++)); do
-  for ((j = i + 1; j < ${#sorted_priority_ids[@]}; j++)); do
-    if [[ ${sorted_priority_ids[j]} < ${sorted_priority_ids[i]} ]]; then
-      swap=${sorted_priority_ids[i]}
-      sorted_priority_ids[i]=${sorted_priority_ids[j]}
-      sorted_priority_ids[j]=$swap
-    fi
-  done
-done
+mapfile -t sorted_priority_ids < <(sort_ids "${priority_ids[@]}")
 for id in "${sorted_priority_ids[@]}"; do
   module_files+=("$root_dir/modules/priorities/$id.md")
 done
 
-sorted_optional_ids=("${optional_ids[@]}")
-for ((i = 0; i < ${#sorted_optional_ids[@]}; i++)); do
-  for ((j = i + 1; j < ${#sorted_optional_ids[@]}; j++)); do
-    if [[ ${sorted_optional_ids[j]} < ${sorted_optional_ids[i]} ]]; then
-      swap=${sorted_optional_ids[i]}
-      sorted_optional_ids[i]=${sorted_optional_ids[j]}
-      sorted_optional_ids[j]=$swap
-    fi
-  done
-done
+mapfile -t sorted_optional_ids < <(sort_ids "${optional_ids[@]}")
 for id in "${sorted_optional_ids[@]}"; do
   module_files+=("$root_dir/modules/optional/$id.md")
+done
+
+section_headings=()
+section_files=()
+for file in "$core_file" "${module_files[@]}"; do
+  heading=''
+  IFS= read -r heading < "$file" || [[ -n $heading ]] || \
+    fail "section is empty: '$file'"
+  [[ $heading == '# '* ]] || fail "section must begin with an H1 heading: '$file'"
+  for selected_file in "${section_files[@]}"; do
+    cmp -s -- "$file" "$selected_file" && \
+      fail "duplicate section content in '$file' and '$selected_file'"
+  done
+  already_selected "$heading" "${section_headings[@]}" && \
+    fail "duplicate section heading '$heading'"
+  section_headings+=("$heading")
+  section_files+=("$file")
 done
 
 for file in "${module_files[@]}"; do

@@ -4,11 +4,23 @@ set -euo pipefail
 export LC_ALL=C
 
 test_dir=$(mktemp -d "${TMPDIR:-/tmp}/compose-policy-test.XXXXXX")
-trap 'rm -rf -- "$test_dir"' EXIT
-
 repo_root=$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
 composer=$repo_root/scripts/compose-policy.sh
 core_file=$repo_root/AGENTS.md
+duplicate_heading=$repo_root/modules/priorities/m01-4-duplicate-heading.md
+duplicate_content=$repo_root/modules/priorities/m01-4-duplicate-content.md
+symlink_module=$repo_root/modules/priorities/m01-4-symlink.md
+duplicate_heading_created=0
+duplicate_content_created=0
+symlink_module_created=0
+
+cleanup() {
+  ((duplicate_heading_created)) && rm -f -- "$duplicate_heading"
+  ((duplicate_content_created)) && rm -f -- "$duplicate_content"
+  ((symlink_module_created)) && rm -f -- "$symlink_module"
+  rm -rf -- "$test_dir"
+}
+trap cleanup EXIT
 
 fail() {
   printf 'FAIL: %s\n' "$*" >&2
@@ -75,10 +87,51 @@ readability_line=$(grep -n -F '# Readability' "$test_dir/multiple-a.md" | cut -d
   --output "$test_dir/output.md"
 cmp -s "$test_dir/one-priority.md" "$test_dir/output.md" || \
   fail "file output differs from stdout output"
+if compgen -G "$test_dir/.engineering-policy.*" > /dev/null; then
+  fail "successful publication left a temporary output file"
+fi
 
 printf 'keep me\n' > "$test_dir/existing.md"
 expect_failure "refusing to overwrite" --level personal --output "$test_dir/existing.md"
 [[ $(cat "$test_dir/existing.md") == "keep me" ]] || fail "existing output was modified"
+
+printf 'keep me\n' > "$test_dir/symlink-target.md"
+ln -s -- "$test_dir/symlink-target.md" "$test_dir/symlink-output.md"
+expect_failure "refusing to overwrite" --level personal --output "$test_dir/symlink-output.md"
+[[ $(cat "$test_dir/symlink-target.md") == "keep me" ]] || fail "symlink output target was modified"
+
+mkdir "$test_dir/fail-bin" "$test_dir/publish"
+cat > "$test_dir/fail-bin/ln" <<'FAIL_LN'
+#!/usr/bin/env bash
+exit 1
+FAIL_LN
+chmod +x "$test_dir/fail-bin/ln"
+if PATH="$test_dir/fail-bin:$PATH" "$composer" --level personal \
+  --output "$test_dir/publish/policy.md" > "$test_dir/stdout" 2> "$test_dir/stderr"; then
+  fail "publication failure unexpectedly succeeded"
+fi
+grep -Fq -- "could not create output" "$test_dir/stderr" || fail "publication failure was not reported"
+[[ ! -s $test_dir/stdout ]] || fail "publication failure wrote partial stdout"
+[[ ! -e $test_dir/publish/policy.md ]] || fail "publication failure left a partial output"
+if compgen -G "$test_dir/publish/.engineering-policy.*" > /dev/null; then
+  fail "publication failure left a temporary output file"
+fi
+
+[[ ! -e $duplicate_heading && ! -e $duplicate_content && ! -e $symlink_module ]] || \
+  fail "temporary module fixture path already exists"
+printf '# Readability\n\nDuplicate heading fixture.\n' > "$duplicate_heading"
+duplicate_heading_created=1
+expect_failure "duplicate section heading" --level personal \
+  --priority readability --priority m01-4-duplicate-heading
+
+cp "$repo_root/modules/priorities/readability.md" "$duplicate_content"
+duplicate_content_created=1
+expect_failure "duplicate section content" --level personal \
+  --priority m01-4-duplicate-content --priority readability
+
+ln -s readability.md "$symlink_module"
+symlink_module_created=1
+expect_failure "symlinked priority module" --level personal --priority m01-4-symlink
 
 expect_failure "missing required --level" --priority readability
 expect_failure "select exactly one project level" \
