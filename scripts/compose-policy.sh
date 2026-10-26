@@ -171,12 +171,20 @@ fi
 
 module_files=("$level_file")
 
-mapfile -t sorted_priority_ids < <(sort_ids "${priority_ids[@]}")
+sorted_ids=$(sort_ids "${priority_ids[@]}") || fail "could not sort priority IDs"
+sorted_priority_ids=()
+if [[ -n $sorted_ids ]]; then
+  mapfile -t sorted_priority_ids <<< "$sorted_ids"
+fi
 for id in "${sorted_priority_ids[@]}"; do
   module_files+=("$root_dir/modules/priorities/$id.md")
 done
 
-mapfile -t sorted_optional_ids < <(sort_ids "${optional_ids[@]}")
+sorted_ids=$(sort_ids "${optional_ids[@]}") || fail "could not sort optional-module IDs"
+sorted_optional_ids=()
+if [[ -n $sorted_ids ]]; then
+  mapfile -t sorted_optional_ids <<< "$sorted_ids"
+fi
 for id in "${sorted_optional_ids[@]}"; do
   module_files+=("$root_dir/modules/optional/$id.md")
 done

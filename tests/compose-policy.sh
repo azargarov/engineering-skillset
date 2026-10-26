@@ -117,6 +117,24 @@ if compgen -G "$test_dir/publish/.engineering-policy.*" > /dev/null; then
   fail "publication failure left a temporary output file"
 fi
 
+mkdir "$test_dir/fail-sort-bin"
+cat > "$test_dir/fail-sort-bin/sort" <<'FAIL_SORT'
+#!/usr/bin/env bash
+exit 1
+FAIL_SORT
+chmod +x "$test_dir/fail-sort-bin/sort"
+if PATH="$test_dir/fail-sort-bin:$PATH" "$composer" --level personal \
+  --priority readability --output "$test_dir/sort-failure.md" \
+  > "$test_dir/stdout" 2> "$test_dir/stderr"; then
+  fail "sort failure unexpectedly succeeded"
+fi
+grep -Fq -- "could not sort priority IDs" "$test_dir/stderr" || fail "sort failure was not reported"
+[[ ! -s $test_dir/stdout ]] || fail "sort failure wrote partial stdout"
+[[ ! -e $test_dir/sort-failure.md ]] || fail "sort failure published a partial policy"
+if compgen -G "$test_dir/.engineering-policy.*" > /dev/null; then
+  fail "sort failure left a temporary output file"
+fi
+
 [[ ! -e $duplicate_heading && ! -e $duplicate_content && ! -e $symlink_module ]] || \
   fail "temporary module fixture path already exists"
 printf '# Readability\n\nDuplicate heading fixture.\n' > "$duplicate_heading"
