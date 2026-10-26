@@ -106,7 +106,9 @@ invoke_bootstrap "$test_dir/install-target" --level personal \
   --priority readability > "$test_dir/install.log"
 cmp -s "$test_dir/expected.md" "$test_dir/install-target/AGENTS.md" || \
   fail "bootstrapped policy differs from composer output"
-[[ $(find "$test_dir/install-target" -mindepth 1 -maxdepth 1 -printf '%f\n') == AGENTS.md ]] || \
+[[ -f $test_dir/install-target/.engineering-skillset-manifest ]] || \
+  fail "bootstrapped installation omitted its manifest"
+[[ $(find "$test_dir/install-target" -mindepth 1 -maxdepth 1 -type f | wc -l) == 2 ]] || \
   fail "bootstrap created unexpected target files"
 [[ -z $(find "$temp_parent" -mindepth 1 -print -quit) ]] || \
   fail "successful bootstrap left temporary files"
@@ -116,7 +118,8 @@ grep -Fq -- "$source_repo/archive/$revision.tar.gz" "$download_log" || \
 mkdir "$test_dir/dry-target"
 invoke_bootstrap "$test_dir/dry-target" --level personal \
   --priority development-speed --dry-run > "$test_dir/dry-run.log"
-grep -Fq -- '--level personal --priority development-speed' "$test_dir/dry-run.log" || \
+grep -Fq -- 'Configuration: level=personal;priority=development-speed' \
+  "$test_dir/dry-run.log" || \
   fail "bootstrap did not forward installer selections"
 [[ -z $(find "$test_dir/dry-target" -mindepth 1 -print -quit) ]] || \
   fail "dry-run modified target"
