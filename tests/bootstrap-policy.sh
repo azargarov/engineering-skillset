@@ -115,6 +115,29 @@ cmp -s "$test_dir/expected.md" "$test_dir/install-target/AGENTS.md" || \
 grep -Fq -- "$source_repo/archive/$revision.tar.gz" "$download_log" || \
   fail "bootstrap used an unexpected source endpoint"
 
+old_bootstrap_policy=$(sha256sum "$test_dir/install-target/AGENTS.md")
+old_bootstrap_manifest=$(sha256sum "$test_dir/install-target/.engineering-skillset-manifest")
+if invoke_bootstrap "$test_dir/install-target" --level personal \
+  --priority development-speed > "$test_dir/stdout" 2> "$test_dir/stderr"; then
+  fail "bootstrap changed configuration without explicit reconfiguration"
+fi
+grep -Fq -- 'use --reconfigure' "$test_dir/stderr" || \
+  fail "bootstrap did not preserve installer reconfiguration error"
+[[ $(sha256sum "$test_dir/install-target/AGENTS.md") == "$old_bootstrap_policy" && \
+  $(sha256sum "$test_dir/install-target/.engineering-skillset-manifest") == "$old_bootstrap_manifest" ]] || \
+  fail "unauthorized bootstrap reconfiguration changed managed files"
+invoke_bootstrap "$test_dir/install-target" --level personal \
+  --priority development-speed --reconfigure > "$test_dir/reconfigure.log"
+"$repo_root/scripts/compose-policy.sh" --level personal \
+  --priority development-speed > "$test_dir/reconfigure-expected.md"
+cmp -s "$test_dir/reconfigure-expected.md" "$test_dir/install-target/AGENTS.md" || \
+  fail "bootstrap did not forward --reconfigure to installer"
+grep -Fq -- 'configuration=level=personal;priority=development-speed' \
+  "$test_dir/install-target/.engineering-skillset-manifest" || \
+  fail "bootstrap reconfiguration did not update manifest"
+[[ -z $(find "$temp_parent" -mindepth 1 -print -quit) ]] || \
+  fail "bootstrap reconfiguration left temporary files"
+
 mkdir "$test_dir/dry-target"
 invoke_bootstrap "$test_dir/dry-target" --level personal \
   --priority development-speed --dry-run > "$test_dir/dry-run.log"

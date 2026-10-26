@@ -7,7 +7,7 @@ usage() {
 Usage:
   scripts/bootstrap-policy.sh --source https://github.com/OWNER/REPO \
     --revision COMMIT_SHA --sha256 ARCHIVE_SHA256 --target DIR \
-    --level ID [--priority ID ...] [--optional ID ...] [--dry-run]
+    --level ID [--priority ID ...] [--optional ID ...] [--reconfigure] [--dry-run]
 
 Download the GitHub source archive for one full commit SHA, verify its SHA-256,
 validate and extract it in a temporary directory outside DIR, then run its
@@ -84,6 +84,10 @@ while (($#)); do
       ;;
     --dry-run)
       installer_args+=(--dry-run)
+      shift
+      ;;
+    --reconfigure)
+      installer_args+=(--reconfigure)
       shift
       ;;
     --help)
