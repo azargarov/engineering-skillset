@@ -50,10 +50,11 @@ MOCK_CURL
 chmod +x "$mock_bin/curl"
 
 source_root=$test_dir/source/engineering-skillset-$revision
-mkdir -p "$source_root/scripts" "$source_root/modules"
+mkdir -p "$source_root/scripts" "$source_root/modules" "$source_root/.agents"
 cp AGENTS.md "$source_root/AGENTS.md"
 cp scripts/compose-policy.sh scripts/install-policy.sh "$source_root/scripts/"
 cp -a modules/levels modules/priorities "$source_root/modules/"
+cp -a .agents/skills "$source_root/.agents/skills"
 valid_archive=$test_dir/valid.tar.gz
 tar -czf "$valid_archive" -C "$test_dir/source" "${source_root##*/}"
 mock_archive=$valid_archive
@@ -110,6 +111,11 @@ cmp -s "$test_dir/expected.md" "$test_dir/install-target/AGENTS.md" || \
   fail "bootstrapped policy differs from composer output"
 [[ -f $test_dir/install-target/.engineering-skillset-manifest ]] || \
   fail "bootstrapped installation omitted its manifest"
+for skill_id in software-design implementation-review verification-qa project-handover; do
+  cmp -s "$repo_root/.agents/skills/$skill_id/SKILL.md" \
+    "$test_dir/install-target/.agents/skills/$skill_id/SKILL.md" || \
+    fail "bootstrap installed incorrect Skill content for '$skill_id'"
+done
 [[ $(find "$test_dir/install-target" -mindepth 1 -maxdepth 1 -type f | wc -l) == 3 ]] || \
   fail "bootstrap created unexpected target files"
 [[ $(sha256sum "$test_dir/install-target/README.local") == "$user_file_sha" ]] || \
@@ -118,6 +124,21 @@ cmp -s "$test_dir/expected.md" "$test_dir/install-target/AGENTS.md" || \
   fail "successful bootstrap left temporary files"
 grep -Fq -- "$source_repo/archive/$revision.tar.gz" "$download_log" || \
   fail "bootstrap used an unexpected source endpoint"
+
+mkdir -p "$test_dir/missing-skill-source" "$test_dir/missing-skill-target"
+saved_valid_archive_sha=$archive_sha
+cp -a "$source_root" "$test_dir/missing-skill-source/"
+missing_skill_root=$test_dir/missing-skill-source/${source_root##*/}
+rm -f -- "$missing_skill_root/.agents/skills/software-design/SKILL.md"
+missing_skill_archive=$test_dir/missing-skill.tar.gz
+tar -czf "$missing_skill_archive" -C "$test_dir/missing-skill-source" \
+  "${source_root##*/}"
+mock_archive=$missing_skill_archive
+archive_sha=$(sha256sum "$missing_skill_archive" | cut -d' ' -f1)
+expect_failure "source is missing a required Skill: 'software-design'" \
+  "$test_dir/missing-skill-target" --level personal
+mock_archive=$valid_archive
+archive_sha=$saved_valid_archive_sha
 
 initial_policy_stat=$(stat -c '%d:%i:%Y' "$test_dir/install-target/AGENTS.md")
 initial_manifest_stat=$(stat -c '%d:%i:%Y' \
@@ -270,9 +291,10 @@ mkdir "$test_dir/missing-installer-source" \
   "$test_dir/missing-installer-target"
 missing_root=$test_dir/missing-installer-source/engineering-skillset-$revision
 mkdir -p "$missing_root/scripts" "$missing_root/modules/levels" \
-  "$missing_root/modules/priorities"
+  "$missing_root/modules/priorities" "$missing_root/.agents"
 cp AGENTS.md "$missing_root/AGENTS.md"
 cp scripts/compose-policy.sh "$missing_root/scripts/compose-policy.sh"
+cp -a .agents/skills "$missing_root/.agents/skills"
 touch "$missing_root/modules/levels/personal.md" \
   "$missing_root/modules/priorities/readability.md"
 chmod +x "$missing_root/scripts/compose-policy.sh"

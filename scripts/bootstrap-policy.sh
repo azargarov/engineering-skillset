@@ -11,7 +11,8 @@ Usage:
 
 Download the GitHub source archive for one full commit SHA, verify its SHA-256,
 validate and extract it in a temporary directory outside DIR, then run its
-local installer. The target directory must already exist.
+local installer to install the composed policy and four bundled Skills. The
+target directory must already exist.
 
 Use a trusted repository and obtain ARCHIVE_SHA256 through a trusted channel.
 The commit URL identifies a revision but does not itself verify archive bytes.
@@ -217,6 +218,11 @@ source_root=$extract_dir/$archive_root
 for source_file in AGENTS.md scripts/compose-policy.sh scripts/install-policy.sh; do
   [[ -f $source_root/$source_file && ! -L $source_root/$source_file && -r $source_root/$source_file ]] || \
     fail "source is missing a required file: '$source_file'"
+done
+for skill_id in software-design implementation-review verification-qa project-handover; do
+  source_file=.agents/skills/$skill_id/SKILL.md
+  [[ -f $source_root/$source_file && ! -L $source_root/$source_file && -r $source_root/$source_file ]] || \
+    fail "source is missing a required Skill: '$skill_id'"
 done
 [[ -x $source_root/scripts/compose-policy.sh && -x $source_root/scripts/install-policy.sh ]] || \
   fail "source installer or composer is not executable"
