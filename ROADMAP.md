@@ -166,6 +166,16 @@ For isolating Skill effects, keep underlying policy and authorization comparable
 
 **Goal:** Prepare a clearly labeled experimental distribution whose supported scope and limitations are explicit. Do not present it as a proven productivity improvement.
 
+### M05.1 — Skills Packaging and Installation
+
+**Status:** Accepted for the verified supported scope. **Commit:** `43f72a9c902f6ab4d3a5594d5c6490901afb2e97`.
+
+The local installer now installs the composed policy and all four bundled Workflow Skills. Manifest v2 records policy and Skill digests; existing v1 policy-only manifests require explicit `--reconfigure` to add the Skills. Unmanaged collisions and modified managed Skills are refused, unrelated Skills are preserved, and repeated installs leave managed files unchanged. Bootstrap validates the four required Skill files before invoking the installer.
+
+Composer, installer, and bootstrap tests, Bash syntax checks, ShellCheck, and `git diff --check` passed. A fresh-target `codex debug prompt-input` check listed all four installed Skill names, establishing discovery metadata in that runtime; Skill body loading and invocation were not established.
+
+**Limitations:** Policy, Skills, and manifest publication is not atomic as a set; process interruption may leave inconsistent state. Concurrent filesystem modifications remain unqualified. Live GitHub download and trusted digest provenance remain **NOT ESTABLISHED**. Selective Skill removal and uninstall are unsupported; only the current `SKILL.md` files are managed. M05.1 does not establish behavioral effectiveness or independent assurance.
+
 - Document purpose, supported platforms/agents, installation, profiles, priorities, options, reconfiguration, review of diffs, and uninstall limitations.
 - Test installation and updates in clean and existing Git repositories, including collision and interrupted-operation scenarios.
 - Verify packaging excludes development fixtures, unrelated modules, temporary downloads, and other nonessential files from target projects.
