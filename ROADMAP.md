@@ -38,8 +38,8 @@ The always-applicable Core Policy preserves scope, correctness, proportionate QA
 | **M01 — Module Composition** | Validate a minimal composable set of policy modules | **Completed (verified supported scope)** |
 | **M02 — Bash Installer** | Safe, repeatable local and remote installation and reconfiguration | **Completed (verified supported scope)** |
 | **M03 — Workflow Skills** | Implement and verify the selected task workflows | **Completed (verified supported scope)** |
-| **M04 — Evaluation & Qualification** | Evaluate modules and Skills against actual Codex behavior | **In progress** |
-| **M05 — Release v1.0** | Package, document, verify, and publish the usable system | Planned |
+| **M04 — Evaluation & Qualification** | Evaluate modules and Skills against actual Codex behavior | **Completed for evaluation scope; behavioral effectiveness inconclusive** |
+| **M05 — Experimental v1 Release** | Package, document, verify, and publish the experimental system | **Next active** |
 
 **Status convention:** Planned / Next active / In progress / Blocked / Completed / Accepted. Completion requires evidence against milestone acceptance conditions; documentation deliverables alone do not establish behavioral effectiveness.
 
@@ -158,20 +158,20 @@ For isolating Skill effects, keep underlying policy and authorization comparable
 - **M04.2 — Evaluation Case Preparation:** Completed in commit `ea65489`. Prepared three frozen cases with agent-facing tasks, separate evaluator criteria, deterministic checks where practical, and recorded provenance.
 - **M04.3 — Matched Pilot Comparison and Analysis:** Completed for the nine-run pilot and its provisional analysis. Evidence is recorded in `docs/development/evaluation-runs/m04.3/README.md` and `docs/development/evaluation-runs/m04.3-analysis.md` (pilot commit `8488a4f`; analysis commit `f83ef37`). One run per condition and case is not statistical evidence.
 - **M04.4 — Targeted Repeats and Ablation:** Completed as an evaluation activity for its bounded scope. The four planned follow-up runs are recorded in `docs/development/evaluation-runs/m04.4-follow-up/README.md`; the Case 2 Core-only/Baseline pair produced identical accepted patches, while the Case 3 pair preserved the expected integration failure and handover boundary. An additional explicit Project Handover activation check is recorded in `docs/development/evaluation-runs/m04.5-skill-activation/README.md` (evidence commit `fe3cd06`). Metadata discovery was observed, but the Skill body read and invocation were not established; this is an unresolved result, not proof of value or experimental failure. The follow-up evidence, analysis, and closeout are in commits `fe83bf3`, `7737040`, and `7ff432c`. Component effectiveness remains inconclusive.
-- **M04.5 — Independent Assessment and Recommendations:** In progress. A self-reviewed provisional component and release decision is recorded in `docs/development/evaluation-runs/m04.5-decision-review.md` (commit `7c141f8`). No independent assessor participated; independent assessment and the project owner’s release-policy decision remain outstanding. No further model trials are recommended before that review unless a specific decision requires new evidence.
+- **M04.5 — Final Evaluation Decisions:** Completed for the recorded evidence and evaluation scope. The prior self-reviewed assessment is preserved in `docs/development/evaluation-runs/m04.5-decision-review.md` (commit `7c141f8`); final provisional experimental-v1 decisions and release distinctions are in `docs/development/evaluation-runs/m04.5-final-decisions.md` (commit `6cb6b12`). The pilot, targeted follow-up, explicit Skill activation check, and one matched end-to-end comparison establish no general behavioral advantage over Baseline. Components are provisionally included for experimental inspection and trial; effectiveness remains inconclusive. No independent assurance was performed, and no further evaluation runs are planned for M04.
 
-**Acceptance:** Reproducible evaluation notes, no concealed critical failures, a justified release set, and an explicit account of limitations and overhead.
+**Acceptance:** The planned pilot, bounded follow-up, activation check, and focused end-to-end comparison are recorded; no known critical acceptance failures were concealed; provisional experimental inclusion decisions and observed costs are documented without claiming efficacy or statistical significance. M04 is closed as an evaluation activity, not as proof of behavioral effectiveness.
 
-## 9. M05 — Release v1.0
+## 9. M05 — Experimental v1 Release
 
-**Goal:** Ship the smallest reliable usable system.
+**Goal:** Prepare a clearly labeled experimental distribution whose supported scope and limitations are explicit. Do not present it as a proven productivity improvement.
 
 - Document purpose, supported platforms/agents, installation, profiles, priorities, options, reconfiguration, review of diffs, and uninstall limitations.
 - Test installation and updates in clean and existing Git repositories, including collision and interrupted-operation scenarios.
 - Verify packaging excludes development fixtures, unrelated modules, temporary downloads, and other nonessential files from target projects.
 - Tag a release with its verified revision, known limitations, and reproducible checks.
 
-**Acceptance:** A user can install an appropriate configuration, inspect and safely change it later, and understand what the methodology does and what has actually been tested.
+**Acceptance:** A user can obtain and use the documented experimental configuration, inspect and safely change it within the verified supported scope, and understand what has and has not been tested. Any claimed remote-bootstrap or Skill-distribution path must be verified before it is described as supported; otherwise omit or clearly mark it unsupported.
 
 ## 10. Cross-milestone checkpoints
 
@@ -193,8 +193,8 @@ The underlying record layout is still an open implementation decision. Avoid man
 
 ## 12. Immediate next actions
 
-1. **M04 — Evaluation & Qualification** remains in progress. M04.3 pilot/analysis and M04.4 targeted evaluation are recorded; M04.4 is complete as an activity, with component effects inconclusive. M04.5 is active; independent assessment and the owner’s release-policy decision remain outstanding.
+1. **M05 — Experimental v1 Release** is the next active milestone. M04 is closed for its completed evaluation scope; no general behavioral advantage over Baseline was established. M05 packaging, documentation, and release-scope verification remain to be done. Remote bootstrap must not be claimed as a verified release route without live-download and trusted-digest provenance evidence; the installer does not currently distribute Skills.
 2. Preserve the distinction between policy modules and reusable workflow Skills.
-3. Do not treat M01 structural or M02 installation verification as evidence of behavioral effectiveness; that remains for M04 evaluation.
+3. Do not treat M01 structural or M02 installation verification as evidence of behavioral effectiveness. M04 evaluation is complete, but effectiveness remains unproven.
 
 **Roadmap change rule:** This document may be updated as evidence arrives. Preserve important decisions and explicitly revise future milestones when learning warrants it; do not expand approved scope silently.
