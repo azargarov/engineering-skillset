@@ -26,6 +26,8 @@ acceptance order.
    levels, target interactions and emergent behavior instead of repeating
    component coverage. Repeat a critical guarantee only when the higher-level
    check gives distinct evidence against another failure mode.
+   When retry, duplicate-request, or partial-failure behavior is part of the
+   required guarantees, verify it at the appropriate test level.
 5. Run relevant checks when authorized and feasible. Preserve each actual
    result, including failures. Do not silently recast a failing check as a
    warning, and do not expand implementation scope to fix a discovered issue
