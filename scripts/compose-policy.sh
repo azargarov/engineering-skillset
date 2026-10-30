@@ -213,6 +213,11 @@ for file in "${module_files[@]}"; do
 done
 
 if ((output_seen)); then
+  file_umask=$(umask) || fail "cannot read file creation mask"
+  output_mode=$(printf '%04o' "$((0666 & ~8#$file_umask))") || \
+    fail "cannot calculate output permissions"
+  chmod "$output_mode" -- "$tmp_file" || \
+    fail "cannot set output permissions"
   if ! ln -T -- "$tmp_file" "$output_path" 2>/dev/null; then
     fail "could not create output at '$output_path' without overwriting"
   fi

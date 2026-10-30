@@ -7,6 +7,8 @@ test_dir=$(mktemp -d "${TMPDIR:-/tmp}/install-policy-test.XXXXXX")
 repo_root=$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
 installer=$repo_root/scripts/install-policy.sh
 composer=$repo_root/scripts/compose-policy.sh
+file_umask=$(umask)
+expected_file_mode=$(printf '%o' "$((0666 & ~8#$file_umask))")
 test_level=$repo_root/modules/levels/m02-4-test.md
 created_test_level=0
 if [[ -e $test_level || -L $test_level ]]; then
@@ -45,6 +47,7 @@ grep -Fq -- '--target DIR' "$test_dir/help" || fail "help omits target usage"
 grep -Fq -- 'four bundled Skills' "$test_dir/help" || fail "help omits bundled Skills"
 
 mkdir "$test_dir/empty-target"
+mkdir "$test_dir/restricted-target"
 mkdir -p "$test_dir/empty-target/.agents/skills/user-notes"
 printf 'user-owned Skill\n' > "$test_dir/empty-target/.agents/skills/user-notes/SKILL.md"
 user_skill_sha=$(sha256sum "$test_dir/empty-target/.agents/skills/user-notes/SKILL.md")
@@ -54,6 +57,14 @@ user_skill_sha=$(sha256sum "$test_dir/empty-target/.agents/skills/user-notes/SKI
   --priority readability --priority development-speed > "$test_dir/install.log"
 cmp -s "$test_dir/expected.md" "$test_dir/empty-target/AGENTS.md" || \
   fail "installed policy differs from composer output"
+[[ $(stat -c '%a' "$test_dir/empty-target/AGENTS.md") == "$expected_file_mode" ]] || \
+  fail "installed policy mode does not respect the process umask"
+(
+  umask 0077
+  "$installer" --target "$test_dir/restricted-target" --level personal > /dev/null
+)
+[[ $(stat -c '%a' "$test_dir/restricted-target/AGENTS.md") == 600 ]] || \
+  fail "installed policy ignored a restrictive process umask"
 [[ -f $test_dir/empty-target/.engineering-skillset-manifest ]] || \
   fail "installation manifest is missing"
 [[ $(cat "$test_dir/empty-target/.engineering-skillset-manifest") == \

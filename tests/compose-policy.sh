@@ -7,6 +7,8 @@ test_dir=$(mktemp -d "${TMPDIR:-/tmp}/compose-policy-test.XXXXXX")
 repo_root=$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
 composer=$repo_root/scripts/compose-policy.sh
 core_file=$repo_root/AGENTS.md
+file_umask=$(umask)
+expected_file_mode=$(printf '%o' "$((0666 & ~8#$file_umask))")
 duplicate_heading=$repo_root/modules/priorities/m01-4-duplicate-heading.md
 duplicate_content=$repo_root/modules/priorities/m01-4-duplicate-content.md
 symlink_module=$repo_root/modules/priorities/m01-4-symlink.md
@@ -87,6 +89,14 @@ readability_line=$(grep -n -F '# Readability' "$test_dir/multiple-a.md" | cut -d
   --output "$test_dir/output.md"
 cmp -s "$test_dir/one-priority.md" "$test_dir/output.md" || \
   fail "file output differs from stdout output"
+[[ $(stat -c '%a' "$test_dir/output.md") == "$expected_file_mode" ]] || \
+  fail "file output mode does not respect the process umask"
+(
+  umask 0077
+  "$composer" --level personal --output "$test_dir/restricted-output.md"
+)
+[[ $(stat -c '%a' "$test_dir/restricted-output.md") == 600 ]] || \
+  fail "file output ignored a restrictive process umask"
 if compgen -G "$test_dir/.engineering-policy.*" > /dev/null; then
   fail "successful publication left a temporary output file"
 fi
