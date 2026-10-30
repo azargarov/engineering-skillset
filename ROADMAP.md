@@ -183,6 +183,16 @@ Composer, installer, and bootstrap tests, Bash syntax checks, ShellCheck, and `g
 
 **Acceptance:** A user can obtain and use the documented experimental configuration, inspect and safely change it within the verified supported scope, and understand what has and has not been tested. Any claimed remote-bootstrap or Skill-distribution path must be verified before it is described as supported; otherwise omit or clearly mark it unsupported.
 
+### M05.2 — End-to-End Qualification
+
+**Status:** Completed for the verified qualification scope.
+
+A fresh disposable-project installation produced a policy matching the selected composition, and all four Skills were installed, discovered, and explicitly invoked in fresh Codex sessions. Instruction-body loading was confirmed, including controlled comparisons using disposable copies for `software-design`, `verification-qa`, and `project-handover`. Relevant design, review, QA, and handover behavior was observed. Identical repeat installation and safe reconfiguration passed; representative user-owned files remained unchanged.
+
+**Limitations:** These scenarios do not establish general improvement over Baseline. User-owned file preservation was checked for representative cases, not every possible layout. The focused instruction-loading experiments used disposable Skill copies and do not modify the shipped Skills. M05.2 does not qualify live GitHub download, trusted digest provenance, atomic policy/manifest publication, concurrent modifications, or behavioral effectiveness.
+
+**Exit:** Installation, composition, Skill discovery/invocation/loading, repeat installation, and reconfiguration were verified for the tested scope. Experimental v1 publication and remaining M05 release checks are still open.
+
 ## 10. Cross-milestone checkpoints
 
 At every meaningful milestone transition:
@@ -203,7 +213,7 @@ The underlying record layout is still an open implementation decision. Avoid man
 
 ## 12. Immediate next actions
 
-1. **M05 — Experimental v1 Release** is the next active milestone. M04 is closed for its completed evaluation scope; no general behavioral advantage over Baseline was established. M05 packaging, documentation, and release-scope verification remain to be done. Remote bootstrap must not be claimed as a verified release route without live-download and trusted-digest provenance evidence; the installer does not currently distribute Skills.
+1. **M05 — Experimental v1 Release** remains active. M04 is closed for its completed evaluation scope; no general behavioral advantage over Baseline was established. M05 packaging, documentation, and remaining release-scope verification remain to be done. Remote bootstrap must not be claimed as a verified release route without live-download and trusted-digest provenance evidence.
 2. Preserve the distinction between policy modules and reusable workflow Skills.
 3. Do not treat M01 structural or M02 installation verification as evidence of behavioral effectiveness. M04 evaluation is complete, but effectiveness remains unproven.
 
