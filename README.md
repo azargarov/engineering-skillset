@@ -25,6 +25,9 @@ Its guiding principles are:
 The methodology is experimental. Current evaluations have not established a
 general quality or productivity advantage over baseline Codex.
 
+This project is licensed under the Apache License, Version 2.0. See
+[`LICENSE`](LICENSE) for the full license text.
+
 ## Quick start
 
 Use the local installer from a checkout of this repository. The target
