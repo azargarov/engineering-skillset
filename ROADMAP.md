@@ -39,7 +39,7 @@ The always-applicable Core Policy preserves scope, correctness, proportionate QA
 | **M02 — Bash Installer** | Safe, repeatable local and remote installation and reconfiguration | **Completed (verified supported scope)** |
 | **M03 — Workflow Skills** | Implement and verify the selected task workflows | **Completed (verified supported scope)** |
 | **M04 — Evaluation & Qualification** | Evaluate modules and Skills against actual Codex behavior | **Completed for evaluation scope; behavioral effectiveness inconclusive** |
-| **M05 — Experimental v1 Release** | Package, document, verify, and publish the experimental system | **Next active** |
+| **M05 — Experimental v1 Release** | Package, document, verify, and publish the experimental system | **Completed** |
 
 **Status convention:** Planned / Next active / In progress / Blocked / Completed / Accepted. Completion requires evidence against milestone acceptance conditions; documentation deliverables alone do not establish behavioral effectiveness.
 
@@ -191,9 +191,20 @@ A fresh disposable-project installation produced a policy matching the selected 
 
 **Limitations:** These scenarios do not establish general improvement over Baseline. User-owned file preservation was checked for representative cases, not every possible layout. The focused instruction-loading experiments used disposable Skill copies and do not modify the shipped Skills. M05.2 does not qualify live GitHub download, trusted digest provenance, atomic policy/manifest publication, concurrent modifications, or behavioral effectiveness.
 
-**Exit:** Installation, composition, Skill discovery/invocation/loading, repeat installation, and reconfiguration were verified for the tested scope. Experimental v1 publication and remaining M05 release checks are still open.
+**Exit:** Installation, composition, Skill discovery/invocation/loading, repeat installation, and reconfiguration were verified for the tested scope. The experimental v1 release was published as GitHub Release/tag `v0.1.0-experimental`, pointing to verified commit `954bf56e1ce33cfeda65fedd6cf92d3c7dcb8311`. The release tag resolves to that commit. M05 is complete for its documented experimental scope.
 
-## 10. Cross-milestone checkpoints
+**Release limitations retained:** Behavioral effectiveness and improvement over Baseline remain unproven; no statistical conclusions or independent assurance are established. Live GitHub download and trusted digest provenance remain **NOT ESTABLISHED**. Policy, Skills, and manifest publication is not atomic as a set; concurrent filesystem modifications remain unqualified; user-owned file preservation was checked for representative cases only. Selective Skill removal and uninstall are unsupported. Successful optional-module paths remain untested. These are recorded limitations, not claims established by publication.
+
+## 10. Agreed future direction
+
+- **M06 — Dropped:** No implementation is planned.
+- **M07 — Postponed:** Retained as a future direction but not scheduled or active.
+- **M08 — Composed-policy duplication and context efficiency:** Evaluate duplicated content in composed policies and their context efficiency. This is an evaluation direction; no implementation is authorized by this entry.
+- **M09 — Roadmap Optimization Skill:** Develop and evaluate the Skill, then perform a controlled migration. Keep design/evaluation and migration as distinct stages; migration follows only after the Skill has been evaluated.
+
+No prior M06–M09 milestone definitions were present in this roadmap when these directions were recorded.
+
+## 11. Cross-milestone checkpoints
 
 At every meaningful milestone transition:
 
@@ -205,16 +216,16 @@ At every meaningful milestone transition:
 
 The underlying record layout is still an open implementation decision. Avoid mandatory separate files per stage for small work.
 
-## 11. Decisions retained and questions left open
+## 12. Decisions retained and questions left open
 
 **Retained:** central proportionate QA; compositional testing; honest evidence; authoritative scope; readable code and KISS/YAGNI; meaningful stage history and compact current context; configurable level/priorities/options; modular assembly; Bash installer; safe updates; evaluation against baseline.
 
 **Open:** exact project-level taxonomy; profile and priority semantics; module section/slot format; conflicts beyond enforceable static rules; number of Skills; activation and independent-review thresholds; record formats; installer flags and metadata details; statistically meaningful Skill acceptance policy. These must be resolved through bounded design and tests rather than speculative framework-building.
 
-## 12. Immediate next actions
+## 13. Immediate next actions
 
-1. **M05 — Experimental v1 Release** remains active. M04 is closed for its completed evaluation scope; no general behavioral advantage over Baseline was established. M05 packaging, documentation, and remaining release-scope verification remain to be done. Remote bootstrap must not be claimed as a verified release route without live-download and trusted-digest provenance evidence.
+1. M05 is complete. The agreed next active evaluation direction is M08: composed-policy duplication and context efficiency. M09 follows as Roadmap Optimization Skill design/evaluation, then controlled migration. M06 is dropped and M07 postponed.
 2. Preserve the distinction between policy modules and reusable workflow Skills.
-3. Do not treat M01 structural or M02 installation verification as evidence of behavioral effectiveness. M04 evaluation is complete, but effectiveness remains unproven.
+3. Do not treat M01 structural, M02 installation, M05 qualification, or release publication as evidence of behavioral effectiveness. M04 evaluation is complete, but effectiveness remains unproven.
 
 **Roadmap change rule:** This document may be updated as evidence arrives. Preserve important decisions and explicitly revise future milestones when learning warrants it; do not expand approved scope silently.
