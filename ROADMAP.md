@@ -200,7 +200,7 @@ A fresh disposable-project installation produced a policy matching the selected 
 - **M06 — Dropped:** No implementation is planned.
 - **M07 — Postponed:** Retained as a future direction but not scheduled or active.
 - **M08 — Composed-policy duplication and context efficiency:** Completed. The largest supported composition is 833 words; overlap primarily serves distinct policy responsibilities. Estimated wording savings of 20–50 words had no demonstrated behavioral benefit, so policy and Skill wording remain unchanged. Actual Skill-loading overhead remains a separate runtime-observation question. Findings: `docs/development/evaluation-runs/m08-context-efficiency.md`.
-- **M09 — Roadmap Optimization Skill:** M09.1 (design and evaluation) is the next planned work. M09.2 (controlled migration) remains separate and may follow only after the Skill has been evaluated.
+- **M09 — Roadmap Optimization Skill:** M09.1 (experimental Skill design and fixture evaluation) is complete and accepted. Its three synthetic cases retained the small and already-organized roadmaps and proposed outcome-oriented epochs for the disorganized roadmap. Independent review found preservation and link defects in the first proposal; these were corrected, the Case B preservation audit was repeated, and all 17 relative Markdown links resolved. The original first-pass failure and remaining limitations are recorded in `docs/development/evaluation-runs/m09.1-roadmap-optimization/README.md`. M09.2 (controlled migration experiment) is the next planned stage and has not begun; it remains subject to separate authorization. No production Skill installation or project roadmap migration is included in M09.1.
 
 No prior M06–M09 milestone definitions were present in this roadmap when these directions were recorded.
 
@@ -224,7 +224,7 @@ The underlying record layout is still an open implementation decision. Avoid man
 
 ## 13. Immediate next actions
 
-1. M08 is complete. Next planned work is M09.1: Roadmap Optimization Skill design and evaluation. M09.2 is a separate controlled migration, contingent on evaluation. M06 is dropped and M07 postponed.
+1. M08 and M09.1 are complete. Next planned work is M09.2: a separately authorized controlled migration experiment for the roadmap optimization workflow. M06 is dropped and M07 postponed.
 2. Preserve the distinction between policy modules and reusable workflow Skills.
 3. Do not treat M01 structural, M02 installation, M05 qualification, or release publication as evidence of behavioral effectiveness. M04 evaluation is complete, but effectiveness remains unproven.
 
