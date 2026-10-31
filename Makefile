@@ -1,13 +1,32 @@
 .DEFAULT_GOAL := build
 
-include presets/personal.mk
+PRESETS := prototype personal production
+PRESET ?= personal
 
-DIST_DIR := dist/personal
+ifeq ($(PRESET),prototype)
+PRESET_FILE := presets/prototype.mk
+else ifeq ($(PRESET),personal)
+PRESET_FILE := presets/personal.mk
+else ifeq ($(PRESET),production)
+PRESET_FILE := presets/production.mk
+else
+$(error unknown preset '$(PRESET)'; choose one of: $(PRESETS))
+endif
+
+include $(PRESET_FILE)
+
+DIST_DIR := dist/$(PRESET)
 SKILLS_DIR := .agents/skills
 
-.PHONY: build check clean
+.PHONY: build build-one check clean
 
 build:
+	@set -e; \
+	for preset in $(PRESETS); do \
+	  $(MAKE) --no-print-directory build-one PRESET=$$preset; \
+	done
+
+build-one:
 	rm -rf $(DIST_DIR)
 	mkdir -p $(DIST_DIR)
 	./scripts/compose-policy.sh --level $(PRESET_LEVEL) $(foreach priority,$(PRESET_PRIORITIES),--priority $(priority)) > $(DIST_DIR)/AGENTS.md

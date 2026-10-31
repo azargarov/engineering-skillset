@@ -104,12 +104,14 @@ The paths are illustrative pending the first stage's design review. Avoid adding
 
 ### V2-02 — Prototype and Production presets
 
+**Status:** Implementation and structural verification complete; awaiting owner review.
+
 - Add minimal `prototype` and `production` level modules.
 - Define three presets and explicitly select priorities and Skills for each.
 - Build and review all three configurations; keep QA guarantees across levels.
 - Test that preset artifacts do not depend on source Markdown at agent runtime.
 
-**Exit:** Three verified, distinct, flat presets; no need to create every possible module combination.
+**Exit:** Three verified, distinct, flat presets; no need to create every possible module combination. `make check` covers composition, deterministic output, unchanged Personal policy, shared Skills, and invalid selections. Behavioral effectiveness is not established.
 
 ### V2-03 — Implement minimal `ess`
 

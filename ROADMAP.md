@@ -2,7 +2,8 @@
 
 The active v0.2 architecture and staged plan are documented in
 [`docs/development/roadmap-v0.2.md`](docs/development/roadmap-v0.2.md).
-V2-01 is the current authorized stage; later stages require separate review.
+V2-02 implementation is complete and awaiting owner review; later stages
+require separate authorization.
 
 The prior v0.1 roadmap is preserved at
 [`docs/development/roadmap-v0.1.md`](docs/development/roadmap-v0.1.md).
