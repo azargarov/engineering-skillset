@@ -115,6 +115,8 @@ The paths are illustrative pending the first stage's design review. Avoid adding
 
 ### V2-03 — Implement minimal `ess`
 
+**Status:** Implementation and focused verification complete; awaiting owner review.
+
 - One Bash CLI in `scripts/ess`, made available with a symlink under `~/.local/bin/ess`.
 - Support `list`, `install PRESET [PATH]`, `status [PATH]`, and `install --dry-run`.
 - Current working directory is the default installation target; a specified path wins.

@@ -39,6 +39,7 @@ build-one:
 check: build
 	bash tests/compose-policy.sh
 	bash tests/build-personal.sh
+	bash tests/ess.sh
 
 clean:
 	rm -rf dist

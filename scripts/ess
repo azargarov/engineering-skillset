@@ -1,0 +1,519 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+export LC_ALL=C
+
+program=${0##*/}
+state_name=.engineering-skillset-state
+
+error() {
+  printf '%s: %s\n' "$program" "$*" >&2
+}
+
+fail() {
+  error "$*"
+  exit 2
+}
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  ess list
+  ess install PRESET [PATH] [--dry-run]
+  ess status [PATH]
+
+Install a built preset into an existing project directory. The default PATH
+is the current directory. Managed Skills are linked to this source checkout.
+USAGE
+}
+
+valid_id() {
+  [[ $1 =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]
+}
+
+path_exists() {
+  [[ -e $1 || -L $1 ]]
+}
+
+script_path=$(readlink -f -- "${BASH_SOURCE[0]}") || fail 'cannot resolve the CLI script path'
+script_dir=$(CDPATH='' cd -- "$(dirname -- "$script_path")" && pwd -P) || \
+  fail 'cannot locate the CLI directory'
+repo_root=$(CDPATH='' cd -- "$script_dir/.." && pwd -P) || \
+  fail 'cannot locate the source repository'
+dist_root=$repo_root/dist
+
+declare -a PRESET_SKILLS=()
+declare -a STATE_SKILLS=()
+declare -a TEMP_FILES=()
+STATE_PRESET=''
+STATE_POLICY_SHA256=''
+
+read_preset_skills() {
+  local preset_dir=$1
+  local entry skill_file
+  PRESET_SKILLS=()
+
+  [[ -d $preset_dir && ! -L $preset_dir ]] || return 1
+  [[ -f $preset_dir/AGENTS.md && ! -L $preset_dir/AGENTS.md && -r $preset_dir/AGENTS.md ]] || return 1
+  [[ -d $preset_dir/skills && ! -L $preset_dir/skills ]] || return 1
+
+  for entry in "$preset_dir"/skills/*; do
+    path_exists "$entry" || continue
+    [[ -d $entry && ! -L $entry ]] || return 1
+    skill=${entry##*/}
+    valid_id "$skill" || return 1
+    skill_file=$entry/SKILL.md
+    [[ -f $skill_file && ! -L $skill_file && -r $skill_file ]] || return 1
+    PRESET_SKILLS+=("$skill")
+  done
+}
+
+validate_preset() {
+  local preset=$1
+  valid_id "$preset" || return 1
+  read_preset_skills "$dist_root/$preset"
+}
+
+list_presets() {
+  local preset_dir preset
+  local found=0
+  for preset_dir in "$dist_root"/*; do
+    path_exists "$preset_dir" || continue
+    [[ -d $preset_dir && ! -L $preset_dir ]] || continue
+    preset=${preset_dir##*/}
+    valid_id "$preset" || continue
+    if validate_preset "$preset"; then
+      printf '%s\n' "$preset"
+      found=1
+    fi
+  done
+  if ((found == 0)); then
+    printf 'No built presets found. Run make build in the source checkout.\n'
+  fi
+}
+
+read_state() {
+  local state_file=$1
+  local -a lines=()
+  local skill previous='' canonical_skills=''
+
+  [[ -f $state_file && ! -L $state_file && -r $state_file ]] || {
+    error "state file is not a readable regular file: '$state_file'"
+    return 1
+  }
+  if ! cmp -s "$state_file" <(LC_ALL=C tr -d '\000' < "$state_file"); then
+    error 'state file contains NUL bytes'
+    return 1
+  fi
+  mapfile -t lines < "$state_file" || return 1
+  [[ ${#lines[@]} -eq 4 ]] || {
+    error 'state file must contain exactly four lines'
+    return 1
+  }
+  [[ ${lines[0]} == engineering-skillset-state-v1 ]] || {
+    error 'unsupported state file schema'
+    return 1
+  }
+  [[ ${lines[1]} == preset=* ]] || {
+    error 'state file has an invalid preset field'
+    return 1
+  }
+  STATE_PRESET=${lines[1]#preset=}
+  valid_id "$STATE_PRESET" || {
+    error 'state file contains an invalid preset name'
+    return 1
+  }
+  [[ ${lines[2]} =~ ^policy_sha256=([a-f0-9]{64})$ ]] || {
+    error 'state file has an invalid policy digest'
+    return 1
+  }
+  STATE_POLICY_SHA256=${BASH_REMATCH[1]}
+  [[ ${lines[3]} == skills=* ]] || {
+    error 'state file has an invalid Skills field'
+    return 1
+  }
+  STATE_SKILLS=()
+  local skill_list=${lines[3]#skills=}
+  if [[ -n $skill_list ]]; then
+    IFS=, read -r -a STATE_SKILLS <<< "$skill_list"
+    for skill in "${STATE_SKILLS[@]}"; do
+      valid_id "$skill" || {
+        error 'state file contains an invalid Skill name'
+        return 1
+      }
+      [[ $skill > $previous ]] || {
+        error 'state file Skill names must be unique and sorted'
+        return 1
+      }
+      previous=$skill
+      [[ -z $canonical_skills ]] || canonical_skills+=,
+      canonical_skills+=$skill
+    done
+  fi
+  [[ $canonical_skills == "$skill_list" ]] || {
+    error 'state file Skills field is not canonical'
+    return 1
+  }
+}
+
+file_sha256() {
+  sha256sum < "$1" | cut -c1-64
+}
+
+skill_link_path() {
+  printf '%s/.agents/skills/%s' "$1" "$2"
+}
+
+expected_skill_target() {
+  printf '%s/skills/%s' "$dist_root/$1" "$2"
+}
+
+skill_target_is_available() {
+  [[ -d $1 && ! -L $1 && -f $1/SKILL.md && ! -L $1/SKILL.md && -r $1/SKILL.md ]]
+}
+
+validate_existing_layout() {
+  local target=$1
+  local agents_dir skills_dir
+  agents_dir=$target/.agents
+  skills_dir=$agents_dir/skills
+  if path_exists "$agents_dir"; then
+    [[ -d $agents_dir && ! -L $agents_dir ]] || {
+      error "refusing to use a non-directory or symlinked path: '$agents_dir'"
+      return 1
+    }
+  fi
+  if path_exists "$skills_dir"; then
+    [[ -d $skills_dir && ! -L $skills_dir ]] || {
+      error "refusing to use a non-directory or symlinked path: '$skills_dir'"
+      return 1
+    }
+  fi
+}
+
+validate_old_installation() {
+  local target=$1
+  local policy_file=$target/AGENTS.md
+  local actual_sha skill link_path expected_target actual_target
+
+  [[ -f $policy_file && ! -L $policy_file && -r $policy_file ]] || {
+    error 'managed AGENTS.md is missing, unreadable, or not a regular file'
+    return 1
+  }
+  actual_sha=$(file_sha256 "$policy_file") || {
+    error 'cannot calculate the managed AGENTS.md digest'
+    return 1
+  }
+  [[ $actual_sha == "$STATE_POLICY_SHA256" ]] || {
+    error 'managed AGENTS.md was modified; refusing replacement'
+    return 1
+  }
+
+  for skill in "${STATE_SKILLS[@]}"; do
+    link_path=$(skill_link_path "$target" "$skill")
+    expected_target=$(expected_skill_target "$STATE_PRESET" "$skill")
+    [[ -L $link_path ]] || {
+      error "managed Skill link is missing or replaced: '$link_path'"
+      return 1
+    }
+    actual_target=$(readlink -- "$link_path") || {
+      error "cannot read managed Skill link: '$link_path'"
+      return 1
+    }
+    if [[ $actual_target != "$expected_target" ]] || ! skill_target_is_available "$expected_target"; then
+      error "managed Skill link has an unexpected or broken target: '$link_path'"
+      return 1
+    fi
+  done
+}
+
+validate_new_skill_paths() {
+  local target=$1 state_present=$2 skill link_path managed old_skill
+  for skill in "${PRESET_SKILLS[@]}"; do
+    link_path=$(skill_link_path "$target" "$skill")
+    managed=0
+    if ((state_present)); then
+      for old_skill in "${STATE_SKILLS[@]}"; do
+        if [[ $old_skill == "$skill" ]]; then
+          managed=1
+          break
+        fi
+      done
+    fi
+    if ((managed == 0)) && path_exists "$link_path"; then
+      error "refusing to replace an unmanaged Skill path: '$link_path'"
+      return 1
+    fi
+  done
+}
+
+write_state_file() {
+  local path=$1 preset=$2 digest=$3 skill
+  local joined=''
+  for skill in "${PRESET_SKILLS[@]}"; do
+    [[ -z $joined ]] || joined+=,
+    joined+=$skill
+  done
+  {
+    printf 'engineering-skillset-state-v1\n'
+    printf 'preset=%s\n' "$preset"
+    printf 'policy_sha256=%s\n' "$digest"
+    printf 'skills=%s\n' "$joined"
+  } > "$path"
+}
+
+add_temp_file() {
+  TEMP_FILES+=("$1")
+}
+
+cleanup_temps() {
+  local path
+  for path in "${TEMP_FILES[@]}"; do
+    rm -f -- "$path" 2>/dev/null || true
+  done
+}
+trap cleanup_temps EXIT
+
+install_preset() {
+  local preset=$1 target_arg=$2 dry_run=$3
+  local target state_file policy_file preset_dir desired_sha mode state_present=0
+  local skill link_path target_path temp_policy temp_state temp_link old_skill
+  local -a remove_skills=()
+  local -a replace_skills=()
+  local -a create_skills=()
+  local skill_is_old
+
+  if ! validate_preset "$preset"; then
+    fail "preset '$preset' is not built or has invalid artifacts"
+  fi
+  preset_dir=$dist_root/$preset
+  desired_sha=$(file_sha256 "$preset_dir/AGENTS.md") || fail 'cannot calculate preset policy digest'
+
+  [[ -d $target_arg ]] || fail "target directory does not exist: '$target_arg'"
+  target=$(CDPATH='' cd -- "$target_arg" && pwd -P) || fail "cannot resolve target directory: '$target_arg'"
+  state_file=$target/$state_name
+  policy_file=$target/AGENTS.md
+  validate_existing_layout "$target" || exit 2
+
+  if path_exists "$state_file"; then
+    read_state "$state_file" || fail 'state file is malformed; refusing installation'
+    state_present=1
+    validate_old_installation "$target" || exit 2
+  else
+    if path_exists "$policy_file"; then
+      fail "refusing to replace AGENTS.md without a valid '$state_name' ownership file"
+    fi
+  fi
+
+  validate_new_skill_paths "$target" "$state_present" || exit 2
+
+  if ((state_present)) && [[ $STATE_PRESET == "$preset" && $STATE_POLICY_SHA256 == "$desired_sha" && "${STATE_SKILLS[*]}" == "${PRESET_SKILLS[*]}" ]]; then
+    printf 'Preset %s is already installed in %s; no changes needed.\n' "$preset" "$target"
+    return 0
+  fi
+
+  if ((state_present)); then
+    for old_skill in "${STATE_SKILLS[@]}"; do
+      skill_is_old=0
+      for skill in "${PRESET_SKILLS[@]}"; do
+        [[ $skill == "$old_skill" ]] && skill_is_old=1
+      done
+      ((skill_is_old)) || remove_skills+=("$old_skill")
+    done
+  fi
+
+  for skill in "${PRESET_SKILLS[@]}"; do
+    link_path=$(skill_link_path "$target" "$skill")
+    target_path=$(expected_skill_target "$preset" "$skill")
+    if ((state_present)); then
+      skill_is_old=0
+      for old_skill in "${STATE_SKILLS[@]}"; do
+        [[ $old_skill == "$skill" ]] && skill_is_old=1
+      done
+      if ((skill_is_old)); then
+        [[ $(readlink -- "$link_path") == "$target_path" ]] || replace_skills+=("$skill")
+      else
+        create_skills+=("$skill")
+      fi
+    else
+      create_skills+=("$skill")
+    fi
+  done
+
+  printf 'Preset: %s\nTarget: %s\n' "$preset" "$target"
+  if ((state_present)); then
+    printf 'Policy: replace verified managed AGENTS.md\n'
+  else
+    printf 'Policy: create AGENTS.md\n'
+  fi
+  for skill in "${replace_skills[@]}"; do printf 'Skill: update managed link %s\n' "$skill"; done
+  for skill in "${create_skills[@]}"; do printf 'Skill: create link %s\n' "$skill"; done
+  for skill in "${remove_skills[@]}"; do printf 'Skill: remove managed link %s\n' "$skill"; done
+  printf 'State: write %s after successful installation\n' "$state_name"
+
+  if ((dry_run)); then
+    printf 'Dry run: no files changed.\n'
+    return 0
+  fi
+
+  local current_umask
+  current_umask=$(umask) || fail 'cannot read process umask'
+  mode=$(printf '%04o' "$((0666 & ~8#$current_umask))") || fail 'cannot calculate output permissions'
+
+  if ((${#PRESET_SKILLS[@]} > 0 || ${#remove_skills[@]} > 0)); then
+    mkdir -p -- "$target/.agents/skills" || fail 'cannot create target Skill directory'
+  fi
+  temp_policy=$(mktemp "$target/.ess-policy.XXXXXX") || fail 'cannot stage AGENTS.md'
+  add_temp_file "$temp_policy"
+  cat -- "$preset_dir/AGENTS.md" > "$temp_policy" || fail 'cannot copy preset policy'
+  chmod "$mode" -- "$temp_policy" || fail 'cannot set AGENTS.md permissions'
+
+  temp_state=$(mktemp "$target/.ess-state.XXXXXX") || fail 'cannot stage ownership state'
+  add_temp_file "$temp_state"
+  write_state_file "$temp_state" "$preset" "$desired_sha" || fail 'cannot write ownership state'
+  chmod "$mode" -- "$temp_state" || fail 'cannot set ownership state permissions'
+
+  for skill in "${remove_skills[@]}"; do
+    link_path=$(skill_link_path "$target" "$skill")
+    rm -- "$link_path" || fail "cannot remove managed Skill link '$link_path'"
+  done
+  for skill in "${replace_skills[@]}" "${create_skills[@]}"; do
+    link_path=$(skill_link_path "$target" "$skill")
+    target_path=$(expected_skill_target "$preset" "$skill")
+    temp_link=$(mktemp "$target/.agents/skills/.ess-link.XXXXXX") || fail "cannot stage Skill link '$skill'"
+    add_temp_file "$temp_link"
+    rm -- "$temp_link" || fail "cannot prepare Skill link '$skill'"
+    ln -s -- "$target_path" "$temp_link" || fail "cannot create Skill link '$skill'"
+    mv -Tf -- "$temp_link" "$link_path" || fail "cannot publish Skill link '$skill'"
+  done
+
+  mv -fT -- "$temp_policy" "$policy_file" || fail 'cannot publish AGENTS.md'
+  mv -fT -- "$temp_state" "$state_file" || fail 'cannot publish ownership state'
+  TEMP_FILES=()
+  printf 'Installed preset %s in %s.\n' "$preset" "$target"
+}
+
+status_target() {
+  local target_arg=$1 target state_file policy_file source_revision
+  local actual_sha skill link_path expected_target actual_target healthy=1
+
+  [[ -d $target_arg ]] || fail "target directory does not exist: '$target_arg'"
+  target=$(CDPATH='' cd -- "$target_arg" && pwd -P) || fail "cannot resolve target directory: '$target_arg'"
+  state_file=$target/$state_name
+  policy_file=$target/AGENTS.md
+  source_revision=$(git -C "$repo_root" rev-parse --short HEAD 2>/dev/null || printf 'unavailable')
+  printf 'Target: %s\nSource checkout revision (HEAD): %s\n' "$target" "$source_revision"
+
+  if ! path_exists "$state_file"; then
+    printf 'Installation: not managed by ess (state file missing)\n'
+    if path_exists "$policy_file"; then
+      printf 'Policy: present without ess ownership state\n'
+      printf 'Status: inconsistent\n'
+      return 1
+    fi
+    printf 'Policy: absent\nStatus: not installed\n'
+    return 0
+  fi
+
+  if ! read_state "$state_file"; then
+    printf 'Installation: malformed ownership state\nPolicy: not verified\nStatus: inconsistent\n'
+    return 1
+  fi
+  printf 'Installed preset: %s\n' "$STATE_PRESET"
+
+  if ! validate_existing_layout "$target"; then
+    printf 'Skill paths: target layout is inconsistent\nStatus: inconsistent\n'
+    return 1
+  fi
+
+  if ! validate_preset "$STATE_PRESET"; then
+    printf 'Preset artifacts: unavailable or invalid\n'
+    healthy=0
+  elif [[ "${PRESET_SKILLS[*]}" != "${STATE_SKILLS[*]}" ]]; then
+    printf 'Preset Skills: differ from installed state\n'
+    healthy=0
+  fi
+
+  if [[ -f $policy_file && ! -L $policy_file ]]; then
+    actual_sha=$(file_sha256 "$policy_file") || actual_sha=''
+    if [[ $actual_sha == "$STATE_POLICY_SHA256" ]]; then
+      printf 'Policy: matches installed digest\n'
+    else
+      printf 'Policy: modified or unreadable (digest mismatch)\n'
+      healthy=0
+    fi
+  else
+    printf 'Policy: missing or not a regular file\n'
+    healthy=0
+  fi
+
+  for skill in "${STATE_SKILLS[@]}"; do
+    link_path=$(skill_link_path "$target" "$skill")
+    expected_target=$(expected_skill_target "$STATE_PRESET" "$skill")
+    if [[ -L $link_path ]]; then
+      actual_target=$(readlink -- "$link_path") || actual_target=''
+      if [[ $actual_target == "$expected_target" ]] && skill_target_is_available "$expected_target"; then
+        printf 'Skill %s: linked\n' "$skill"
+      else
+        printf 'Skill %s: inconsistent or broken link\n' "$skill"
+        healthy=0
+      fi
+    else
+      printf 'Skill %s: missing or replaced\n' "$skill"
+      healthy=0
+    fi
+  done
+
+  if ((healthy)); then
+    printf 'Status: healthy\n'
+    return 0
+  fi
+  printf 'Status: inconsistent\n'
+  return 1
+}
+
+if (($# == 1)) && [[ $1 == --help ]]; then
+  usage
+  exit 0
+fi
+(($#)) || fail 'missing command; use --help for usage'
+
+command=$1
+shift
+case $command in
+  list)
+    (($# == 0)) || fail 'list does not accept arguments'
+    list_presets
+    ;;
+  install)
+    (($# >= 1 && $# <= 4)) || fail 'install requires PRESET, optional PATH, and optional --dry-run'
+    preset=$1
+    shift
+    target_arg=.
+    dry_run=0
+    if (($#)); then
+      if [[ $1 == --dry-run ]]; then
+        dry_run=1
+        shift
+      else
+        target_arg=$1
+        shift
+        if (($#)); then
+          [[ $# == 1 && $1 == --dry-run ]] || fail 'unexpected install arguments'
+          dry_run=1
+          shift
+        fi
+      fi
+    fi
+    (($# == 0)) || fail 'unexpected install arguments'
+    install_preset "$preset" "$target_arg" "$dry_run"
+    ;;
+  status)
+    (($# <= 1)) || fail 'status accepts at most one PATH'
+    target_arg=${1:-.}
+    status_target "$target_arg"
+    ;;
+  *)
+    fail "unknown command '$command'"
+    ;;
+esac

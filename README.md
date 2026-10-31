@@ -41,6 +41,35 @@ directory must already exist.
   --priority development-speed
 ```
 
+## v0.2 built presets
+
+The v0.2 development CLI installs a preset built from this checkout. Build the
+presets, inspect those available, then install one into an existing project:
+
+```bash
+make build
+./scripts/ess list
+./scripts/ess install personal /path/to/your/project
+./scripts/ess status /path/to/your/project
+```
+
+Omit the target path to install into the current directory. The CLI copies
+`AGENTS.md` and links selected Skills to this checkout's `dist/` artifacts.
+It records minimal ownership state in
+`.engineering-skillset-state` so later installs can detect policy edits and
+verify managed Skill links. Keep this checkout available while projects use
+those links. `status` reports the current source checkout revision. Installation
+publishes state last but does not roll back a partial multi-file write; use
+`status` to identify an inconsistent target. This CLI is separate from the
+existing v0.1 installer; updates and Git operations are not implemented.
+
+The current build removes each preset's `dist/` directory before recreating
+it. Project Skill symlinks can be temporarily broken during a build, and a
+failed build may leave them broken. `make clean` removes all generated
+artifacts, so those links remain broken until a successful `make build`.
+Avoid cleaning or rebuilding while projects are using the linked Skills.
+Improved build publication is deferred to V2-04.
+
 After installation, invoke a workflow Skill by name when it fits the task. For
 example, ask Codex to plan an API change without editing code:
 
