@@ -34,9 +34,11 @@ content to differ by preset.
   generates the policy and full Skill set. `ess` remains unchanged; its
   existing discovery and install assumptions are exercised by disposable
   project checks for the complete presets.
-- Full builds still remove and recreate existing preset output directories.
-  Projects linking to artifacts in those directories may see broken links
-  during a build; publication behavior remains to be addressed in later work.
+- The complete build now stages and validates all presets before publishing
+  files individually by atomic rename. Existing directory Skill links remain
+  stable across successful rebuilds. An interruption during the sequence of
+  file replacements can still leave mixed generations; `make clean` still
+  removes published outputs and breaks those links until the next build.
 
 The focused tests verify the generated variants, selected content and order,
 frontmatter, differences, deterministic output, umask behavior for `022` and

@@ -2,6 +2,8 @@
 
 PRESETS := prototype personal production fast-development performance reliable
 PRESET ?= personal
+DIST_ROOT ?= dist
+BUILD_ROOT ?= $(DIST_ROOT)
 
 ifeq ($(PRESET),prototype)
 PRESET_FILE := presets/prototype.mk
@@ -49,35 +51,52 @@ endif
 endif
 endif
 
-DIST_DIR := dist/$(PRESET)
+DIST_DIR := $(BUILD_ROOT)/$(PRESET)
 SKILLS_DIR := .agents/skills
 
-.PHONY: build build-one build-modular-skill check clean
+.PHONY: build build-staged build-one build-modular-skill check clean
 
 build:
+	@set -eu; \
+	publish_root='$(DIST_ROOT)'; \
+	case "$$publish_root" in \
+	  */*) stage_parent=$${publish_root%/*}; stage_name=$${publish_root##*/}; [[ -n $$stage_parent ]] || stage_parent=/ ;; \
+	  *) stage_parent=.; stage_name=$$publish_root ;; \
+	esac; \
+	[[ -n $$stage_name && $$stage_name != . && $$stage_name != .. ]] || { printf 'invalid DIST_ROOT: %s\n' "$$publish_root" >&2; exit 2; }; \
+	mkdir -p "$$stage_parent"; \
+	stage_root=$$(mktemp -d "$$stage_parent/.$$stage_name.stage.XXXXXX"); \
+	trap 'rm -rf -- "$$stage_root"' EXIT; \
+	$(MAKE) --no-print-directory build-staged BUILD_ROOT="$$stage_root"; \
+	bash scripts/publish-build.sh "$$stage_root" "$$publish_root" $(PRESETS); \
+	rm -rf -- "$$stage_root"; \
+	trap - EXIT
+
+build-staged:
 	@set -e; \
 	for preset in $(PRESETS); do \
-	  $(MAKE) --no-print-directory build-one PRESET=$$preset; \
+	  $(MAKE) --no-print-directory build-one PRESET=$$preset BUILD_ROOT="$(BUILD_ROOT)"; \
 	done; \
 	for preset in $(MODULAR_PRESETS); do \
 	  for skill in $(MODULAR_SKILLS); do \
-	    $(MAKE) --no-print-directory build-modular-skill SKILL_PRESET=$$preset SKILL_NAME=$$skill; \
+	    $(MAKE) --no-print-directory build-modular-skill SKILL_PRESET=$$preset SKILL_NAME=$$skill BUILD_ROOT="$(BUILD_ROOT)"; \
 	  done; \
 	done
 
 build-one:
-	rm -rf $(DIST_DIR)
-	mkdir -p $(DIST_DIR)
-	./scripts/compose-policy.sh --level $(PRESET_LEVEL) $(foreach priority,$(PRESET_PRIORITIES),--priority $(priority)) > $(DIST_DIR)/AGENTS.md
+	@if [ "$(abspath $(BUILD_ROOT))" = "$(abspath $(DIST_ROOT))" ]; then printf 'build-one is an internal staging target; use make build\n' >&2; exit 2; fi
+	rm -rf "$(DIST_DIR)"
+	mkdir -p "$(DIST_DIR)"
+	./scripts/compose-policy.sh --level $(PRESET_LEVEL) $(foreach priority,$(PRESET_PRIORITIES),--priority $(priority)) > "$(DIST_DIR)/AGENTS.md"
 	set -eu; \
 	for skill in $(PRESET_SKILLS); do \
-	  mkdir -p $(DIST_DIR)/skills/$$skill; \
-	  cp $(SKILLS_DIR)/$$skill/SKILL.md $(DIST_DIR)/skills/$$skill/SKILL.md; \
+	  mkdir -p "$(DIST_DIR)/skills/$$skill"; \
+	  cp "$(SKILLS_DIR)/$$skill/SKILL.md" "$(DIST_DIR)/skills/$$skill/SKILL.md"; \
 	done
 
 build-modular-skill:
 	@set -eu; \
-	output_dir=dist/$(SKILL_PRESET)/skills/$(SKILL_NAME); \
+	output_dir=$(BUILD_ROOT)/$(SKILL_PRESET)/skills/$(SKILL_NAME); \
 	output_file=$$output_dir/SKILL.md; \
 	modules='$(MODULAR_MODULES_SELECTED)'; \
 	source='$(MODULAR_SOURCE_SELECTED)'; \
@@ -116,6 +135,7 @@ check: build
 	bash tests/build-personal.sh
 	bash tests/build-modular-presets.sh
 	bash tests/ess.sh
+	bash tests/build-publication.sh
 
 clean:
-	rm -rf dist
+	rm -rf "$(DIST_ROOT)"

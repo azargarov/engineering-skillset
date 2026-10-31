@@ -86,7 +86,10 @@ composition is awaiting owner review.
 
 **Exit evidence:** explicit selections build the four complete outputs
 deterministically, retain shared Core Policy, and produce appropriate
-strategy differences. Owner review is pending.
+strategy differences. Builds stage and validate outputs before publishing
+files individually; successful rebuilds preserve directory Skill links.
+Focused tests cover compile/validation failures and disposable linked projects.
+Owner review is pending.
 
 ### V2-05 — Validate and extend modular compilation
 
@@ -106,8 +109,9 @@ evaluation.
 well-formed `dist/<preset>/` directories dynamically. It accepts hyphenated
 preset names and expects a regular `AGENTS.md` plus `skills/<name>/SKILL.md`
 directories; the four outputs follow that layout, and disposable-project
-install checks pass for each. Remote updates, publication during rebuild, and
-effects on already installed projects remain unqualified.
+install checks pass for each. Local build publication is validated through
+existing Skill links. Remote updates and interrupted multi-file publication
+remain unqualified; `make clean` intentionally removes the published output.
 
 - Adapt Make targets and stable output directories to the final configuration
   and generated layout.

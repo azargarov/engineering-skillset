@@ -63,12 +63,15 @@ publishes state last but does not roll back a partial multi-file write; use
 `status` to identify an inconsistent target. This CLI is separate from the
 existing v0.1 installer; updates and Git operations are not implemented.
 
-The current build removes each preset's `dist/` directory before recreating
-it. Project Skill symlinks can be temporarily broken during a build, and a
-failed build may leave them broken. `make clean` removes all generated
-artifacts, so those links remain broken until a successful `make build`.
-Avoid cleaning or rebuilding while projects are using the linked Skills.
-Improved build publication is deferred to V2-04.
+`make build` stages and validates the complete output before publishing each
+artifact with an atomic per-file rename into stable preset directories. This
+keeps existing project Skill symlinks valid during a successful rebuild. A
+failure or interruption partway through publication can leave artifacts from
+different build generations; rerun `make build` to restore the complete
+intended set. `make clean` removes generated artifacts and breaks installed
+Skill links until a successful `make build` recreates them. Publication adds or
+replaces configured files but does not remove obsolete files from a preset;
+removed artifacts can remain until manually cleaned.
 
 After installation, invoke a workflow Skill by name when it fits the task. For
 example, ask Codex to plan an API change without editing code:

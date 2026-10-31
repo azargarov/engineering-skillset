@@ -104,8 +104,24 @@ for preset in fast-development performance reliable; do
   grep -Fxq "preset=$preset" "$target/$state_name" || fail "$preset state was not recorded"
 done
 
-# Repeated installs are idempotent and preserve unrelated project content.
 printf 'keep\n' > "$current_target/user-file.txt"
+make -C "$repo_root" build >/dev/null
+installed_presets=(personal production prototype fast-development performance reliable)
+installed_targets=(
+  "$current_target"
+  "$spaced_target"
+  "$prototype_target"
+  "$test_dir/fast-development-project"
+  "$test_dir/performance-project"
+  "$test_dir/reliable-project"
+)
+for index in "${!installed_presets[@]}"; do
+  assert_policy_matches "${installed_presets[$index]}" "${installed_targets[$index]}"
+  assert_skill_links "${installed_presets[$index]}" "${installed_targets[$index]}"
+done
+[[ $(cat "$current_target/user-file.txt") == keep ]] || fail 'build changed unrelated project content'
+
+# Repeated installs are idempotent and preserve unrelated project content.
 mkdir -p "$current_target/.agents/skills/user-skill"
 printf 'user skill\n' > "$current_target/.agents/skills/user-skill/SKILL.md"
 policy_stat=$(stat -c '%i:%Y:%a' "$current_target/AGENTS.md")
