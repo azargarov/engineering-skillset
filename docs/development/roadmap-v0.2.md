@@ -1,158 +1,131 @@
-# Engineering Skillset v0.2 — Modular Source, Built Presets, `ess`
+# Engineering Skillset v0.2 — Modular Presets Roadmap
 
-**Status:** Proposed v0.2 plan for owner review; stages authorized individually
-**Baseline:** Preserve `v0.1.0-experimental` tag, evidence, and history
-**Architecture decision:** Modules are editable sources; presets are built distributions; `ess` installs them.
+**Status:** Revised plan for owner review; no future implementation authorized
+**Product intent:** [`../../VISION.md`](../../VISION.md)
+**Baseline:** Preserve the released `v0.1.0-experimental` history and evaluation
+evidence.
 
-## 1. Product goal
+This roadmap aligns the v0.2 work with task strategies assembled from explicit
+source modules. It records earlier implementation evidence separately from
+owner acceptance. Later work proceeds only after owner review and authorization.
 
-Keep the engineering methodology portable, modular, and practical, with minimal custom tooling. Use native Git, Make, Bash, filesystem operations, and symlinks. Do not add a package manager or runtime dependency resolver.
+## Product and architecture direction
 
-- **Module:** source Markdown defining Core, one maturity level, an independent engineering priority, or a reusable Skill component.
-- **Preset:** named, built set of a self-contained `AGENTS.md` and selected standalone Skills.
-- **Build:** `make build` produces deterministic, flat artifacts. Agents need not resolve source-module links when using a preset.
-- **Install:** `ess` selects a built preset for the current directory by default, or an explicit target. It copies project `AGENTS.md` and symlinks selected Skill directories to a central checkout.
-- **Source of updates:** one local Git checkout; `ess check` inspects the remote, `ess update` updates only on request and rebuilds presets.
+The initial presets are `prototype`, `fast-development`, `performance`, and
+`reliable`.
+Each preset is a small declarative selection of Markdown modules. Modules may
+represent shared rules or a workflow variant. The initial modular workflow
+experiment is `verification-qa`, with selections for `prototype` and
+`reliable`; the other two presets can initially reuse existing guidance until
+evidence justifies additional variants.
 
-The project `AGENTS.md` includes Core exactly once plus selected level and priorities. `~/.codex/AGENTS.md` is optional personal guidance, never required for the project's engineering guarantees. A selected Skill must be usable as a standalone `SKILL.md`, without runtime references to the source module structure. Don't copy all Core rules into every Skill.
+Make orchestrates deterministic compilation into stable per-preset
+directories. A compiled Skill is a standalone `SKILL.md`; shared Core Policy
+is supplied once as portable project `AGENTS.md`, not copied wholesale into
+every Skill. Workflow Skill names stay stable across presets while their
+content may differ. `ess` installs or switches built presets and links compiled
+Skills from a central Git checkout; it does not compile source modules. Preset
+switches govern subsequent work while preserving existing project contracts
+and operational requirements. Git manages source versions and updates. Keep
+configuration and lifecycle behavior simple, and retain existing components
+where they fit the clarified product.
 
-**Important constraint:** Project-local links select which Skills a project exposes. Avoid simultaneously installing the same names globally, since Codex can discover both global and local copies. Symlinks pointing outside the project are local development artifacts and should generally be excluded from its Git commits. Built source and installer behavior must be documented for portable/collaborative projects.
+## Recorded work
 
-## 2. Minimal interface
+### V2-01 — Build Personal preset
 
-Proposed commands (not yet implemented):
+**Implementation evidence:** committed as `3d46bed`; Personal build and
+structural checks were added. The original stage scope and evidence are
+preserved in Git history. This work is a foundation and may be adapted as the
+modular configuration evolves.
 
-```sh
-make build                   # generate all declared presets
-make check                   # validate build and links/structure
-make clean                   # delete only build output
+### V2-02 — Add Prototype and Production presets
 
-ess list                     # available presets and their composition
-ess install personal         # default target: current working directory
-ess install prototype /path/to/project
-ess status                   # current directory by default
-ess check                    # fetch remote metadata without modifying checkout
-ess update                  # explicit fast-forward source update, then rebuild
-```
-
-Optional `--dry-run` on install; no interactive prompts in the initial version. `ess install` may replace only files/symlinks demonstrably managed by `ess`. Refuse an unmanaged existing `AGENTS.md`, real Skill directories, unexpected symlinks, or partially conflicting target. Report what is present before changes. Do not `rm -rf` arbitrary project files. Keep update and installation distinct; no implicit online access during install.
-
-## 3. Source and output layout (proposed)
-
-```text
-engineering-skillset/
-  Makefile
-  README.md
-  LICENSE
-  src/
-    core.md
-    levels/{prototype,personal,production}.md
-    priorities/{readability,development-speed}.md
-    skills/{software-design,implementation-review,verification-qa,project-handover}/
-  presets/{prototype,personal,production}.conf
-  dist/                            # generated; never edit directly
-    prototype/AGENTS.md
-    prototype/skills/*/SKILL.md
-    personal/AGENTS.md
-    personal/skills/*/SKILL.md
-    production/AGENTS.md
-    production/skills/*/SKILL.md
-  scripts/ess
-  scripts/compose-policy.sh        # reuse existing composer where possible
-  tests/
-  ROADMAP.md
-  docs/development/...
-```
-
-The paths are illustrative pending the first stage's design review. Avoid adding a separate Skill template engine unless existing independent Skills cannot be copied unchanged into `dist/`. Keep presets few; do not enumerate every combination of priorities. Existing `roadmap-optimization` stays experimental until its separate M09.2 qualification.
-
-## 4. Invariants
-
-1. Mandatory Core guarantees: correctness, authorized scope, proportional QA, compositional testing, truthful evidence, and development continuity.
-2. Prototype/Personal/Production vary in engineering rigor, not truthfulness or basic correctness. Priorities remain independent source modules, even if the initial CLI exposes only three named presets.
-3. Same inputs produce identical built files. No timestamps, runtime LLM calls, implicit downloads, or untracked templates during build.
-4. Generated Skills are individually usable and retain valid Skill frontmatter. Build-time composition must not duplicate generic Core policy in each Skill.
-5. Project policy is a regular portable file; selected Skills are links to central built artifacts. Document that broken links occur when the central checkout moves or is unavailable.
-6. Before replacing existing managed installation, detect and report any local user changes; avoid silent data loss. Prefer a minimal explicit ownership convention over an elaborate manifest or hash-driven lifecycle system.
-7. `ess` resolves its source checkout reliably when invoked via `~/.local/bin/ess` symlink. Respect `umask` and paths with spaces; report errors, avoid claiming atomic multi-file replacement.
-8. `ess check` and `ess update` are explicit network operations, with update restricted to safe fast-forward behavior and refusal on dirty checkouts. No unattended updates.
-9. Preserve the v0.1 public tag/history and experimental findings. Use a v0.2 branch; migrate existing v0.1 projects only after review, never automatically.
-10. Keep `ess` thin; Git handles versions, Make handles builds, Markdown holds methodology.
-
-## 5. Milestones
-
-### V2-00 — Architecture reconciliation and plan approval
-
-**Status:** Reconciled for V2-01; later stages remain subject to separate authorization.
-
-- Confirm source/built distinction, preset naming, policy portability, symlink behavior, collision policy and central checkout path resolution.
-- Inventory v0.1 components and decide retain/archive/remove after qualification.
-- Agree on minimal command semantics and the managed-file replacement rule.
-- Make this document the v0.2 detailed plan; link to it from root `ROADMAP.md` without duplicating full milestones.
-
-**Exit:** The architecture decision is recorded in `docs/architecture/v0.2-architecture.md`; existing sources, Skills, composer, installer, and bootstrap are retained. No installer runtime changes are included in V2-01.
-
-### V2-01 — Build one Personal preset
-
-- Build from existing Core, Personal, Readability, Development Speed, and four current Skills.
-- Use existing composer for policy; introduce Makefile and minimal preset definition as necessary.
-- Prefer copying existing standalone Skills unchanged over inventing an include language.
-- Verify deterministic output, self-contained `AGENTS.md`, valid Skill frontmatter and parity with current Personal composition.
-- No installer changes yet.
-
-**Exit:** `make build`/`make check` work for Personal; reproducible artifact comparison passes; review before proceeding.
-
-### V2-02 — Prototype and Production presets
-
-**Status:** Implementation and structural verification complete; awaiting owner review.
-
-- Add minimal `prototype` and `production` level modules.
-- Define three presets and explicitly select priorities and Skills for each.
-- Build and review all three configurations; keep QA guarantees across levels.
-- Test that preset artifacts do not depend on source Markdown at agent runtime.
-
-**Exit:** Three verified, distinct, flat presets; no need to create every possible module combination. `make check` covers composition, deterministic output, unchanged Personal policy, shared Skills, and invalid selections. Behavioral effectiveness is not established.
+**Implementation evidence:** committed as `cea6aaa`; prototype, personal, and
+production preset definitions and build outputs were added. Existing evidence
+and the historical `personal` and `production` configurations are retained;
+they are not aliases for the four initial product presets.
 
 ### V2-03 — Implement minimal `ess`
 
-**Status:** Implementation and focused verification complete; awaiting owner review.
+**Implementation evidence:** committed as `9f3fcd0`; the CLI implements
+`list`, `install`, `status`, and dry-run installation behavior against the
+current `dist/` structure, with focused tests in `tests/ess.sh`.
+**Acceptance:** owner review remains pending. The implementation is not marked
+accepted or complete for release; review whether its contracts fit the revised
+output structure before extending it.
 
-- One Bash CLI in `scripts/ess`, made available with a symlink under `~/.local/bin/ess`.
-- Support `list`, `install PRESET [PATH]`, `status [PATH]`, and `install --dry-run`.
-- Current working directory is the default installation target; a specified path wins.
-- Write `AGENTS.md` as a normal file, link only selected Skill directories to the central built preset.
-- On preset switch, replace only known managed artifacts; preserve/refuse conflicts with user-owned files. Record enough to show active preset and avoid destructive guessing, without importing v0.1 ownership-manifest complexity.
-- Test new installation, repeat, switch, target with spaces, invalid arguments, symlink resolution, collisions, permissions, and safe failure.
+## Proposed remaining work
 
-**Exit:** Minimal command supports a complete safe install and switch in disposable projects.
+### V2-04 — Define declarative modular presets and first workflow experiment
 
-### V2-04 — Git updates, integration, and migration documentation
+- Define the minimal configuration format and explicit module file selections
+  for the four initial presets.
+- Establish how shared Core Policy is emitted once in portable project policy
+  while compiled Skills remain independently usable.
+- Implement modular `verification-qa` variants initially for `prototype` and
+  `reliable`; preserve the stated strategy differences and shared guarantees.
+- Define explicit selections for the new presets while preserving the
+  historical `personal` and `production` configurations and their evidence.
 
-- Implement `ess check` using Git remote information, reporting available updates without changing the checkout or project.
-- Implement `ess update` as an explicitly requested fast-forward checkout update followed by a validated rebuild; refuse dirty/conflicting states.
-- Verify that symlinked built Skills update in two disposable projects. Confirm a project `AGENTS.md` stays unchanged until explicit reinstall, and document the resulting version difference.
-- Reconcile v0.1-managed installations carefully; document non-destructive manual migration, no automatic cleanup.
-- Qualify `ess` when run via `~/.local/bin/ess`; update README, supported environments, and test documentation.
+**Exit evidence:** configuration is understandable and explicit; the first
+two QA variants compose deterministically; review before broadening the
+compiler.
 
-**Exit:** Installed state and update status are truthful; integration and failure tests pass; migration behavior is documented.
+### V2-05 — Validate and extend modular compilation
 
-### V2-05 — Simplify release surface and publish v0.2
+- Validate generated Skills for standalone use and valid Skill structure.
+- Verify shared Core Policy guarantees remain available to all presets.
+- Review substantive differences between prototype and reliable QA guidance.
+- Extend modular compilation to other workflows only where a demonstrated
+  strategy difference warrants a variant.
 
-- Retire obsolete per-project installer/bootstrap and associated current docs only after the new path passes; retain old behavior in v0.1 tag/history.
-- Review scope, release diff, testing, published artifacts, and limitations.
-- Publish a distinct experimental v0.2 tag and GitHub release; do not rewrite v0.1 tags.
-- Update `ROADMAP.md` milestone status on verified release.
+**Exit evidence:** structural checks and focused comparisons support the
+intended distinctions; no claim of behavioral effectiveness without suitable
+evaluation.
 
-**Exit:** Reproducible v0.2 build and installation, independently verified release, honest evidence.
+### V2-06 — Align build, `ess`, and publication behavior
 
-## 6. Deferred
+- Adapt Make targets and stable output directories to the final configuration
+  and generated layout.
+- Adapt `ess` to install and switch the four presets, linking centrally
+  maintained compiled Skills while writing portable, self-contained project
+  `AGENTS.md`.
+- Qualify preset switching and the behavior of linked Skills after a central
+  rebuild or update, including build publication and failure behavior.
+- Keep update actions explicit and preserve safe handling of user-owned files.
 
-- Generating every possible combination of levels and priorities.
-- Automatic modification of user-authored `AGENTS.md` or user-owned Skills.
-- Background auto-updates, GUI, own package registry, declarative dependency solver, multi-machine sync.
-- Runtime effectiveness claims beyond recorded experiments.
-- M09.2 roadmap Skill graduation and general automatic Skill activation research.
+**Exit evidence:** builds and switching work against the agreed layout;
+publication behavior and limitations are documented and checked in disposable
+projects.
 
-## 7. First Codex implementation assignment
+### V2-07 — Simplify, document, and prepare experimental release
 
-V2-01 is authorized on the `v0.2-development` branch. Build and check the Personal preset, then stop for owner review. Do not implement `ess`, alter global user directories, remove v0.1 tooling, migrate projects, or change release tags in this stage.
+- Identify obsolete installation machinery after the new route is qualified;
+  simplify only the agreed current surface while preserving v0.1 history.
+- Update user and development documentation to describe the supported
+  workflow and limitations.
+- Review the release diff and evidence, then prepare an experimental v0.2
+  release for owner review.
+- Do not alter the v0.1 release tag or historical evaluation records.
+
+**Exit evidence:** release contents, build, installation route, and known
+limitations are reviewable. Publishing and tag creation require separate
+authorization.
+
+## Scope boundaries
+
+No stage calls for a general package manager, custom templating language,
+dependency resolver, automatic code refactoring, whole-project level
+migration, or exhaustive tests unrelated to actual risks. Do not work in the
+M09.2 experimental archive as part of this roadmap. Avoid adding lifecycle
+machinery without demonstrated value.
+
+## Open owner decisions before implementation
+
+1. What final stable output directory convention should `ess` link into, and
+   what publication guarantee is required during rebuilds?
+2. After V2-03 review, which managed installation and collision contracts
+   remain acceptable for the new output structure?
+3. Which obsolete installation machinery should be simplified after the new
+   route is qualified, while retaining its historical record?
