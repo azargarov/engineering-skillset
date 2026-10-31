@@ -1,23 +1,26 @@
 # Engineering Skillset v0.2 — Modular Presets Roadmap
 
-**Status:** Revised plan for owner review; no future implementation authorized
+**Status:** Four-preset composition implemented for owner review;
+verification-qa pilot previously accepted
 **Product intent:** [`../../VISION.md`](../../VISION.md)
 **Baseline:** Preserve the released `v0.1.0-experimental` history and evaluation
 evidence.
 
 This roadmap aligns the v0.2 work with task strategies assembled from explicit
-source modules. It records earlier implementation evidence separately from
-owner acceptance. Later work proceeds only after owner review and authorization.
+source modules. It records implementation evidence separately from owner
+acceptance. Further workflow extensions proceed only after owner review and
+authorization.
 
 ## Product and architecture direction
 
 The initial presets are `prototype`, `fast-development`, `performance`, and
 `reliable`.
 Each preset is a small declarative selection of Markdown modules. Modules may
-represent shared rules or a workflow variant. The initial modular workflow
-experiment is `verification-qa`, with selections for `prototype` and
-`reliable`; the other two presets can initially reuse existing guidance until
-evidence justifies additional variants.
+represent shared rules or a workflow variant. The accepted first workflow
+experiment is `verification-qa` for `prototype` and `reliable`. Complete
+preset outputs now include all four strategies and the four existing workflow
+Skill names. Historical `personal` and `production` configurations remain
+available alongside the new names and retain their prior meaning and evidence.
 
 Make orchestrates deterministic compilation into stable per-preset
 directories. A compiled Skill is a standalone `SKILL.md`; shared Core Policy
@@ -57,20 +60,33 @@ output structure before extending it.
 
 ## Proposed remaining work
 
-### V2-04 — Define declarative modular presets and first workflow experiment
+### V2-04 — Define declarative modular presets and validate workflow composition
+
+**Pilot status:** `verification-qa` composition for Prototype and Reliable
+received an independent PASS review and is accepted. Its review record,
+configuration limitations, and remaining integration limits are documented in
+[`verification-qa-modular-pilot.md`](verification-qa-modular-pilot.md).
+The complete composition includes all four product presets and workflow
+Skills. `implementation-review` and `project-handover` reuse their existing
+standalone sources unchanged because their guidance does not need preset
+variants. Generated Skill files respect the active umask. The complete
+composition is awaiting owner review.
 
 - Define the minimal configuration format and explicit module file selections
   for the four initial presets.
 - Establish how shared Core Policy is emitted once in portable project policy
   while compiled Skills remain independently usable.
-- Implement modular `verification-qa` variants initially for `prototype` and
-  `reliable`; preserve the stated strategy differences and shared guarantees.
-- Define explicit selections for the new presets while preserving the
-  historical `personal` and `production` configurations and their evidence.
+- Implement modular `verification-qa` variants for all four presets, sharing
+  common guidance and using focused strategy modules where behavior differs.
+- Compose `software-design` by the same rule; reuse unchanged workflow Skills
+  where separate variants would add no substantive value.
+- Build self-contained `AGENTS.md` and standalone Skill artifacts for all four
+  product presets while preserving historical `personal` and `production`
+  configurations and their evidence.
 
-**Exit evidence:** configuration is understandable and explicit; the first
-two QA variants compose deterministically; review before broadening the
-compiler.
+**Exit evidence:** explicit selections build the four complete outputs
+deterministically, retain shared Core Policy, and produce appropriate
+strategy differences. Owner review is pending.
 
 ### V2-05 — Validate and extend modular compilation
 
@@ -85,6 +101,13 @@ intended distinctions; no claim of behavioral effectiveness without suitable
 evaluation.
 
 ### V2-06 — Align build, `ess`, and publication behavior
+
+**Current integration evidence:** `ess` remains unchanged and discovers
+well-formed `dist/<preset>/` directories dynamically. It accepts hyphenated
+preset names and expects a regular `AGENTS.md` plus `skills/<name>/SKILL.md`
+directories; the four outputs follow that layout, and disposable-project
+install checks pass for each. Remote updates, publication during rebuild, and
+effects on already installed projects remain unqualified.
 
 - Adapt Make targets and stable output directories to the final configuration
   and generated layout.

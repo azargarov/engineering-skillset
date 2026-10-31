@@ -69,8 +69,16 @@ for preset in "${presets[@]}"; do
     source_file=$repo_root/.agents/skills/$skill/SKILL.md
     built_file=$preset_dir/skills/$skill/SKILL.md
     [[ -s $built_file ]] || fail "built Skill is missing or empty: $preset/$skill"
-    cmp -s "$source_file" "$built_file" || \
-      fail "built Skill differs from unchanged source: $preset/$skill"
+    if [[ $preset == prototype && $skill == verification-qa ]]; then
+      grep -Fq '## Prototype verification' "$built_file" || \
+        fail 'Prototype verification-qa variant was not compiled'
+    elif [[ $preset == prototype && $skill == software-design ]]; then
+      grep -Fq '## Prototype design' "$built_file" || \
+        fail 'Prototype software-design variant was not compiled'
+    else
+      cmp -s "$source_file" "$built_file" || \
+        fail "built Skill differs from unchanged source: $preset/$skill"
+    fi
     awk -v expected_name="$skill" '
       NR == 1 && $0 != "---" { exit 1 }
       NR == 2 && $0 != "name: " expected_name { exit 1 }
@@ -86,6 +94,7 @@ personal_sha256=$(sha256sum "$repo_root/dist/personal/AGENTS.md" | cut -d' ' -f1
   fail 'Personal policy changed from the V2-01 build output'
 
 for skill in "${skills[@]}"; do
+  [[ $skill == verification-qa || $skill == software-design ]] && continue
   for preset in personal production; do
     cmp -s "$repo_root/dist/$preset/skills/$skill/SKILL.md" \
       "$repo_root/dist/prototype/skills/$skill/SKILL.md" || \

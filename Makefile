@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := build
 
-PRESETS := prototype personal production
+PRESETS := prototype personal production fast-development performance reliable
 PRESET ?= personal
 
 ifeq ($(PRESET),prototype)
@@ -9,21 +9,60 @@ else ifeq ($(PRESET),personal)
 PRESET_FILE := presets/personal.mk
 else ifeq ($(PRESET),production)
 PRESET_FILE := presets/production.mk
+else ifeq ($(PRESET),fast-development)
+PRESET_FILE := presets/fast-development.mk
+else ifeq ($(PRESET),performance)
+PRESET_FILE := presets/performance.mk
+else ifeq ($(PRESET),reliable)
+PRESET_FILE := presets/reliable.mk
 else
 $(error unknown preset '$(PRESET)'; choose one of: $(PRESETS))
 endif
 
 include $(PRESET_FILE)
+include presets/skill-modules.mk
+
+ifneq ($(filter build-modular-skill,$(MAKECMDGOALS)),)
+ifeq ($(filter $(SKILL_PRESET),$(MODULAR_PRESETS)),)
+$(error unknown modular Skill preset '$(SKILL_PRESET)'; choose one of: $(MODULAR_PRESETS))
+endif
+ifeq ($(filter $(SKILL_NAME),$(MODULAR_SKILLS)),)
+$(error unknown modular Skill '$(SKILL_NAME)'; choose one of: $(MODULAR_SKILLS))
+endif
+MODULAR_MODULES_SELECTED := $(MODULES_$(SKILL_NAME)_$(SKILL_PRESET))
+MODULAR_SOURCE_SELECTED := $(SKILL_SOURCE_$(SKILL_NAME))
+MODULAR_DESCRIPTION_SELECTED := $(SKILL_DESCRIPTION_$(SKILL_NAME))
+MODULAR_TITLE_SELECTED := $(SKILL_TITLE_$(SKILL_NAME))
+ifeq ($(strip $(MODULAR_MODULES_SELECTED)$(MODULAR_SOURCE_SELECTED)),)
+$(error no module files configured for $(SKILL_NAME) / $(SKILL_PRESET))
+endif
+ifneq ($(strip $(MODULAR_MODULES_SELECTED)),)
+ifneq ($(strip $(MODULAR_SOURCE_SELECTED)),)
+$(error configure either source modules or an unchanged Skill source for $(SKILL_NAME), not both)
+endif
+ifeq ($(strip $(MODULAR_DESCRIPTION_SELECTED)),)
+$(error no description configured for modular Skill '$(SKILL_NAME)')
+endif
+ifeq ($(strip $(MODULAR_TITLE_SELECTED)),)
+$(error no title configured for modular Skill '$(SKILL_NAME)')
+endif
+endif
+endif
 
 DIST_DIR := dist/$(PRESET)
 SKILLS_DIR := .agents/skills
 
-.PHONY: build build-one check clean
+.PHONY: build build-one build-modular-skill check clean
 
 build:
 	@set -e; \
 	for preset in $(PRESETS); do \
 	  $(MAKE) --no-print-directory build-one PRESET=$$preset; \
+	done; \
+	for preset in $(MODULAR_PRESETS); do \
+	  for skill in $(MODULAR_SKILLS); do \
+	    $(MAKE) --no-print-directory build-modular-skill SKILL_PRESET=$$preset SKILL_NAME=$$skill; \
+	  done; \
 	done
 
 build-one:
@@ -36,9 +75,46 @@ build-one:
 	  cp $(SKILLS_DIR)/$$skill/SKILL.md $(DIST_DIR)/skills/$$skill/SKILL.md; \
 	done
 
+build-modular-skill:
+	@set -eu; \
+	output_dir=dist/$(SKILL_PRESET)/skills/$(SKILL_NAME); \
+	output_file=$$output_dir/SKILL.md; \
+	modules='$(MODULAR_MODULES_SELECTED)'; \
+	source='$(MODULAR_SOURCE_SELECTED)'; \
+	for module in $$modules; do \
+	  if [ ! -f "$$module" ] || [ ! -r "$$module" ]; then \
+	    printf 'missing or unreadable %s module: %s\n' '$(SKILL_NAME)' "$$module" >&2; \
+	    exit 2; \
+	  fi; \
+	done; \
+	mkdir -p "$$output_dir"; \
+	temp_file=$$(mktemp "$$output_file.tmp.XXXXXX"); \
+	trap 'rm -f "$$temp_file"' EXIT; \
+	if [ -n "$$source" ]; then \
+	  if [ ! -f "$$source" ] || [ ! -r "$$source" ]; then \
+	    printf 'missing or unreadable %s Skill source: %s\n' '$(SKILL_NAME)' "$$source" >&2; \
+	    exit 2; \
+	  fi; \
+	  cat "$$source" > "$$temp_file"; \
+	else \
+	  { \
+	    printf '%s\n' '---' 'name: $(SKILL_NAME)' 'description: $(MODULAR_DESCRIPTION_SELECTED)' '---' '' '# $(MODULAR_TITLE_SELECTED)'; \
+	    for module in $$modules; do \
+	      printf '\n'; \
+	      cat "$$module"; \
+	    done; \
+	  } > "$$temp_file"; \
+	fi; \
+	file_umask=$$(umask); \
+	output_mode=$$(printf '%04o' "$$((0666 & ~8#$$file_umask))"); \
+	chmod "$$output_mode" "$$temp_file"; \
+	mv "$$temp_file" "$$output_file"; \
+	trap - EXIT
+
 check: build
 	bash tests/compose-policy.sh
 	bash tests/build-personal.sh
+	bash tests/build-modular-presets.sh
 	bash tests/ess.sh
 
 clean:

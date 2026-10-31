@@ -56,7 +56,7 @@ snapshot_tree() {
 mkdir -p "$test_bin"
 ln -s -- "$ess_script" "$test_bin/ess"
 
-printf 'personal\nproduction\nprototype\n' > "$test_dir/expected-presets"
+printf 'fast-development\nperformance\npersonal\nproduction\nprototype\nreliable\n' > "$test_dir/expected-presets"
 invoke list > "$test_dir/list"
 cmp -s "$test_dir/expected-presets" "$test_dir/list" || fail 'list output is incorrect'
 
@@ -94,6 +94,15 @@ mkdir "$prototype_target"
 invoke install prototype "$prototype_target" >/dev/null
 assert_policy_matches prototype "$prototype_target"
 assert_skill_links prototype "$prototype_target"
+
+for preset in fast-development performance reliable; do
+  target=$test_dir/$preset-project
+  mkdir "$target"
+  invoke install "$preset" "$target" >/dev/null
+  assert_policy_matches "$preset" "$target"
+  assert_skill_links "$preset" "$target"
+  grep -Fxq "preset=$preset" "$target/$state_name" || fail "$preset state was not recorded"
+done
 
 # Repeated installs are idempotent and preserve unrelated project content.
 printf 'keep\n' > "$current_target/user-file.txt"
