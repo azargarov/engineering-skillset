@@ -1,71 +1,61 @@
 # Installation Metadata
 
-The local installer manages the composed policy, the four bundled Workflow
-Skills, and one ownership manifest:
+`scripts/ess` manages a copied project policy, centrally linked Workflow
+Skills, and one plain-text ownership state file:
 
-- `AGENTS.md` contains the composed policy.
-- `.agents/skills/<skill-id>/SKILL.md` contains each bundled Skill:
-  `software-design`, `implementation-review`, `verification-qa`, and
-  `project-handover`.
-- `.engineering-skillset-manifest` records managed-file digests and the policy
-  configuration.
+- `AGENTS.md` is copied from the selected built preset.
+- `.agents/skills/<skill-id>` links to
+  `<skillset-checkout>/dist/<preset>/skills/<skill-id>`.
+- `.engineering-skillset-state` records the preset, the SHA-256 digest of
+  `AGENTS.md`, and the sorted Skill IDs managed by `ess`.
 
-The current manifest is plain text:
+The current state format is:
 
 ```text
-engineering-skillset-manifest-v2
+engineering-skillset-state-v1
+preset=<preset-id>
 policy_sha256=<SHA-256 of AGENTS.md>
-skill_software-design_sha256=<SHA-256 of that Skill's SKILL.md>
-skill_implementation-review_sha256=<SHA-256 of that Skill's SKILL.md>
-skill_verification-qa_sha256=<SHA-256 of that Skill's SKILL.md>
-skill_project-handover_sha256=<SHA-256 of that Skill's SKILL.md>
-configuration=level=personal;priority=development-speed;priority=readability
+skills=<comma-separated sorted skill IDs>
 ```
 
-Priority and optional selections are listed in stable identifier order. The
-manifest is a local consistency and ownership record, not a signature or proof
-of authorship. The installer verifies all recorded digests before replacing
-managed files. Repeating the same policy and bundled Skill contents leaves the
-managed files unchanged. A changed policy or bundled Skill requires explicit
-`--reconfigure`; modified managed files, unmanaged collisions at a bundled
-Skill path, malformed metadata, or inconsistent state are refused.
+This state is an ownership and consistency record, not a signature or proof of
+authorship. Before switching or updating, `ess` checks that the existing policy
+matches its recorded digest and that every managed Skill path is still the
+expected symlink. Modified policy files, replaced links, malformed state, and
+unmanaged collisions are refused. Unrelated project files and Skills are
+preserved.
 
-Existing v1 policy-only manifests remain readable. They do not claim ownership
-of any Skill file. The same policy/configuration can be upgraded to v2 with
-`--reconfigure`, which installs the four Skills and records their digests. If
-a target Skill path already contains an unmanaged file, the upgrade refuses
-to overwrite it. An existing `.agents/skills` directory and unrelated Skills
-are preserved. An existing directory at one of the four bundled Skill IDs is
-also refused unless the manifest establishes ownership of its `SKILL.md`.
-Only missing parent directories and the four exact bundled Skill files are
-created.
+## Uninstall safeguards
 
-Skills are installed as available workflows; installation does not mean they
-must be invoked for every task. Codex can discover them from the project
-`.agents/skills` directory, and they may be invoked explicitly or when
-contextually relevant.
+`ess uninstall [PATH]` removes the recorded managed Skill symlinks, the
+verified `AGENTS.md`, and finally the ownership state. It uses the state file
+and the same policy digest and literal link-target checks as installation.
+Unlinking a Skill removes the link itself and never follows it; the central
+checkout and `dist/` targets are not changed.
 
-Initial publication stages all files before creating target paths and uses
-no-overwrite links. Detectable publication failures roll back files published
-by the installer when their identity and digest still match. Reconfiguration
-uses recovery copies in the target-local `.engineering-skillset-stage.*`
-directory and rolls back detectable failures when the destinations still
-match the staged replacements. Policy, four Skills, and manifest are published
-through separate filesystem operations, not atomically as a set. Process
-termination or a filesystem failure between operations can leave an
-inconsistent installation. The next run refuses inconsistent or modified
-state; concurrent filesystem modifications are not qualified.
+Before removing anything, uninstall validates every managed file that is still
+present. A changed policy, a non-symlink at a managed Skill path, or a symlink
+with a different target stops the operation before cleanup begins. A missing
+policy or Skill link is treated as already removed, allowing a retry after a
+partial uninstall while valid state remains. The ownership state is removed
+last for that reason.
 
-If reconfiguration is interrupted, do not rerun installation or delete the
-staging directory. Back up current target files and inspect the reported
-recovery directory (or remaining `.engineering-skillset-stage.*` directory).
-The recovery copies are named `previous-AGENTS.md`, `previous-manifest`, and
-`previous-skill-<skill-id>`. Compare the policy and Skill copies with the
-digests in `previous-manifest` before restoring, and confirm the manifest's
-format and configuration. Preserve the files and resolve the state manually
-if copies do not match or newer user edits may exist; the installer does not
-choose which copy to keep.
+When the state file is absent, `ess` cannot establish ownership. It refuses if
+`AGENTS.md` remains and otherwise reports a no-op, leaving any Skill paths
+untouched. Malformed or unreadable state is also refused. The `.agents` and
+`.agents/skills` directories are left in place: the installer does not record
+whether those directories existed before installation, and they may contain
+user data.
 
-The ownership record does not create a separate removal interface. The four
-bundled Skills are always installed together; uninstall and selective Skill
-removal are not supported by this installer.
+Installation and uninstall use multiple filesystem operations and are not
+atomic as a set. State-last uninstall can resume after an interruption as long
+as the state file remains valid. Concurrent modifications during either
+operation are not qualified; do not edit managed paths while the command is
+running. The state file is not cryptographically protected from deliberate
+forgery by a user with write access to the project.
+
+The central `dist/` outputs must exist for installation and for linked Skills
+to work. `make clean` removes those outputs and breaks existing Skill links
+until the next successful build. Moving the central checkout changes the link
+targets; uninstall must be run before moving or removing that checkout because
+it validates links against the current checkout path.

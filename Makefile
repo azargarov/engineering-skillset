@@ -1,16 +1,12 @@
 .DEFAULT_GOAL := build
 
-PRESETS := prototype personal production fast-development performance reliable
-PRESET ?= personal
+PRESETS := prototype fast-development performance reliable
+PRESET ?= prototype
 DIST_ROOT ?= dist
 BUILD_ROOT ?= $(DIST_ROOT)
 
 ifeq ($(PRESET),prototype)
 PRESET_FILE := presets/prototype.mk
-else ifeq ($(PRESET),personal)
-PRESET_FILE := presets/personal.mk
-else ifeq ($(PRESET),production)
-PRESET_FILE := presets/production.mk
 else ifeq ($(PRESET),fast-development)
 PRESET_FILE := presets/fast-development.mk
 else ifeq ($(PRESET),performance)
@@ -132,8 +128,8 @@ build-modular-skill:
 
 check: build
 	bash tests/compose-policy.sh
-	bash tests/build-personal.sh
 	bash tests/build-modular-presets.sh
+	bash tests/build-modular-skills.sh
 	bash tests/ess.sh
 	bash tests/build-publication.sh
 

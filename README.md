@@ -1,239 +1,163 @@
 # Engineering Skillset
 
-**A modular engineering methodology for AI-assisted software development.**
+Engineering Skillset provides a Core Policy and workflow Skills for AI coding
+agents, with four presets for choosing the level of engineering process that
+fits a task. The generated project `AGENTS.md` is self-contained. Workflow
+Skills are linked to a central checkout so their content can be maintained in
+one place.
 
-AI coding agents can generate working code quickly. Maintaining consistent
-engineering quality across tasks and development sessions requires clear
-expectations for architecture, implementation, verification, and project
-continuity.
+The project is licensed under the Apache License, Version 2.0. See
+[`LICENSE`](LICENSE).
 
-Engineering Skillset provides these expectations through a configurable Core
-Policy and reusable workflow Skills for Codex.
+## Requirements
 
-Its guiding principles are:
+The supported environment is GNU/Linux. Building and installing require Bash,
+GNU Make, and common GNU/Linux command-line tools, including coreutils,
+findutils, grep, awk, and diffutils (`cmp`). Keep these commands on `PATH`.
+Use Git to update the central checkout. Other platforms have not been
+qualified.
 
-- **Keep it simple:** Prefer readable, maintainable code and justified
-  abstractions.
-- **Respect scope:** Implement only authorized changes.
-- **Design deliberately:** Establish responsibilities, interfaces, and
-  important invariants before significant implementation.
-- **Verify proportionately:** Apply appropriate checks at each development
-  stage, with evidence-based acceptance.
-- **Preserve continuity:** Record decisions, progress, limitations, and
-  unresolved questions so work can continue reliably across sessions.
+## Build and install
 
-The methodology is experimental. Current evaluations have not established a
-general quality or productivity advantage over baseline Codex.
-
-This project is licensed under the Apache License, Version 2.0. See
-[`LICENSE`](LICENSE) for the full license text.
-
-## Quick start
-
-Use the local installer from a checkout of this repository. The target
-directory must already exist.
-
-```bash
-./scripts/install-policy.sh \
-  --target /path/to/your/project \
-  --level personal \
-  --priority readability \
-  --priority development-speed
-```
-
-## v0.2 built presets
-
-The v0.2 development CLI installs a preset built from this checkout. Build the
-presets, inspect those available, then install one into an existing project:
+From a fresh checkout, build the presets first. The project directory must
+already exist:
 
 ```bash
 make build
 ./scripts/ess list
-./scripts/ess install personal /path/to/your/project
+./scripts/ess install fast-development /path/to/your/project
 ./scripts/ess status /path/to/your/project
 ```
 
-Omit the target path to install into the current directory. The CLI copies
-`AGENTS.md` and links selected Skills to this checkout's `dist/` artifacts.
-It records minimal ownership state in
-`.engineering-skillset-state` so later installs can detect policy edits and
-verify managed Skill links. Keep this checkout available while projects use
-those links. `status` reports the current source checkout revision. Installation
-publishes state last but does not roll back a partial multi-file write; use
-`status` to identify an inconsistent target. This CLI is separate from the
-existing v0.1 installer; updates and Git operations are not implemented.
+Omit the project path to install into the current directory. `ess` copies the
+preset's `AGENTS.md` and creates links for its four Skills under
+`.agents/skills/`.
 
-`make build` stages and validates the complete output before publishing each
-artifact with an atomic per-file rename into stable preset directories. This
-keeps existing project Skill symlinks valid during a successful rebuild. A
-failure or interruption partway through publication can leave artifacts from
-different build generations; rerun `make build` to restore the complete
-intended set. `make clean` removes generated artifacts and breaks installed
-Skill links until a successful `make build` recreates them. Publication adds or
-replaces configured files but does not remove obsolete files from a preset;
-removed artifacts can remain until manually cleaned.
+## Choose a preset
 
-After installation, invoke a workflow Skill by name when it fits the task. For
-example, ask Codex to plan an API change without editing code:
+| Preset | Intended use |
+|---|---|
+| `prototype` | Validate a hypothesis quickly; focus on essential logic and the happy path. |
+| `fast-development` | Build maintainable software quickly with simple design and focused checks. |
+| `performance` | Meet measurable performance goals using profiling and workload-based checks. |
+| `reliable` | Prioritize clear contracts, failure behavior, and risk-driven verification. |
+
+The older `personal` and `production` presets are retired. If an existing
+installation uses either one, uninstall it from the same central checkout
+before moving or removing that checkout.
+
+Switch presets by installing another one into the same project:
+
+```bash
+./scripts/ess install reliable /path/to/your/project
+```
+
+The switch applies to subsequent work. It does not authorize retroactive
+refactoring or weaken existing project requirements.
+
+## Work with an AI coding agent
+
+After installation, work in the project with your coding agent. The generated
+`AGENTS.md` provides persistent project guidance. Invoke a workflow Skill by
+name when useful, for example:
 
 ```text
 $software-design
 
-Review the architecture of this Go API.
-Propose the smallest change needed to support
-idempotent job submission.
-
-Do not modify the code yet.
+Review the architecture of this API and propose the smallest change needed to
+support idempotent job submission. Do not edit files yet.
 ```
 
-## How it works
+The four Skills are `software-design`, `implementation-review`,
+`verification-qa`, and `project-handover`. Agents may use relevant Skills
+contextually, but automatic activation is not guaranteed.
 
-The installer composes a project policy from the Core Policy, one project
-level, and selected priorities, then installs it as `AGENTS.md`. The four
-workflow Skills are installed alongside it, where Codex can discover and use
-them for relevant tasks. Automatic Skill activation is not guaranteed.
-
-```mermaid
-flowchart TD
-    C[Core Policy<br/>Shared engineering rules and QA expectations] --> G[Generated AGENTS.md<br/>Persistent project-specific instructions]
-    L[Project Level<br/>Personal] --> G
-    P[Priorities<br/>Readability, Development Speed] --> G
-    G --> X[Codex in your project<br/>Policy always available]
-    S[Four discoverable workflow Skills<br/>Available for relevant tasks] --> X
-```
-
-The Core Policy in [`AGENTS.md`](AGENTS.md) defines shared expectations for
-authorized scope, simple and readable implementation, proportionate QA,
-compositional testing, truthful evidence, and development continuity. Modules
-add project-specific emphasis without replacing those guarantees.
-
-Currently supported policy selections are:
-
-- **Project level:** `personal`
-- **Priorities:** `readability`, `development-speed`
-- **Optional modules:** none currently available
-
-The installer includes all four Skills. Codex can use them explicitly or when
-contextually relevant, but automatic activation is not guaranteed:
-
-- [`software-design`](.agents/skills/software-design/SKILL.md) — plan designs
-  and nontrivial changes to existing systems.
-- [`implementation-review`](.agents/skills/implementation-review/SKILL.md) —
-  identify concrete implementation defects and justified corrections.
-- [`verification-qa`](.agents/skills/verification-qa/SKILL.md) — select and
-  assess proportionate tests and other checks.
-- [`project-handover`](.agents/skills/project-handover/SKILL.md) — preserve
-  verified project state, meaningful history, and deferred work.
-
-## Configuration and reconfiguration
-
-The installer uses the composer and installs the composed policy as the
-target's `AGENTS.md`. It also installs the four Skills under
-`.agents/skills/` and creates `.engineering-skillset-manifest` to track the
-managed files and selected policy configuration.
-
-Preview the plan without changing the target:
+Check the installation at any time:
 
 ```bash
-./scripts/install-policy.sh \
-  --target /path/to/your/project \
-  --level personal \
-  --priority readability \
-  --dry-run
+./scripts/ess status /path/to/your/project
 ```
 
-The installer refuses to replace an existing unmanaged `AGENTS.md`, symbolic
-links, modified managed files, or inconsistent installation metadata. It
-preserves unrelated user files and Skills. Repeating an identical installation
-does not rewrite managed files. To change an existing managed configuration,
-repeat the desired selections with `--reconfigure`:
+`status` reports whether the policy digest and managed Skill links match the
+installation state.
+
+## Update an installation
+
+Update the central checkout and rebuild its artifacts:
 
 ```bash
-./scripts/install-policy.sh \
-  --target /path/to/your/project \
-  --level personal \
-  --priority readability \
-  --reconfigure
+git -C /path/to/engineering-skillset pull
+make -C /path/to/engineering-skillset build
 ```
 
-Reconfiguration requires the installer to verify ownership and file integrity.
-Back up important project files before changing an existing installation and
-review the result. The installer does not merge the policy with a user-authored
-`AGENTS.md`; it only reconfigures an installation it can identify and verify.
-See [installation metadata and recovery](docs/development/installation-metadata.md)
-for ownership details and interrupted-operation guidance.
-
-### Compose a policy without installing it
-
-The composer writes a standalone policy to standard output by default:
+Linked Skills use those central artifacts and reflect a successful rebuild.
+The project `AGENTS.md` is a copy, so reinstall the selected preset to refresh
+it:
 
 ```bash
-./scripts/compose-policy.sh \
-  --level personal \
-  --priority readability \
-  --priority development-speed
+/path/to/engineering-skillset/scripts/ess install fast-development /path/to/your/project
 ```
 
-To write it to a new file, pass `--output PATH`. Existing output files are not
-overwritten. The composer does not install Skills or modify a project.
+`ess` refuses to replace a project policy or Skill link that no longer matches
+its recorded ownership state. Review and resolve such changes before
+reinstalling. Git updates are performed explicitly by the user; `ess` does not
+fetch or update the checkout.
 
-### Remote bootstrap status
+## Uninstall
 
-`scripts/bootstrap-policy.sh` can download an archive for a specified full
-commit SHA, check it against a caller-provided SHA-256 digest, validate and
-extract it in temporary storage, then delegate to the local installer. The
-commit URL alone does not verify the downloaded bytes, and the digest must
-come from a trusted channel. **Live GitHub download and trusted digest
-provenance have not been established**, so remote bootstrap is not a qualified
-release installation route. Use a trusted local checkout for the supported
-installation procedure described above.
-
-## Platform and dependencies
-
-The supported and tested environment is GNU/Linux with Bash and GNU coreutils.
-Local installation requires Bash, GNU coreutils (including `chmod`, `sha256sum`,
-`sort`, `stat`, and the standard file utilities), and `cmp` from diffutils. Keep
-them available on `PATH`. Optional remote bootstrap additionally requires
-`curl` and GNU `tar`; it also uses `sha256sum` and `mktemp`.
-
-Other platforms, including macOS and other Unix-like systems, have not been
-qualified. The scripts use GNU-specific command behavior, so compatibility
-with non-GNU toolchains is not established.
-
-## Safety and limitations
-
-- The installer manages the composed `AGENTS.md`, the four bundled Skill files,
-  and its ownership manifest. Selective Skill removal and a dedicated uninstall
-  command are not supported.
-- Publication of the policy, Skills, and manifest uses separate filesystem
-  operations and is not atomic as a set. Process interruption can leave an
-  inconsistent installation; recovery steps are documented in the installation
-  metadata guide.
-- Concurrent modifications to target files during installation have not been
-  qualified.
-- Only the `personal` level and two priorities are currently implemented. No
-  optional modules are available.
-- Current evaluations have not established a general quality or productivity
-  advantage over baseline Codex, or effectiveness in every project.
-
-For current milestone status and the complete qualification record, see
-[`ROADMAP.md`](ROADMAP.md). The design and evaluation documents are in
-[`docs/architecture/`](docs/architecture/) and
-[`docs/development/`](docs/development/).
-
-## Development and tests
-
-From the repository root, run the relevant Bash test scripts:
+Remove the managed policy and Skill links while preserving unrelated project
+content:
 
 ```bash
-bash tests/compose-policy.sh
-bash tests/install-policy.sh
-bash tests/bootstrap-policy.sh
+/path/to/engineering-skillset/scripts/ess uninstall /path/to/your/project
 ```
 
-Check shell syntax and, when ShellCheck is installed, lint the scripts:
+Uninstall requires a valid ownership state. It refuses if the managed policy or
+a present managed Skill link has been modified or replaced. Missing managed
+files are treated as already removed, so an interrupted uninstall can be
+retried. If the ownership state is absent or malformed, `ess` will not guess
+which files belong to it. Empty `.agents` directories are left in place because
+their ownership is not recorded. Repeating uninstall after a successful
+uninstall is safe.
+
+## Project Memory Lifecycle
+
+The Core Policy asks agents to preserve project intent, decisions, progress,
+verification evidence, and unresolved work. For meaningful development, use
+the project's `VISION.md`, `ROADMAP.md`, and `current.md` when present; record
+milestone results, significant decisions, and important failures in the
+project's established locations. Keep current state concise and truthful.
+The `project-handover` Skill helps prepare that record when work is handed off.
+
+## Symlinks and limitations
+
+The generated `AGENTS.md` is portable, but Skill links point into this
+checkout's `dist/<preset>/` directories. Keep the checkout and built artifacts
+available while installed projects use those links. `make clean` removes the
+artifacts and breaks the links until `make build` recreates them. Successful
+builds publish files into stable directories; interruption during publication
+can leave artifacts from mixed build generations.
+
+Moving the central checkout also breaks existing links. Uninstall verifies
+each link against the current checkout, so run it before moving or removing
+that checkout.
+
+Installation and uninstall perform several filesystem operations and are not
+atomic as a set. Concurrent changes to project files during those operations
+have not been qualified. Current evaluations do not establish a general
+quality or productivity advantage over baseline coding agents.
+
+## Development checks
+
+Run the build and applicable release checks from the repository root:
 
 ```bash
-bash -n scripts/*.sh tests/*.sh
-shellcheck scripts/*.sh tests/*.sh
+make build
+make check
+bash -n scripts/ess scripts/*.sh tests/*.sh
 ```
+
+The product sources and maintained verification scripts are in `modules/`,
+`presets/`, `scripts/`, and `tests/`. See [`ROADMAP.md`](ROADMAP.md) for
+project status and [`docs/architecture/`](docs/architecture/) for design
+records.

@@ -5,6 +5,7 @@ export LC_ALL=C
 
 program=${0##*/}
 state_name=.engineering-skillset-state
+SUPPORTED_PRESETS=(fast-development performance prototype reliable)
 
 error() {
   printf '%s: %s\n' "$program" "$*" >&2
@@ -21,6 +22,7 @@ Usage:
   ess list
   ess install PRESET [PATH] [--dry-run]
   ess status [PATH]
+  ess uninstall [PATH]
 
 Install a built preset into an existing project directory. The default PATH
 is the current directory. Managed Skills are linked to this source checkout.
@@ -71,17 +73,17 @@ read_preset_skills() {
 validate_preset() {
   local preset=$1
   valid_id "$preset" || return 1
+  case " ${SUPPORTED_PRESETS[*]} " in
+    *" $preset "*) ;;
+    *) return 1 ;;
+  esac
   read_preset_skills "$dist_root/$preset"
 }
 
 list_presets() {
-  local preset_dir preset
+  local preset
   local found=0
-  for preset_dir in "$dist_root"/*; do
-    path_exists "$preset_dir" || continue
-    [[ -d $preset_dir && ! -L $preset_dir ]] || continue
-    preset=${preset_dir##*/}
-    valid_id "$preset" || continue
+  for preset in "${SUPPORTED_PRESETS[@]}"; do
     if validate_preset "$preset"; then
       printf '%s\n' "$preset"
       found=1
@@ -393,6 +395,80 @@ install_preset() {
   printf 'Installed preset %s in %s.\n' "$preset" "$target"
 }
 
+uninstall_target() {
+  local target_arg=$1 target state_file policy_file actual_sha skill link_path expected_target actual_target
+
+  [[ -d $target_arg ]] || fail "target directory does not exist: '$target_arg'"
+  target=$(CDPATH='' cd -- "$target_arg" && pwd -P) || fail "cannot resolve target directory: '$target_arg'"
+  state_file=$target/$state_name
+  policy_file=$target/AGENTS.md
+
+  if ! path_exists "$state_file"; then
+    if path_exists "$policy_file"; then
+      fail "no valid '$state_name' ownership file; preserving AGENTS.md and all Skill paths (no files removed)"
+    fi
+    printf 'Target: %s\nNo ess-managed installation found; no files removed.\n' "$target"
+    printf 'Any remaining Skill paths were preserved because ownership state is absent.\n'
+    return 0
+  fi
+
+  read_state "$state_file" || fail 'state file is malformed; refusing uninstall (no files removed)'
+  if ! validate_existing_layout "$target"; then
+    error 'uninstall refused; no files removed'
+    exit 2
+  fi
+
+  if path_exists "$policy_file"; then
+    [[ -f $policy_file && ! -L $policy_file && -r $policy_file ]] || \
+      fail 'managed AGENTS.md is not a readable regular file; refusing uninstall (no files removed)'
+    actual_sha=$(file_sha256 "$policy_file") || fail 'cannot calculate the managed AGENTS.md digest; no files removed'
+    [[ $actual_sha == "$STATE_POLICY_SHA256" ]] || \
+      fail 'managed AGENTS.md was modified; refusing uninstall (no files removed)'
+  fi
+
+  for skill in "${STATE_SKILLS[@]}"; do
+    link_path=$(skill_link_path "$target" "$skill")
+    if path_exists "$link_path"; then
+      [[ -L $link_path ]] || fail "managed Skill path was replaced; refusing uninstall: '$link_path' (no files removed)"
+      actual_target=$(readlink -- "$link_path") || fail "cannot read managed Skill link: '$link_path' (no files removed)"
+      expected_target=$(expected_skill_target "$STATE_PRESET" "$skill")
+      [[ $actual_target == "$expected_target" ]] || \
+        fail "managed Skill link was modified; refusing uninstall: '$link_path' (no files removed)"
+    fi
+  done
+
+  printf 'Target: %s\n' "$target"
+  if path_exists "$policy_file"; then
+    printf 'Remove verified AGENTS.md\n'
+  else
+    printf 'AGENTS.md already absent; continuing interrupted uninstall\n'
+  fi
+  for skill in "${STATE_SKILLS[@]}"; do
+    link_path=$(skill_link_path "$target" "$skill")
+    if path_exists "$link_path"; then
+      printf 'Remove managed Skill link %s\n' "$skill"
+    else
+      printf 'Skill link %s already absent\n' "$skill"
+    fi
+  done
+  printf 'Remove ownership state after managed files\n'
+
+  for skill in "${STATE_SKILLS[@]}"; do
+    link_path=$(skill_link_path "$target" "$skill")
+    if path_exists "$link_path"; then
+      rm -- "$link_path" || fail "cannot remove managed Skill link '$link_path'; uninstall is partial and ownership state remains for retry"
+    fi
+  done
+  if path_exists "$policy_file"; then
+    rm -- "$policy_file" || fail 'cannot remove managed AGENTS.md; uninstall is partial and ownership state remains for retry'
+  fi
+  rm -- "$state_file" || fail 'cannot remove ownership state; rerun uninstall to finish cleanup'
+
+  printf 'Uninstalled Engineering Skillset from %s.\n' "$target"
+  printf 'Preserved unrelated files and the .agents directory tree.\n'
+  printf 'Central build and Skill targets were not changed.\n'
+}
+
 status_target() {
   local target_arg=$1 target state_file policy_file source_revision
   local actual_sha skill link_path expected_target actual_target healthy=1
@@ -512,6 +588,11 @@ case $command in
     (($# <= 1)) || fail 'status accepts at most one PATH'
     target_arg=${1:-.}
     status_target "$target_arg"
+    ;;
+  uninstall)
+    (($# <= 1)) || fail 'uninstall accepts at most one PATH'
+    target_arg=${1:-.}
+    uninstall_target "$target_arg"
     ;;
   *)
     fail "unknown command '$command'"
