@@ -47,6 +47,66 @@ untouched. Malformed or unreadable state is also refused. The `.agents` and
 whether those directories existed before installation, and they may contain
 user data.
 
+## Recovering an interrupted first install
+
+This procedure applies only to a first install with no previous valid
+ownership state. Installation stages temporary policy and state files, then
+publishes Skill links, publishes `AGENTS.md`, and writes the ownership state
+last. If the command stops after publishing target paths but before the state
+write, those paths remain without ownership metadata. The `EXIT` trap cleans
+temporary files when it runs, but does not roll back paths already published.
+With some Skill links present and no policy, install treats the links as
+unmanaged collisions and refuses; uninstall leaves them because state is
+absent. If `AGENTS.md` is present without state, both commands refuse to guess
+ownership.
+
+If no target path was published, rerun `ess install` normally. Otherwise,
+first stop other writers and check that the ownership state is absent. The
+current files alone cannot prove they came from `ess`: proceed only if you
+know `AGENTS.md` and the relevant `.agents/skills/<skill>` paths were absent
+before this first install. A matching policy or link target is supporting
+evidence, not proof of ownership. If the prior contents are uncertain, leave
+all paths untouched and request review.
+
+For a confirmed empty starting project, identify the intended preset with
+`ess list`. Compare any present `AGENTS.md` byte-for-byte with
+`dist/<preset>/AGENTS.md`. For each present Skill path, verify it is a symlink
+whose literal target is exactly
+`<checkout>/dist/<preset>/skills/<skill>`, and verify that target contains a
+readable `SKILL.md`. The policy and any links must agree on one preset. If any
+path differs, stop without changing it.
+
+Keep the central checkout at the same path used for the interrupted install
+and run `make build` before checking that the expected Skill targets are
+available.
+
+Move only the paths you positively verified into a new, private backup
+directory outside the project. For example, after creating a destination that
+does not already exist (and making sure `$HOME` is outside the project):
+
+```bash
+set -eu
+project=/path/to/project
+state="$project/.engineering-skillset-state"
+if [[ -e $state || -L $state ]]; then
+  printf '%s\n' 'ownership state exists; this procedure does not apply' >&2
+  exit 1
+fi
+backup=$(mktemp -d "$HOME/ess-interrupted-install.XXXXXX") || exit 1
+mkdir -- "$backup/skills"
+# Run these only for paths that exist and passed the checks above.
+mv -- "$project/AGENTS.md" "$backup/AGENTS.md"
+mv -- "$project/.agents/skills/software-design" "$backup/skills/software-design"
+```
+
+Repeat the Skill-link move only for each confirmed link left by the interrupted
+install. `mv` moves the link itself; it does not follow the Skill target. Do not
+move or remove the `.agents` directories or unrelated Skills. Keep the backup,
+then rerun `ess install <preset> <project>` and check `ess status <project>`.
+Staging files named `.ess-policy.*`, `.ess-state.*`, or `.ess-link.*` are not
+proof of ownership; do not remove them by name alone. They do not establish
+ownership or prevent a new install.
+
 Installation and uninstall use multiple filesystem operations and are not
 atomic as a set. State-last uninstall can resume after an interruption as long
 as the state file remains valid. Concurrent modifications during either

@@ -33,6 +33,12 @@ Omit the project path to install into the current directory. `ess` copies the
 preset's `AGENTS.md` and creates links for its four Skills under
 `.agents/skills/`.
 
+On a fresh install, interruption before the ownership state is written can
+leave paths that `ess` will not claim or remove. Do not remove them based on
+appearance alone. If you know the paths were absent before installation, use
+the [safe manual recovery procedure](docs/development/installation-metadata.md#recovering-an-interrupted-first-install).
+If their prior ownership is uncertain, preserve them and stop for review.
+
 ## Choose a preset
 
 | Preset | Intended use |
