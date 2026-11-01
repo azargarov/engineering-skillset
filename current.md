@@ -1,36 +1,30 @@
 # Current State
 
-- **Project:** Engineering Skillset v0.2.0
+- **Project:** Engineering Skillset v0.2.1
 - **Branch:** `main`
-- **Release commit:** `f662d7543d389506621f6ebda1e93dd49cc33594` is on
-  `origin/main`; annotated tag `v0.2.0` remains local and unpublished.
+- **M02:** operator-accepted.
+- **M03:** verification and release candidate preparation complete; operator
+  review pending. No release acceptance or publication is implied.
 
-## Current objective
+## Verification
 
-Close out the accepted manual recovery guidance for a first `ess install`
-interrupted before ownership state is written. CLI ownership validation and
-behavior are unchanged.
+- `make build` — passed.
+- `make check` — passed, including existing build, CLI lifecycle, publication,
+  and user-install tests.
+- `bash -n scripts/ess scripts/*.sh tests/*.sh` — passed.
+- `git diff --check` — passed.
+- Independent disposable end-to-end installation run — passed. Covered fresh
+  copied checkout, CLI invocation from another directory, checkout relocation,
+  updated distribution, stable project Skill links, repeat install, guarded
+  uninstall, unrelated CLI refusal, and injected staging/activation failures.
+  Both injected failures preserved the previous active release.
 
-## Completed
+## Findings and next action
 
-- The four-preset build and essential checks passed on `main` after integration.
-- The evaluation bundle is preserved outside the product checkout at
-  `~/Documents/projects/skillset-evaluation-preserved/`; the M09.2 archive is
-  separately preserved outside the checkout.
-- Recovery guidance was added to the README and installation metadata. No new
-  test was added because no automatic recovery behavior changed.
-
-## Open issues and next action
-
-- Behavioral effectiveness over baseline agents has not been established.
-- Installation and uninstall remain multi-step operations. The new manual
-  procedure applies only when the target was known empty before a first install;
-  uncertain ownership still requires review.
-- Next action: request operator approval before moving the local `v0.2.0` tag to
-  the documentation closeout commit. This task does not change the tag or push.
-
-## References
-
-- Product intent: [`VISION.md`](VISION.md)
-- Project roadmap: [`ROADMAP.md`](ROADMAP.md)
-- Installer ownership and recovery: [`docs/development/installation-metadata.md`](docs/development/installation-metadata.md)
+- Self-review found and fixed validation that accepted `current` through a
+  symlinked release directory. The installer now rejects that path, and a
+  focused regression test passes. No known release-blocking defect remains.
+- Remaining limitations are listed in
+  [`docs/development/release-v0.2.1.md`](docs/development/release-v0.2.1.md).
+- Next action: operator review of the candidate. Do not commit, tag, push, or
+  publish without separate authorization.

@@ -200,3 +200,41 @@ machinery without demonstrated value.
    experimental evaluation material; it is not part of Stage 2A or Stage 2B.
 3. Authorize Stage 2C release preparation only after reviewing the v0.2.0
    contents and remaining limitations.
+
+## v0.2.1 M02 — Local user installation
+
+**Implementation status:** implemented and verified in this worktree;
+operator acceptance was explicitly provided for M02 with M03 authorization.
+The checkout-side `make install-user` command stages complete immutable releases in the user
+data directory and atomically switches `current`. The installed CLI uses the
+same `scripts/ess` implementation as the checkout CLI. Existing v0.2.0
+projects use the documented manual uninstall/reinstall transition; no
+automatic migration is provided.
+
+**Scope preserved:** four presets, four Workflow Skills, copied project
+policy, ownership validation, guarded switching and uninstall. Previous
+releases are retained; automatic cleanup and network updates remain out of
+scope.
+
+### v0.2.1 M03 — Verification and release preparation
+
+**Status:** verification completed; release candidate prepared for operator
+review. This does not mark M03 accepted or authorize publication.
+
+- `make build`, `make check`, Bash syntax validation, and `git diff --check`
+  passed in the candidate worktree.
+- A separate disposable checkout and isolated user/project directories passed
+  fresh install, global CLI use outside the checkout, checkout relocation,
+  updated release activation with stable project Skill links, repeated
+  installation, guarded uninstall, and unrelated CLI refusal.
+- Injected staging-copy failure and active-link replacement failure both
+  preserved the previous `current` link. One corrupted active-release path
+  validation defect was found and fixed; no known release-blocking defect
+  remains.
+- Self-review found that an existing `current` target could pass validation
+  through a symlinked release directory. The installer now requires a
+  generated-style release basename and a real, non-symlink directory; a
+  focused test confirms refusal without changing the active link.
+- Candidate notes and limitations are in
+  [`release-v0.2.1.md`](release-v0.2.1.md); the user-facing summary is in
+  [`../../CHANGELOG.md`](../../CHANGELOG.md).

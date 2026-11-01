@@ -4,8 +4,8 @@
 Skills, and one plain-text ownership state file:
 
 - `AGENTS.md` is copied from the selected built preset.
-- `.agents/skills/<skill-id>` links to
-  `<skillset-checkout>/dist/<preset>/skills/<skill-id>`.
+- `.agents/skills/<skill-id>` links through
+  `${XDG_DATA_HOME:-$HOME/.local/share}/engineering-skillset/current/<preset>/skills/<skill-id>`.
 - `.engineering-skillset-state` records the preset, the SHA-256 digest of
   `AGENTS.md`, and the sorted Skill IDs managed by `ess`.
 
@@ -30,8 +30,8 @@ preserved.
 `ess uninstall [PATH]` removes the recorded managed Skill symlinks, the
 verified `AGENTS.md`, and finally the ownership state. It uses the state file
 and the same policy digest and literal link-target checks as installation.
-Unlinking a Skill removes the link itself and never follows it; the central
-checkout and `dist/` targets are not changed.
+Unlinking a Skill removes the link itself and never follows it; installed
+release targets are not changed.
 
 Before removing anything, uninstall validates every managed file that is still
 present. A changed policy, a non-symlink at a managed Skill path, or a symlink
@@ -70,15 +70,11 @@ all paths untouched and request review.
 
 For a confirmed empty starting project, identify the intended preset with
 `ess list`. Compare any present `AGENTS.md` byte-for-byte with
-`dist/<preset>/AGENTS.md`. For each present Skill path, verify it is a symlink
-whose literal target is exactly
-`<checkout>/dist/<preset>/skills/<skill>`, and verify that target contains a
-readable `SKILL.md`. The policy and any links must agree on one preset. If any
-path differs, stop without changing it.
-
-Keep the central checkout at the same path used for the interrupted install
-and run `make build` before checking that the expected Skill targets are
-available.
+`${XDG_DATA_HOME:-$HOME/.local/share}/engineering-skillset/current/<preset>/AGENTS.md`. For each
+present Skill path, verify it is a symlink whose literal target is exactly
+`${XDG_DATA_HOME:-$HOME/.local/share}/engineering-skillset/current/<preset>/skills/<skill>`, and verify
+that target contains a readable `SKILL.md`. The policy and links must agree
+on one preset. If any path differs, stop without changing it.
 
 Move only the paths you positively verified into a new, private backup
 directory outside the project. For example, after creating a destination that
@@ -114,8 +110,18 @@ operation are not qualified; do not edit managed paths while the command is
 running. The state file is not cryptographically protected from deliberate
 forgery by a user with write access to the project.
 
-The central `dist/` outputs must exist for installation and for linked Skills
-to work. `make clean` removes those outputs and breaks existing Skill links
-until the next successful build. Moving the central checkout changes the link
-targets; uninstall must be run before moving or removing that checkout because
-it validates links against the current checkout path.
+The installed distribution under `${XDG_DATA_HOME:-$HOME/.local/share}/engineering-skillset/`
+contains immutable releases and a stable `current` symlink. Updating publishes
+a complete release and atomically changes `current`; project Skill links do not
+need rewriting. Previous releases are retained. The checkout can be moved or
+removed after installation. A new update requires a source checkout and build.
+
+## v0.2.0 manual transition
+
+There is no automatic migration command. Verify the old project installation
+is healthy with the original checkout's `ess status`, then run its
+`ess uninstall`. Install the selected preset with the globally installed CLI.
+The uninstall removes the managed policy and Skill links while preserving
+unrelated project files and Skills. If the old installation is damaged or a
+managed file was modified, stop for manual review; do not bypass ownership
+validation.

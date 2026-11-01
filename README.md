@@ -3,8 +3,8 @@
 Engineering Skillset provides a Core Policy and workflow Skills for AI coding
 agents, with four presets for choosing the level of engineering process that
 fits a task. The generated project `AGENTS.md` is self-contained. Workflow
-Skills are linked to a central checkout so their content can be maintained in
-one place.
+Skills link to a local user installation that can be updated independently of
+the source checkout.
 
 The project is licensed under the Apache License, Version 2.0. See
 [`LICENSE`](LICENSE).
@@ -19,21 +19,29 @@ qualified.
 
 ## Build and install
 
-From a fresh checkout, build the presets first. The project directory must
-already exist:
+From a fresh checkout, install the CLI and built presets for your user. The
+project directory must already exist:
 
 ```bash
-make build
-./scripts/ess list
-./scripts/ess install fast-development /path/to/your/project
-./scripts/ess status /path/to/your/project
+make install-user
+export PATH="$HOME/.local/bin:$PATH"
+ess list
+ess install fast-development /path/to/your/project
+ess status /path/to/your/project
 ```
 
 Omit the project path to install into the current directory. `ess` copies the
 preset's `AGENTS.md` and creates links for its four Skills under
 `.agents/skills/`.
 
-On a fresh install, interruption before the ownership state is written can
+`make install-user` builds, validates, and stages a complete immutable release
+under `${XDG_DATA_HOME:-$HOME/.local/share}/engineering-skillset/`, then
+atomically switches its `current` link. The CLI is installed at
+`~/.local/bin/ess`; add that directory to `PATH` yourself if needed. It does
+not edit shell startup files. An unrelated existing `ess` file is preserved
+and causes installation to stop.
+
+On a fresh project install, interruption before the ownership state is written can
 leave paths that `ess` will not claim or remove. Do not remove them based on
 appearance alone. If you know the paths were absent before installation, use
 the [safe manual recovery procedure](docs/development/installation-metadata.md#recovering-an-interrupted-first-install).
@@ -55,7 +63,7 @@ before moving or removing that checkout.
 Switch presets by installing another one into the same project:
 
 ```bash
-./scripts/ess install reliable /path/to/your/project
+ess install reliable /path/to/your/project
 ```
 
 The switch applies to subsequent work. It does not authorize retroactive
@@ -81,7 +89,7 @@ contextually, but automatic activation is not guaranteed.
 Check the installation at any time:
 
 ```bash
-./scripts/ess status /path/to/your/project
+ess status /path/to/your/project
 ```
 
 `status` reports whether the policy digest and managed Skill links match the
@@ -93,15 +101,18 @@ Update the central checkout and rebuild its artifacts:
 
 ```bash
 git -C /path/to/engineering-skillset pull
-make -C /path/to/engineering-skillset build
+make -C /path/to/engineering-skillset install-user
 ```
 
-Linked Skills use those central artifacts and reflect a successful rebuild.
+The command stages a new immutable release and atomically selects it. Existing
+project Skill links use the stable `current` path and see the active release
+without being rewritten. Previous releases are retained. Future updates still
+require a source checkout to build from.
 The project `AGENTS.md` is a copy, so reinstall the selected preset to refresh
 it:
 
 ```bash
-/path/to/engineering-skillset/scripts/ess install fast-development /path/to/your/project
+ess install fast-development /path/to/your/project
 ```
 
 `ess` refuses to replace a project policy or Skill link that no longer matches
@@ -115,7 +126,7 @@ Remove the managed policy and Skill links while preserving unrelated project
 content:
 
 ```bash
-/path/to/engineering-skillset/scripts/ess uninstall /path/to/your/project
+ess uninstall /path/to/your/project
 ```
 
 Uninstall requires a valid ownership state. It refuses if the managed policy or
@@ -137,16 +148,16 @@ The `project-handover` Skill helps prepare that record when work is handed off.
 
 ## Symlinks and limitations
 
-The generated `AGENTS.md` is portable, but Skill links point into this
-checkout's `dist/<preset>/` directories. Keep the checkout and built artifacts
-available while installed projects use those links. `make clean` removes the
-artifacts and breaks the links until `make build` recreates them. Successful
-builds publish files into stable directories; interruption during publication
-can leave artifacts from mixed build generations.
+The generated `AGENTS.md` is portable. Skill links point through the installed
+distribution's stable `current` path. The source checkout may be moved or
+removed after user installation. Previous immutable releases are retained;
+there is no automatic cleanup.
 
-Moving the central checkout also breaks existing links. Uninstall verifies
-each link against the current checkout, so run it before moving or removing
-that checkout.
+The v0.2.0 checkout-based installation is not automatically migrated. Verify
+it is healthy, uninstall it using the original v0.2.0 checkout, then install
+the selected preset with the global CLI. If the old installation is damaged
+or managed files were modified, stop for manual review. Uninstall removes the
+managed policy and Skill links while preserving unrelated project files.
 
 Installation and uninstall perform several filesystem operations and are not
 atomic as a set. Concurrent changes to project files during those operations

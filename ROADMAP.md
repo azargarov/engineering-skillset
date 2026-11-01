@@ -6,7 +6,10 @@ evidence are in [`docs/development/roadmap-v0.2.md`](docs/development/roadmap-v0
 
 V2-01 and V2-02 implementation evidence is preserved in Git history. V2-03
 (`ess`) is implemented and committed, with owner acceptance still pending.
-Further v0.2 work is proposed and requires owner review and authorization.
+The v0.2.1 M02 local user installation is operator-accepted. M03 verification
+and release preparation are complete in the worktree and await operator
+review. See [`docs/development/release-v0.2.1.md`](docs/development/release-v0.2.1.md)
+and the detailed roadmap.
 
 The v0.1 roadmap is preserved at
 [`docs/development/roadmap-v0.1.md`](docs/development/roadmap-v0.1.md). The

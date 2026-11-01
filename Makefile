@@ -50,7 +50,7 @@ endif
 DIST_DIR := $(BUILD_ROOT)/$(PRESET)
 SKILLS_DIR := .agents/skills
 
-.PHONY: build build-staged build-one build-modular-skill check clean
+.PHONY: build install-user build-staged build-one build-modular-skill check clean
 
 build:
 	@set -eu; \
@@ -67,6 +67,9 @@ build:
 	bash scripts/publish-build.sh "$$stage_root" "$$publish_root" $(PRESETS); \
 	rm -rf -- "$$stage_root"; \
 	trap - EXIT
+
+install-user: build
+	bash scripts/install-user.sh
 
 build-staged:
 	@set -e; \
@@ -131,6 +134,7 @@ check: build
 	bash tests/build-modular-presets.sh
 	bash tests/build-modular-skills.sh
 	bash tests/ess.sh
+	bash tests/install-user.sh
 	bash tests/build-publication.sh
 
 clean:

@@ -25,7 +25,7 @@ Usage:
   ess uninstall [PATH]
 
 Install a built preset into an existing project directory. The default PATH
-is the current directory. Managed Skills are linked to this source checkout.
+is the current directory. Managed Skills use the active distribution.
 USAGE
 }
 
@@ -37,12 +37,18 @@ path_exists() {
   [[ -e $1 || -L $1 ]]
 }
 
-script_path=$(readlink -f -- "${BASH_SOURCE[0]}") || fail 'cannot resolve the CLI script path'
-script_dir=$(CDPATH='' cd -- "$(dirname -- "$script_path")" && pwd -P) || \
-  fail 'cannot locate the CLI directory'
-repo_root=$(CDPATH='' cd -- "$script_dir/.." && pwd -P) || \
-  fail 'cannot locate the source repository'
-dist_root=$repo_root/dist
+if [[ -n ${ESS_DATA_HOME:-} ]]; then
+  data_root=$ESS_DATA_HOME/engineering-skillset
+  dist_root=$data_root/current
+  repo_root=''
+else
+  script_path=$(readlink -f -- "${BASH_SOURCE[0]}") || fail 'cannot resolve the CLI script path'
+  script_dir=$(CDPATH='' cd -- "$(dirname -- "$script_path")" && pwd -P) || \
+    fail 'cannot locate the CLI directory'
+  repo_root=$(CDPATH='' cd -- "$script_dir/.." && pwd -P) || \
+    fail 'cannot locate the source repository'
+  dist_root=$repo_root/dist
+fi
 
 declare -a PRESET_SKILLS=()
 declare -a STATE_SKILLS=()
@@ -477,8 +483,12 @@ status_target() {
   target=$(CDPATH='' cd -- "$target_arg" && pwd -P) || fail "cannot resolve target directory: '$target_arg'"
   state_file=$target/$state_name
   policy_file=$target/AGENTS.md
-  source_revision=$(git -C "$repo_root" rev-parse --short HEAD 2>/dev/null || printf 'unavailable')
-  printf 'Target: %s\nSource checkout revision (HEAD): %s\n' "$target" "$source_revision"
+  if [[ -n $repo_root ]]; then
+    source_revision=$(git -C "$repo_root" rev-parse --short HEAD 2>/dev/null || printf 'unavailable')
+    printf 'Target: %s\nSource checkout revision (HEAD): %s\n' "$target" "$source_revision"
+  else
+    printf 'Target: %s\nDistribution: %s\n' "$target" "$dist_root"
+  fi
 
   if ! path_exists "$state_file"; then
     printf 'Installation: not managed by ess (state file missing)\n'
