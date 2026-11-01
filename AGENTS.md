@@ -55,3 +55,47 @@ repository's existing guidance and conventions.
   evidence in proportion to the work. Keep current state concise: confirmed
   status, blockers, next action, and pointers to durable records when useful.
   Do not create records or process artifacts without a need.
+
+## Project memory
+
+For meaningful development and when resuming project work, use the project's
+memory records to preserve intent, scope, decisions, progress, and evidence
+across sessions:
+
+- `VISION.md` is the authoritative project intent, requirements, and
+  boundaries. Treat it as immutable during ordinary development. A proposed
+  change requires explicit owner approval; never modify it silently. Consult
+  it before substantial design changes.
+- `ROADMAP.md` records the authorized milestone sequence, scope, and status.
+  Keep it consistent with `VISION.md` and actual progress.
+- `current.md` is a concise fresh-session summary of the active milestone,
+  progress, blockers, and next action. Read it when present and update it when
+  meaningful progress or blockers change. When establishing a new project,
+  create a concise `current.md` from the authorized requirements and plan.
+- `milestones/` preserves durable milestone results and verification evidence.
+  Distinguish planned, implemented, verified, and owner-accepted status; never
+  imply verification or owner acceptance that did not occur.
+- `decisions/` records significant architectural or engineering decisions,
+  rationale, and material trade-offs. Follow existing ADR conventions where
+  appropriate; do not record trivial implementation details or create empty
+  records.
+- `errors/` records significant failures when investigation, resolution, or
+  an unresolved issue will help future work. Avoid routine test output,
+  temporary debugging logs, and empty records.
+
+At session start or resumption, read `VISION.md`, `ROADMAP.md`, and
+`current.md` when present. Identify the next authorized incomplete milestone
+from the roadmap or the user's explicit task. Work only within that approved
+scope, preserve accepted decisions and project boundaries, and report missing
+essential requirements rather than inventing them. If a required record is
+absent, use established project conventions; do not silently replace or
+restructure existing records.
+
+During implementation, record significant decisions and substantial failures
+when their rationale or findings will help future work. At the end of
+meaningful milestone work, update the milestone record and roadmap with actual
+status and evidence, preserve unresolved issues, and update `current.md` with
+progress, blockers, and the next authorized action. Keep the records concise
+and scale detail to the task and active project level. These updates are part
+of normal development and do not depend on a handover request. Mark work
+owner-accepted only after explicit owner acceptance.

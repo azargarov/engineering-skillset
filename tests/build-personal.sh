@@ -16,7 +16,8 @@ presets=(prototype personal production)
 skills=(software-design implementation-review verification-qa project-handover)
 core_file=$repo_root/AGENTS.md
 core_bytes=$(wc -c < "$core_file")
-personal_v2_01_sha256=b1ea85616e9dd9931467187192f58df1e8b23dcf77c7a83b05cf373aeefee6f5
+# The shared Core Policy now includes the approved project-memory lifecycle.
+personal_core_sha256=ce9c379576a49ee8ebd71c79fea1382517f24b22f8140c797ba4a66e49371c93
 
 for preset in "${presets[@]}"; do
   case $preset in
@@ -90,8 +91,8 @@ for preset in "${presets[@]}"; do
 done
 
 personal_sha256=$(sha256sum "$repo_root/dist/personal/AGENTS.md" | cut -d' ' -f1)
-[[ $personal_sha256 == "$personal_v2_01_sha256" ]] || \
-  fail 'Personal policy changed from the V2-01 build output'
+[[ $personal_sha256 == "$personal_core_sha256" ]] || \
+  fail 'Personal policy changed unexpectedly from the approved Core Policy build'
 
 for skill in "${skills[@]}"; do
   [[ $skill == verification-qa || $skill == software-design ]] && continue

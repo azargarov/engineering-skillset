@@ -27,6 +27,14 @@ for index in "${!presets[@]}"; do
     fail "$preset AGENTS.md does not match its configured Core, level, and priorities"
   [[ $(grep -Fxc '# Engineering Skillset Core Policy' "$preset_dir/AGENTS.md") == 1 ]] || \
     fail "$preset Core Policy is missing or duplicated"
+  for requirement in \
+    '## Project memory' \
+    'VISION.md' 'ROADMAP.md' 'current.md' 'milestones/' 'decisions/' 'errors/' \
+    'explicit owner approval' 'next authorized incomplete milestone' \
+    'owner-accepted only after explicit owner acceptance'; do
+    grep -Fq "$requirement" "$preset_dir/AGENTS.md" || \
+      fail "$preset Core Policy is missing project-memory requirement: $requirement"
+  done
 
   actual_skill_count=$(find "$preset_dir/skills" -mindepth 2 -maxdepth 2 -type f -name SKILL.md | wc -l)
   [[ $actual_skill_count -eq ${#skills[@]} ]] || fail "$preset has an incomplete workflow Skill set"
@@ -43,6 +51,9 @@ for index in "${!presets[@]}"; do
 done
 
 for preset in prototype fast-development performance reliable; do
+  grep -Fq 'does not defer or replace required memory updates' \
+    "$repo_root/dist/$preset/skills/project-handover/SKILL.md" || \
+    fail "$preset/project-handover conflicts with Core Policy memory obligations"
   for skill in implementation-review project-handover; do
     cmp -s "$repo_root/.agents/skills/$skill/SKILL.md" \
       "$repo_root/dist/$preset/skills/$skill/SKILL.md" || \

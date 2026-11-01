@@ -5,6 +5,10 @@ description: Preserve project history, verified current state, and deferred work
 
 Prepare a concise, evidence-based handover when project continuity is requested or a meaningful session transition needs recording. Follow the user's authorized scope, active project instructions, level, priorities, and documentation conventions. Prefer existing records; do not create a new record structure without a need.
 
+The Core Policy's project-memory lifecycle applies during normal development,
+whether or not a handover is requested. This workflow supplements those
+obligations; it does not defer or replace required memory updates.
+
 Keep three information responsibilities distinct, whether the project uses one document or several:
 
 - **Development history** records the meaningful sequence of stages: decisions, changes, verification outcomes, failures, and unresolved issues. Add concise entries to the established history. Do not duplicate ordinary Git history or write activity transcripts.
