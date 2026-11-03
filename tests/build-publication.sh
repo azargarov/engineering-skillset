@@ -25,6 +25,9 @@ assert_no_stage_leftovers() {
 
 assert_preset_trees_match() {
   local preset
+  cmp -s "$repo_root/config/model-preferences.md.example" \
+    "$published_root/config/model-preferences.md.example" || \
+    fail 'published model preferences template does not match the source'
   for preset in prototype fast-development performance reliable; do
     diff -r -- "$repo_root/dist/$preset" "$published_root/$preset" >/dev/null || \
       fail "published output for '$preset' does not match the complete intended build"

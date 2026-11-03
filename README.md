@@ -36,13 +36,14 @@ preset's `AGENTS.md` and creates links for its four standard Skills under
 
 ```bash
 ess delegation on
-ess delegation status
 ess delegation off
 ```
 
 Enabling it adds the provider-independent delegation policy and the
 `opencode-delegation` Skill. OpenCode itself is optional; `ess status` reports
 whether it is available, and ESS works normally without it.
+Advisory provider-based model preferences can be added to the user's private
+configuration; see the [model preferences guide](docs/development/model-preferences.md).
 
 `make install-user` builds, validates, and stages a complete immutable release
 under `${XDG_DATA_HOME:-$HOME/.local/share}/engineering-skillset/`, then
@@ -104,8 +105,9 @@ Check the installation at any time:
 ess status /path/to/your/project
 ```
 
-`status` reports whether the policy digest and managed Skill links match the
-installation state.
+`status` is the single status and diagnostic command. It reports delegation
+state, OpenCode availability, managed Skill state, and whether the policy
+digest matches the installation state.
 
 ## Update an installation
 

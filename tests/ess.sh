@@ -142,8 +142,8 @@ for skill in software-design implementation-review verification-qa project-hando
 done
 [[ -f $current_target/.agents/skills/user-skill/SKILL.md ]] || fail 'delegation off removed unrelated user Skill'
 invoke delegation off "$current_target" >/dev/null
-invoke delegation status "$current_target" > "$test_dir/delegation-status"
-grep -Fq 'Delegation: off' "$test_dir/delegation-status" || fail 'delegation status omitted disabled state'
+invoke status "$current_target" > "$test_dir/delegation-status"
+grep -Fq 'Delegation: off' "$test_dir/delegation-status" || fail 'status omitted disabled delegation state'
 PATH=/usr/bin:/bin "$ess_script" status "$current_target" > "$test_dir/no-opencode-status" || fail 'status required OpenCode to be installed'
 grep -Fq 'OpenCode: not available' "$test_dir/no-opencode-status" || fail 'status did not report missing OpenCode'
 invoke install prototype "$current_target" >/dev/null
@@ -314,6 +314,7 @@ expect_failure 'list does not accept arguments' list extra
 expect_failure 'install requires PRESET' install
 expect_failure 'not built' install missing "$test_dir"
 expect_failure 'status accepts at most one PATH' status one two
+expect_failure 'delegation requires on or off' delegation status
 expect_failure 'target directory does not exist' install prototype "$test_dir/no-target"
 
 empty_checkout=$test_dir/empty-checkout

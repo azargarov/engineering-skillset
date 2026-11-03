@@ -17,13 +17,25 @@ delegation setting; v1 state remains readable. The CLI infers an old v0.3
 installation as enabled from its verified policy content, and treats a
 v0.2.1 policy without that section as disabled.
 
-The root `model-delegation.md` is an existing untracked, user-maintained local
-configuration example. It contains machine-specific executor/model
-preferences, not universal rules. It was left untouched and excluded from
-build/install artifacts. The portable guidance stays in
-`modules/optional/model-delegation.md`; invocation and model selection belong
-to `.agents/skills/opencode-delegation/SKILL.md`. The tracked development
-example documents the private preferences path and this separation.
+User model preferences remain private and are not included in policy builds.
+Portable rules live in `modules/optional/delegation-policy.md`; invocation and
+model selection belong to `.agents/skills/opencode-delegation/SKILL.md`. The
+configuration template and compatibility paths are documented in
+[`model-preferences.md`](model-preferences.md).
+
+### Status command follow-up
+
+Practical installation evaluation found that `ess delegation status` duplicated
+`ess status`. The CLI now uses `ess status` as the single diagnostic command;
+`ess delegation on|off` remains the opt-in control. This changes no installed
+project files or state format, so existing installations remain compatible.
+
+The follow-up passed `make check`, Bash syntax validation
+(`bash -n scripts/ess scripts/*.sh tests/*.sh`), and `git diff --check`. A
+temporary project accepted delegation on/off, and `ess status` reported the
+delegation state, OpenCode availability, and managed delegation Skill state.
+The removed `ess delegation status` action failed as expected. The CLI help
+lists only `ess delegation on|off`.
 
 ## Verification evidence
 

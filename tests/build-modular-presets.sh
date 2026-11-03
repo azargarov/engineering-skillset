@@ -36,7 +36,7 @@ for index in "${!presets[@]}"; do
       fail "$preset Core Policy is missing project-memory requirement: $requirement"
   done
   grep -Fq '# Model Delegation' "$preset_dir/AGENTS.md" && fail "$preset unexpectedly includes delegation policy"
-  args+=(--optional model-delegation)
+  args+=(--optional delegation-policy)
   "$repo_root/scripts/compose-policy.sh" "${args[@]}" > "$test_dir/expected-delegation-$preset.md"
   cmp -s "$test_dir/expected-delegation-$preset.md" "$preset_dir/delegation/AGENTS.md" || \
     fail "$preset delegation policy does not match its composed modules"
@@ -44,7 +44,30 @@ for index in "${!presets[@]}"; do
     fail "$preset delegation module is missing"
   grep -Fq 'Final QA checks the complete result against requirements' "$preset_dir/delegation/AGENTS.md" || \
     fail "$preset delegation QA requirements are missing"
+  for requirement in \
+    'model-preferences.md' \
+    'model-delegation.md' \
+    'If both files exist, use only' \
+    'preferred_models' \
+    'current output of' \
+    'List order expresses preference only within one' \
+    'suitable available model outside preferences may be' \
+    'Briefly report the selected provider/model identifier'; do
+    grep -Fq "$requirement" "$preset_dir/delegation/AGENTS.md" || \
+      fail "$preset delegation policy is missing model preference guidance: $requirement"
+  done
   [[ -s $preset_dir/delegation/skills/opencode-delegation/SKILL.md ]] || fail "$preset OpenCode Skill is missing"
+  for requirement in \
+    'preferred_models' \
+    'fall back to the deprecated' \
+    'If both exist, use only the new file; do not merge them.' \
+    'If neither exists,' \
+    'unavailable preferred model is available' \
+    'choose another available model when it is a better fit' \
+    'name the selected provider/model exactly'; do
+    grep -Fq "$requirement" "$preset_dir/delegation/skills/opencode-delegation/SKILL.md" || \
+      fail "$preset OpenCode Skill is missing model selection guidance: $requirement"
+  done
 
   actual_skill_count=$(find "$preset_dir/skills" -mindepth 2 -maxdepth 2 -type f -name SKILL.md | wc -l)
   [[ $actual_skill_count -eq ${#skills[@]} ]] || fail "$preset has an incomplete workflow Skill set"
@@ -60,6 +83,10 @@ for index in "${!presets[@]}"; do
   done
 done
 
+cmp -s "$repo_root/config/model-preferences.md.example" \
+  "$repo_root/dist/config/model-preferences.md.example" || \
+  fail 'published model preferences template is missing or differs from source'
+
 for preset in prototype fast-development performance reliable; do
   grep -Fq 'does not defer or replace required memory updates' \
     "$repo_root/dist/$preset/skills/project-handover/SKILL.md" || \
@@ -71,11 +98,11 @@ for preset in prototype fast-development performance reliable; do
   done
 done
 
-hashes_before=$(find "$repo_root/dist/prototype" "$repo_root/dist/fast-development" \
+hashes_before=$(find "$repo_root/dist/config" "$repo_root/dist/prototype" "$repo_root/dist/fast-development" \
   "$repo_root/dist/performance" "$repo_root/dist/reliable" -type f -print0 |
   sort -z | xargs -0 sha256sum)
 make -C "$repo_root" build >/dev/null
-hashes_after=$(find "$repo_root/dist/prototype" "$repo_root/dist/fast-development" \
+hashes_after=$(find "$repo_root/dist/config" "$repo_root/dist/prototype" "$repo_root/dist/fast-development" \
   "$repo_root/dist/performance" "$repo_root/dist/reliable" -type f -print0 |
   sort -z | xargs -0 sha256sum)
 [[ $hashes_after == "$hashes_before" ]] || fail 'repeated build changed one or more new preset artifacts'

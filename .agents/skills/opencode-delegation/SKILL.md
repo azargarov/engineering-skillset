@@ -15,23 +15,35 @@ and the final result.
 1. Check that OpenCode is installed with `command -v opencode`. If it is
    unavailable, continue directly or provide a precise handoff if the user
    authorized another executor.
-2. Run `opencode models` and choose from the configured models. Do not assume
-   a model, provider, endpoint, or credential that is not shown by the local
-   configuration.
-3. If present, consult the user's private preferences at
+2. Look for the user's private preferences at
+   `${XDG_CONFIG_HOME:-$HOME/.config}/engineering-skillset/model-preferences.md`.
+   If absent, fall back to the deprecated
    `${XDG_CONFIG_HOME:-$HOME/.config}/engineering-skillset/model-delegation.md`.
-   Treat this as advice only and do not expose private connection details in
+   If both exist, use only the new file; do not merge them. If neither exists,
+   use the existing selection behavior. Read any `preferred_models` provider
+   lists as advice. The file is Markdown; interpret the simple section directly
+   without requiring a parser. Do not expose private connection details in
    task context.
-4. Select a model using demonstrated capability, context needs, tool support,
-   expected cost, completion time, and the effort needed to verify and
-   integrate the result. Local models often suit focused functions, isolated
-   tests, documentation, simple fixes, and refactoring. Cloud models often
-   suit larger or multi-file implementation, complex debugging, and work that
-   needs substantial context or reasoning. These are preferences, not rules.
+3. Run `opencode models` before invocation. Match the resolved preferences
+   against the available provider/model identifiers exactly; never infer that
+   an unavailable preferred model is available.
+4. Prefer an available configured model when it is suitable for the task.
+   List order expresses preference within that provider only; provider order
+   does not set a global ranking. Consider task complexity, capability,
+   context needs, tool support, availability, expected total cost, completion
+   time, and verification/integration effort. Preferences are not an allowlist:
+   choose another available model when it is a better fit and briefly explain
+   why. If a preferred model is unavailable, skip it and consider other
+   available candidates; do not silently substitute it as if it were
+   available.
+5. When reporting the handoff/result, name the selected provider/model exactly
+   as listed by OpenCode and give a brief reason, including why it was outside
+   preferences when applicable. Do not imply a preferred model was used if it
+   was unavailable.
 
 ## Run a bounded task
 
-Use `opencode run --model <configured-model> --dir <project-path> "<task>"`
+Use `opencode run --model <provider/model> --dir <project-path> "<task>"`
 for a noninteractive task. Confirm available flags with `opencode run --help`
 when the installed version differs. Do not use `--auto` unless the user
 explicitly authorized automatic permission approval. Keep delegated work

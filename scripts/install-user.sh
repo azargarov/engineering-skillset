@@ -12,6 +12,9 @@ skills=(software-design implementation-review verification-qa project-handover)
 
 fail() { printf 'install-user: %s\n' "$*" >&2; exit 2; }
 [[ -d $dist_root && ! -L $dist_root ]] || fail "built distribution is missing: '$dist_root' (run make build)"
+[[ -d $dist_root/config && ! -L $dist_root/config && \
+  -f $dist_root/config/model-preferences.md.example && ! -L $dist_root/config/model-preferences.md.example && \
+  -r $dist_root/config/model-preferences.md.example ]] || fail 'model preferences template is missing or invalid'
 for preset in "${presets[@]}"; do
   dir=$dist_root/$preset
   [[ -d $dir && ! -L $dir && -f $dir/AGENTS.md && ! -L $dir/AGENTS.md && -r $dir/AGENTS.md && -d $dir/skills && ! -L $dir/skills ]] || fail "invalid preset distribution: '$preset'"
@@ -50,6 +53,8 @@ for preset in "${presets[@]}"; do
   cp -a -- "$dist_root/$preset" "$stage/$preset" || fail "cannot stage preset '$preset'"
   [[ -f $stage/$preset/AGENTS.md && -r $stage/$preset/AGENTS.md ]] || fail "staged preset is incomplete: '$preset'"
 done
+mkdir -p -- "$stage/config" || fail 'cannot create staged config directory'
+cp -- "$dist_root/config/model-preferences.md.example" "$stage/config/model-preferences.md.example" || fail 'cannot stage model preferences template'
 chmod -R a-w -- "$stage" || fail 'cannot make staged release read-only'
 mv -T -- "$stage" "$release" || fail 'cannot publish release directory'
 stage=''

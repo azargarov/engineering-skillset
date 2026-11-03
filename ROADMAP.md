@@ -54,8 +54,9 @@ framework or automation layer.
 ## M0.4 — Optional OpenCode delegation
 
 Authorized scope: make delegation explicitly opt-in per project through
-`ess delegation on|off|status`, reuse preset composition and the existing
-installer ownership checks, and add one OpenCode Skill. Ordinary preset
+`ess delegation on|off` with `ess status` as the diagnostic command, reuse
+preset composition and the existing installer ownership checks, and add one
+OpenCode Skill. Ordinary preset
 installations omit delegation. Preserve v0.2.1/v0.3 state compatibility and
 keep OpenCode optional. Do not add routing, adapters, or orchestration.
 
@@ -64,3 +65,25 @@ pending. Evidence and compatibility limitations are recorded in
 [`docs/development/m04-optional-opencode-delegation.md`](docs/development/m04-optional-opencode-delegation.md).
 Practical delegation evaluation beyond the bounded command smoke test is
 separate from M0.4 and is not a claimed outcome.
+
+Follow-up: the practical installation test found that `ess delegation status`
+duplicated `ess status`. The redundant subcommand was removed; state format and
+installed project files are unchanged. Regression verification is recorded in
+[`docs/development/m04-optional-opencode-delegation.md`](docs/development/m04-optional-opencode-delegation.md).
+
+## M0.5 — Provider-based model preferences
+
+Authorized scope: extend the private Markdown preferences with advisory
+provider/model lists; use responsibility-based filenames; publish a starter
+template; preserve fallback from the deprecated user config name; have the
+OpenCode Delegation Skill verify candidates against `opencode models`, choose
+by task suitability without global provider ordering or allowlist behavior,
+and report its selected model and reason. Preserve delegation toggles, preset
+QA requirements, and existing installs.
+
+Status: implemented and verified in the worktree; owner acceptance is pending.
+`make check` passed, including all four delegated preset builds, preference
+guidance, publication, user release installation, and CLI lifecycle checks.
+The check validates instructions and packaging; actual model choice remains
+agent judgment and is not an automated runtime selector. See
+[`docs/development/model-preferences.md`](docs/development/model-preferences.md).

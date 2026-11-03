@@ -76,6 +76,8 @@ build-staged:
 	for preset in $(PRESETS); do \
 	  $(MAKE) --no-print-directory build-one PRESET=$$preset BUILD_ROOT="$(BUILD_ROOT)"; \
 	done; \
+	mkdir -p "$(BUILD_ROOT)/config"; \
+	cp config/model-preferences.md.example "$(BUILD_ROOT)/config/model-preferences.md.example"; \
 	for preset in $(MODULAR_PRESETS); do \
 	  for skill in $(MODULAR_SKILLS); do \
 	    $(MAKE) --no-print-directory build-modular-skill SKILL_PRESET=$$preset SKILL_NAME=$$skill BUILD_ROOT="$(BUILD_ROOT)"; \
@@ -88,7 +90,7 @@ build-one:
 	mkdir -p "$(DIST_DIR)"
 	./scripts/compose-policy.sh --level $(PRESET_LEVEL) $(foreach priority,$(PRESET_PRIORITIES),--priority $(priority)) > "$(DIST_DIR)/AGENTS.md"
 	mkdir -p "$(DIST_DIR)/delegation/skills/opencode-delegation"
-	./scripts/compose-policy.sh --level $(PRESET_LEVEL) $(foreach priority,$(PRESET_PRIORITIES),--priority $(priority)) --optional model-delegation > "$(DIST_DIR)/delegation/AGENTS.md"
+	./scripts/compose-policy.sh --level $(PRESET_LEVEL) $(foreach priority,$(PRESET_PRIORITIES),--priority $(priority)) --optional delegation-policy > "$(DIST_DIR)/delegation/AGENTS.md"
 	cp .agents/skills/opencode-delegation/SKILL.md "$(DIST_DIR)/delegation/skills/opencode-delegation/SKILL.md"
 	set -eu; \
 	for skill in $(PRESET_SKILLS); do \

@@ -8,9 +8,20 @@ implementation, integration choices, and their own coding work. Implementation
 owners assemble delegated results, integrate, build, test, debug, and report.
 
 When considering delegation, read the user's configuration at
+`${XDG_CONFIG_HOME:-$HOME/.config}/engineering-skillset/model-preferences.md`.
+If it is absent, fall back to the deprecated
 `${XDG_CONFIG_HOME:-$HOME/.config}/engineering-skillset/model-delegation.md`.
-If it is absent, continue directly unless another delegation mechanism is
-explicitly authorized and available.
+If both files exist, use only `model-preferences.md`; do not merge them. If
+neither exists, continue with the existing delegation behavior. Treat
+`preferred_models` provider lists as advisory. Check candidates against the
+current output of `opencode models` before invocation; never assume an
+unavailable model exists. List order expresses preference only within one
+provider. Provider order does not establish global priority. Choose based on
+task suitability, capability, complexity, availability, expected cost, and
+verification effort. A suitable available model outside preferences may be
+selected when justified. Briefly report the selected provider/model identifier
+and reason. These preferences do not change project reliability requirements
+or engineering priorities.
 
 Delegate only bounded, independently verifiable tasks when expected savings in
 time, API cost, or resource use outweigh preparation, context transfer,

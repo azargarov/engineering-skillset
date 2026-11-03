@@ -14,11 +14,14 @@ mkdir -p -- "$home" "$data"
 fresh_checkout=$test_dir/fresh-checkout
 mkdir -p -- "$fresh_checkout"
 cp -a -- "$repo_root/Makefile" "$repo_root/AGENTS.md" "$repo_root/modules" \
-  "$repo_root/presets" "$repo_root/scripts" "$repo_root/.agents" "$fresh_checkout/"
+  "$repo_root/presets" "$repo_root/scripts" "$repo_root/.agents" "$repo_root/config" "$fresh_checkout/"
 HOME=$home XDG_DATA_HOME=$data ESS_BIN_DIR=$bin make -C "$fresh_checkout" install-user >/dev/null
 [[ -x $bin/ess && -L $data/engineering-skillset/current ]] || fail 'clean install did not publish CLI and current'
 data_root=$data/engineering-skillset
 active=$(readlink -- "$data_root/current")
+cmp -s "$repo_root/config/model-preferences.md.example" \
+  "$data_root/current/config/model-preferences.md.example" || \
+  fail 'installed release omitted the model preferences template'
 PATH=$bin:$PATH HOME=$home XDG_DATA_HOME=$data ess list > "$test_dir/list"
 cmp -s "$test_dir/list" <(printf 'fast-development\nperformance\nprototype\nreliable\n') || fail 'global list failed'
 

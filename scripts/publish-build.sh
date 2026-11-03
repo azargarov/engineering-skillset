@@ -33,10 +33,16 @@ for preset in "${presets[@]}"; do
   valid_id "$preset" || fail "invalid preset name '$preset'"
 done
 
-mapfile -t staged_presets < <(find "$staged_root" -mindepth 1 -maxdepth 1 -printf '%f\n' | LC_ALL=C sort)
-expected_presets=$(printf '%s\n' "${presets[@]}" | LC_ALL=C sort)
-actual_presets=$(printf '%s\n' "${staged_presets[@]}")
-[[ $actual_presets == "$expected_presets" ]] || fail 'staged preset directories do not match the requested build'
+mapfile -t staged_entries < <(find "$staged_root" -mindepth 1 -maxdepth 1 -printf '%f\n' | LC_ALL=C sort)
+expected_entries=$(printf '%s\n' "${presets[@]}" config | LC_ALL=C sort)
+actual_entries=$(printf '%s\n' "${staged_entries[@]}")
+[[ $actual_entries == "$expected_entries" ]] || fail 'staged entries do not match the requested build and config template'
+[[ -d $staged_root/config && ! -L $staged_root/config && \
+  -f $staged_root/config/model-preferences.md.example && ! -L $staged_root/config/model-preferences.md.example && \
+  -r $staged_root/config/model-preferences.md.example ]] || fail 'missing or invalid model preferences template'
+mapfile -t config_entries < <(find "$staged_root/config" -mindepth 1 -maxdepth 1 -printf '%f\n')
+[[ ${#config_entries[@]} == 1 && ${config_entries[0]} == model-preferences.md.example ]] || \
+  fail 'staged config directory contains unexpected files'
 
 for preset in "${presets[@]}"; do
   preset_dir=$staged_root/$preset
@@ -104,6 +110,8 @@ check_file() {
 }
 
 check_directory "$published_root"
+check_directory "$published_root/config"
+check_file "$published_root/config/model-preferences.md.example"
 for preset in "${presets[@]}"; do
   check_directory "$published_root/$preset"
   check_directory "$published_root/$preset/skills"

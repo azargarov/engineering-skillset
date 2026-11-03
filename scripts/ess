@@ -23,7 +23,7 @@ Usage:
   ess install PRESET [PATH] [--dry-run]
   ess status [PATH]
   ess uninstall [PATH]
-  ess delegation on|off|status
+  ess delegation on|off
 
 Install a built preset into an existing project directory. The default PATH
 is the current directory. Managed Skills use the active distribution.
@@ -668,9 +668,10 @@ case $command in
     status_target "$target_arg"
     ;;
   delegation)
-    (($# >= 1 && $# <= 2)) || fail 'delegation requires on, off, or status [PATH]'
+    (($# >= 1 && $# <= 2)) || fail 'delegation requires on or off [PATH]'
     action=$1
     shift
+    [[ $action == on || $action == off ]] || fail 'delegation requires on or off'
     target_arg=${1:-.}
     [[ -d $target_arg ]] || fail "target directory does not exist: '$target_arg'"
     target=$(CDPATH='' cd -- "$target_arg" && pwd -P) || fail "cannot resolve target directory: '$target_arg'"
@@ -679,8 +680,7 @@ case $command in
     read_state "$state_file" || fail 'state file is malformed; delegation unchanged'
     case $action in
       on|off) install_preset "$STATE_PRESET" "$target" 0 "$action" ;;
-      status) status_target "$target" ;;
-      *) fail 'delegation requires on, off, or status' ;;
+      *) fail 'delegation requires on or off' ;;
     esac
     ;;
   uninstall)
