@@ -1,6 +1,6 @@
 ---
 name: project-handover
-description: Preserve project history, verified current state, and deferred work when handing a project between Codex sessions.
+description: Preserve project history, verified current state, and deferred work when handing a project between agent sessions.
 ---
 
 Prepare a concise, evidence-based handover when project continuity is requested or a meaningful session transition needs recording. Follow the user's authorized scope, active project instructions, level, priorities, and documentation conventions. Prefer existing records; do not create a new record structure without a need.

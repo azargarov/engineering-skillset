@@ -8,10 +8,15 @@
 - **Delegation evidence:** The accepted Codex/OpenCode experiment integrated
   OpenAI and DeepSeek models successfully and passed its recorded checks. It
   establishes functional integration, not comparative effectiveness.
-- **Next phase:** v0.4 evaluation is planned but has not started. Topics are
-  engineering quality, Skill activation and effectiveness, comparison with
-  baseline Codex, delegation effectiveness and overhead, and local LLM context
-  windows. Scope and milestones are not approved or completed. See
+- **M0.6:** Skill hardening is implemented, deterministically verified, and
+  owner-accepted. Closeout `make check` and `git diff --check` passed (exit 0);
+  earlier `make build`, generated-output
+  inspection for all four presets, workflow inspection, and `git diff --check`
+  passed. Activation evidence does not establish Skill loading or compliance.
+  See [`docs/development/m06-skill-hardening.md`](docs/development/m06-skill-hardening.md).
+- **Next action:** Stop for operator review after M0.6 closeout. Do not begin
+  M0.7 until separately authorized. v0.3.0 remains the immutable comparison
+  baseline. Local LLM context-window investigation is deferred. See
   [`ROADMAP.md`](ROADMAP.md) and
   [`docs/development/evaluation-plan.md`](docs/development/evaluation-plan.md).
 

@@ -38,8 +38,11 @@ acceptance order.
    review (the author reviews their own work), or independent review (a
    separate reviewer). Self-checks and same-agent review are not independent
    assurance.
-7. Report the requested scope as **verified**, **partially verified**, or **not
-   established**, limiting the claim to properties supported by evidence.
+7. Report each important property as **verified**, **partially verified**, or
+   **unverified**, limiting the claim to properties supported by inspected
+   evidence. Preserve the property, method, result, and evidence reference;
+   include the exact command and exit code for executable checks. Group
+   properties only when the evidence directly supports each one.
    Distinguish:
    - **OBSERVED** — checks actually executed and artifacts directly inspected.
    - **INTERPRETED** — conclusions drawn from those observations.

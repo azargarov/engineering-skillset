@@ -56,9 +56,18 @@ assume separate OpenCode sessions can communicate with each other.
 
 ## Integrate and verify
 
-Collect the complete result and the commands run, their outcomes, and any
-remaining limitations. Review every change in the project context. Resolve
+Ask the delegate to return a concise result containing:
+
+- Completion status: completed, completed with no changes, failed, or blocked.
+- Changed files, or an explicit statement that none changed.
+- Commands executed, each with its exit code and outcome; state when no
+  commands ran.
+- Blockers and unresolved issues, or an explicit statement that none remain.
+
+Check the reported files, commands, outcomes, and claims against the available
+workspace and captured results before integration. Treat self-reported results
+as unverified until inspected. Review every change in project context, resolve
 integration issues, run the lead's established verification strategy, and
-compare the result with the authorized requirements. Delegated checks can
-provide evidence, but do not replace the lead's integration and final QA.
-Return incomplete or out-of-scope work to the lead without applying it.
+compare the result with authorized requirements. Delegated checks can inform
+the evidence record but do not replace coordinator verification of integration
+and final QA. Return incomplete or out-of-scope work without applying it.

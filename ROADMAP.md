@@ -105,17 +105,188 @@ Acceptance does not claim delegation is faster, cheaper, or more reliable than
 Codex working alone. Comparative effectiveness and other evaluation questions
 remain open in [`docs/development/evaluation-plan.md`](docs/development/evaluation-plan.md).
 
-## Planned v0.4 — Evaluation phase
+## Planned v0.4 — Skill hardening and evaluation
 
-The next planned phase is to evaluate the existing Skillset and optional
-delegation workflow. This phase has not started; the focus below records
-planned topics, not approved or completed milestones:
+The v0.3.0 release remains the immutable comparison baseline. Its completed
+milestones and acceptance records above are unchanged. The v0.4 work below is
+planned, not implemented or behaviorally validated. This roadmap update
+records the approved direction; implementation remains subject to operator
+review after this planning stage.
 
-- Engineering quality and comparison with baseline Codex.
-- Skill activation and effectiveness.
-- Delegation effectiveness, including its overhead.
-- Local LLM context-window investigation.
+The sequence separates deterministic contract and repository checks from
+behavioral evaluation. Complete the bounded hardening work first, freeze its
+artifacts, then run the controlled evaluation and interpret results without
+converting structural compliance into an effectiveness claim.
 
-The evaluation plan contains existing methods, evidence limits, and open
-decisions. Work remains subject to a separately defined and authorized scope;
-this roadmap entry does not authorize v0.4 implementation.
+### M0.6 — Skill hardening
+
+**Status:** Implemented, deterministically verified, and owner-accepted. No
+behavioral effectiveness claim is made. Evidence is recorded in
+[`docs/development/m06-skill-hardening.md`](docs/development/m06-skill-hardening.md).
+
+**Objective:** Make existing workflow requirements more enforceable, observable,
+and auditable while preserving the modular Skill architecture, presets, and
+proportional QA.
+
+**Deliverables:**
+
+- Strengthen `verification-qa` with a traceable evidence record for every
+  claimed verified property: property/requirement, method, result, and evidence
+  reference. For executed checks, retain the exact command, exit code, and
+  relevant inspected output or artifact references. Require the method to fit
+  the property, inspected results, and evidence that supports the claim;
+  otherwise report `partially verified` or `unverified`. Match verification
+  level to the property and risk, including integration-level evidence for
+  integration properties. Include a concise table of common invalid
+  conclusions. Avoid duplicating `implementation-review` responsibilities.
+- Add a bounded red–green workflow for reproducible defects: establish and
+  record the failing condition, apply the fix, rerun relevant verification,
+  and record resolution evidence. Permit equivalent reproduction methods when
+  automated tests are unsuitable. Do not require test-first development for
+  every change; retain existing presets and proportional QA without weakening
+  correctness requirements.
+- Review `project-handover` metadata for provider-neutral wording (for example,
+  “between agent sessions”) while retaining intentional Codex integration
+  details.
+- Strengthen optional `opencode-delegation` result reporting with a minimal
+  structured return contract: completion status, changed files, commands,
+  exit codes/outcomes, and blockers or unresolved issues. Support no-change,
+  failed, and blocked results. Treat delegate self-reports as untrusted until
+  the coordinator checks relevant results and independently verifies
+  integration. Do not add a delegation framework.
+- Consider moving lengthy examples or optional procedures to `references/`
+  only where this measurably reduces instruction overhead; keep mandatory
+  behavioral gates in the main Skill or Core Policy. Do not restructure the
+  repository broadly.
+- Run a small Skill observability experiment distinguishing selection,
+  evidence of instruction loading, and compliance. A declaration or request
+  alone proves neither loading nor compliance. Measure added instruction and
+  token overhead; do not make activation announcements mandatory across Skills
+  before evidence supports that choice.
+- Add a minimal GitHub Actions workflow running `make check` on pushes and pull
+  requests, limited to existing deterministic checks.
+
+**Dependencies:** Existing v0.3.0 Skills, composition rules, and deterministic
+`make check`; the evaluation plan's distinction between structural validity
+and behavioral effectiveness.
+
+**Deterministic acceptance criteria:** Relevant Skills and metadata express
+these contracts without conflict or unnecessary duplication; references, if
+introduced, preserve access to mandatory gates; the workflow runs only
+`make check` for push and pull-request events; applicable repository checks
+pass. Record exact checks and outcomes.
+
+**Behavioral criteria:** Not a claim of effectiveness or a release gate for
+Skill utility. Observability and overhead are experimental findings to be
+assessed in M0.8.
+
+**Exclusions:** New default Skills, presets, adapters, routing, universal
+activation announcements, mandatory TDD, and generic frameworks. A dedicated
+defect-diagnosis Skill remains a possible future experiment only if evidence
+shows incremental benefit.
+
+### M0.7 — v0.4 evaluation preparation
+
+**Objective:** Extend the existing [evaluation plan](docs/development/evaluation-plan.md)
+into a reproducible, bounded protocol before effectiveness runs begin.
+
+**Deliverables:**
+
+- Define matched conditions for Codex without ESS, Codex with ESS v0.3.0, and
+  Codex with hardened ESS. Selected external Skills, especially relevant
+  Superpowers workflows, may be optional comparison conditions; treat
+  Superpowers and similar projects as sources of candidate mechanisms and
+  experiments, not wholesale collections to import.
+- Preselect identical task snapshots, task text, and independent acceptance
+  checks; hold model/tool settings and other conditions constant where
+  practicable. Record unavoidable differences and confounders.
+- Specify traceable run evidence, controlled environment setup/teardown,
+  failure cleanup, and recording of deviations and inconclusive results.
+  Capture runtime, token usage, retries, and integration overhead where
+  measurable.
+- Assess whether repeated setup/teardown code across selected cases justifies
+  a small reusable fixture lifecycle wrapper. Introduce one only if that
+  repetition is demonstrated; do not build a generic evaluation framework.
+- Separate findings for (1) functional correctness and defect resolution,
+  (2) engineering quality and scope compliance, (3) verification quality,
+  (4) accuracy of verification claims, (5) Skill selection, activation, and
+  behavioral compliance, and (6) runtime and operational overhead. Preserve
+  observed evidence, interpretation, and unverified claims as distinct.
+  Critical failures remain visible and are never averaged away.
+- Predefine selected external mechanisms to investigate: systematic
+  debugging, verification-before-completion, focused red–green defect
+  workflows, behavioral counterexamples, progressive disclosure through
+  `references/`, and activation observability. Do not treat stars,
+  testimonials, or undocumented benchmark claims as effectiveness evidence.
+
+**Dependencies:** M0.6 artifacts frozen for comparison; existing evaluation
+cases, acceptance documents, and evaluation plan.
+
+**Acceptance criteria:** The protocol identifies frozen inputs, conditions,
+acceptance checks, evidence capture, environment lifecycle, analysis categories,
+and deviation handling before runs. It makes clear that increased activation
+announcements or documentation volume alone are not engineering outcomes.
+The initial run set and any external comparison Skills are selected before
+observing results.
+
+**Exclusions:** Generic benchmarking platform, broad model comparisons,
+weighted aggregate effectiveness scores, automated context-window management,
+and importing `brainstorming`, `writing-plans`, or general-purpose TDD Skills
+into default ESS composition.
+
+### M0.8 — Controlled v0.4 evaluation and decision
+
+**Objective:** Execute the prepared comparisons and make evidence-bounded
+recommendations about the hardened Skills and evaluation scope.
+
+**Deliverables:**
+
+- Run the preselected cases under the frozen conditions, preserving per-run
+  patches, commands/results, logs or artifacts needed to substantiate claims,
+  and measured operational overhead where available.
+- Evaluate all six M0.7 dimensions separately. Use independent acceptance
+  checks; conduct independent review where practical and identify self-review
+  accurately where it is not.
+- Record failures, setup problems, cleanup outcomes, deviations, mixed or
+  inconclusive results, and limitations. Do not exclude unfavorable runs
+  without a documented reason or infer broad effectiveness from a small sample.
+- Make explicit recommendations to retain, simplify, revise, defer, or
+  investigate further. Any dedicated defect-diagnosis Skill remains a future
+  experiment contingent on evidence of incremental benefit.
+
+**Dependencies:** M0.7 protocol accepted and M0.6 artifacts frozen.
+
+**Deterministic completion checks:** Each planned run has traceable inputs,
+conditions, acceptance results, command outcomes, and deviation/cleanup
+records; deterministic checks are run and reported; analysis distinguishes
+observations from interpretation and unverified claims. These checks establish
+that the evaluation was conducted and recorded, not that ESS is effective.
+
+**Behavioral effectiveness criteria:** Report outcome-by-outcome evidence and
+critical failures without an aggregate score. Any claim is bounded to the
+observed tasks, configurations, environment, and repeat count. No positive
+threshold or release conclusion is predeclared by this roadmap; unresolved or
+inconclusive evidence remains visible for operator decision.
+
+**Exclusions:** Implementation changes beyond approved hardening, broad claims
+of superiority, weighted aggregate scoring, and a generic benchmark suite.
+
+### External Skills and deferred questions
+
+Superpowers (`obra/superpowers`) and similar agent-skill projects are candidate
+sources for selective mechanisms and optional experimental comparison. Do not
+adopt whole Skill collections or add default `brainstorming`,
+`writing-plans`, or general-purpose TDD Skills. Keep a dedicated
+defect-diagnosis Skill as a possible later experiment, not current scope.
+External popularity or testimonials do not establish effectiveness.
+
+The evaluation plan remains authoritative for detailed methods and unresolved
+decisions. Still open before execution: exact task snapshots and first case
+set; practical availability of independent reviewers; which external Skills
+are relevant and comparable under controlled settings; which runtime exposes
+sufficient Skill-load evidence; whether setup repetition warrants the fixture
+wrapper; and what evidence the owner will require for any release or
+composition decision. The previously listed local LLM context-window
+investigation is deferred and remains separate from this bounded v0.4 scope.
+These questions do not block this roadmap update and must not be filled with
+invented outcomes.
