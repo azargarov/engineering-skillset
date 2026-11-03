@@ -1,198 +1,184 @@
-# Engineering Skillset
+# Engineering Skillset (ESS)
 
-Engineering Skillset provides a Core Policy and workflow Skills for AI coding
-agents, with four presets for choosing the level of engineering process that
-fits a task. The generated project `AGENTS.md` is self-contained. Workflow
-Skills link to a local user installation that can be updated independently of
-the source checkout.
+**Engineering Skillset (ESS) is a lightweight tool for configuring, installing,
+and switching between sets of engineering Skills and policies for AI coding
+agents.** It is currently Codex-first, with optional OpenCode delegation.
 
-The project is licensed under the Apache License, Version 2.0. See
-[`LICENSE`](LICENSE).
+Different projects need different engineering practices. A quick prototype
+and a reliability-focused project should not necessarily use identical
+workflows. Maintaining agent instructions and Skills by hand across projects
+is inconvenient. ESS provides reusable configurations that you can install
+and switch as project requirements evolve.
 
-## Requirements
+## Quick start
 
-The supported environment is GNU/Linux. Building and installing require Bash,
-GNU Make, and common GNU/Linux command-line tools, including coreutils,
-findutils, grep, awk, and diffutils (`cmp`). Keep these commands on `PATH`.
-Use Git to update the central checkout. Other platforms have not been
-qualified.
+ESS currently supports GNU/Linux and requires Bash, GNU Make, and Git, along
+with common GNU command-line tools.
 
-## Build and install
-
-From a fresh checkout, install the CLI and built presets for your user. The
-project directory must already exist:
+From a checkout of this repository:
 
 ```bash
 make install-user
 export PATH="$HOME/.local/bin:$PATH"
 ess list
-ess install fast-development /path/to/your/project
+ess install prototype /path/to/your/project
 ess status /path/to/your/project
 ```
 
-Omit the project path to install into the current directory. `ess` copies the
-preset's `AGENTS.md` and creates links for its four standard Skills under
-`.agents/skills/`. Optional OpenCode delegation can be enabled per project:
-
-```bash
-ess delegation on
-ess delegation off
-```
-
-Enabling it adds the provider-independent delegation policy and the
-`opencode-delegation` Skill. OpenCode itself is optional; `ess status` reports
-whether it is available, and ESS works normally without it.
-`make install-user` also initializes advisory model preferences in
-`${XDG_CONFIG_HOME:-$HOME/.config}/engineering-skillset/model-preferences.md`.
-Later installations preserve that file. If only the deprecated
-`model-delegation.md` exists, it is preserved and the new file is not created.
-Edit the file to customize preferences; see the
-[model preferences guide](docs/development/model-preferences.md).
-
-`make install-user` builds, validates, and stages a complete immutable release
-under `${XDG_DATA_HOME:-$HOME/.local/share}/engineering-skillset/`, then
-atomically switches its `current` link. The CLI is installed at
-`~/.local/bin/ess`; add that directory to `PATH` yourself if needed. It does
-not edit shell startup files. An unrelated existing `ess` file is preserved
-and causes installation to stop.
-
-On a fresh project install, interruption before the ownership state is written can
-leave paths that `ess` will not claim or remove. Do not remove them based on
-appearance alone. If you know the paths were absent before installation, use
-the [safe manual recovery procedure](docs/development/installation-metadata.md#recovering-an-interrupted-first-install).
-If their prior ownership is uncertain, preserve them and stop for review.
-
-## Choose a preset
-
-| Preset | Intended use |
-|---|---|
-| `prototype` | Validate a hypothesis quickly; focus on essential logic and the happy path. |
-| `fast-development` | Build maintainable software quickly with simple design and focused checks. |
-| `performance` | Meet measurable performance goals using profiling and workload-based checks. |
-| `reliable` | Prioritize clear contracts, failure behavior, and risk-driven verification. |
-
-The older `personal` and `production` presets are retired. If an existing
-installation uses either one, uninstall it from the same central checkout
-before moving or removing that checkout.
-
-Switch presets by installing another one into the same project:
+The target project directory must already exist. Omit the path to install in
+the current directory. To switch later, install another preset:
 
 ```bash
 ess install reliable /path/to/your/project
 ```
 
-The switch applies to subsequent work. It does not authorize retroactive
-refactoring or weaken existing project requirements.
+ESS installs the project's `AGENTS.md` policy and links its Skills. The policy
+is a copy; Skills link to the active user installation. See [installation
+details](#installation-and-updates) for updates and uninstall behavior.
 
-## Work with an AI coding agent
+## Presets
 
-After installation, work in the project with your coding agent. The generated
-`AGENTS.md` provides persistent project guidance. Invoke a workflow Skill by
-name when useful, for example:
+Choose the engineering approach that fits the project or current work:
 
-```text
-$software-design
+| Preset | Focus |
+|---|---|
+| `prototype` | Test a key assumption with the smallest adequate implementation and focused checks. |
+| `fast-development` | Build useful, maintainable software quickly with simple design and checks for important behavior. |
+| `performance` | Meet measurable performance goals through profiling, workload-based benchmarks, and resource checks. |
+| `reliable` | Make correctness and failure behavior predictable with risk-based verification. |
 
-Review the architecture of this API and propose the smallest change needed to
-support idempotent job submission. Do not edit files yet.
-```
+Preset definitions are maintained in [`modules/levels/`](modules/levels/).
+Switching presets guides subsequent agent work; it does not authorize
+retroactive changes or weaken existing project requirements.
 
-The standard Skills are `software-design`, `implementation-review`,
-`verification-qa`, and `project-handover`. When enabled, the optional
-`opencode-delegation` Skill describes bounded noninteractive delegation using
-the models already configured in OpenCode. Agents may use relevant Skills
-contextually, but automatic activation is not guaranteed.
+## How ESS works
 
-Check the installation at any time:
+1. Choose a preset for the project.
+2. ESS composes its policy from the shared Core Policy, the selected preset,
+   and configured shared or optional policy modules.
+3. ESS installs the generated policy and links the preset's workflow Skills
+   into the project.
+4. The coding agent follows the installed instructions and can use relevant
+   Skills during its work.
+5. Install another preset when the project's needs change.
+
+ESS keeps policies and Skills modular so shared guidance can be maintained
+once, preset-specific guidance can vary, and optional behavior can stay out of
+projects that do not need it. A deterministic build generates the distribution
+from Markdown sources and preset definitions. The `ess` CLI installs built
+artifacts; it does not compile source modules or run an agent.
+
+Each preset includes the `software-design`, `implementation-review`,
+`verification-qa`, and `project-handover` Skills. Skill names stay the same
+across presets while relevant guidance varies. The generated project
+`AGENTS.md` is self-contained; linked Skills come from the active ESS user
+installation.
+
+## CLI commands
+
+Run `ess --help` for usage. The supported commands are:
 
 ```bash
-ess status /path/to/your/project
+ess list
+ess install prototype
+ess install reliable /path/to/your/project
+ess status
+ess delegation on
+ess delegation off
+ess uninstall
 ```
 
-`status` is the single status and diagnostic command. It reports delegation
-state, OpenCode availability, managed Skill state, and whether the policy
-digest matches the installation state.
+Project paths are optional for `install`, `status`, and `uninstall`; they
+default to the current directory. `install` also accepts `--dry-run`.
+`status` is the single diagnostic command and reports managed policy and Skill
+state, delegation state, and OpenCode availability.
 
-## Update an installation
+## Optional OpenCode delegation
 
-Update the central checkout and rebuild its artifacts:
+Delegation is opt-in per project. Enable it with `ess delegation on` and turn
+it off with `ess delegation off`. When enabled, ESS installs an additional
+delegation policy and the `opencode-delegation` Skill. OpenCode is optional;
+normal preset installations work without it.
+
+The Skill describes bounded delegation to an OpenCode session using providers
+and models already configured there. A private model-preferences file can list
+advisory models by provider. Preferences are not an automated selector: the
+agent checks availability and suitability, may choose another model, and
+reports its choice. See the [model preferences guide](docs/development/model-preferences.md)
+and [delegation implementation and evidence](docs/development/m04-optional-opencode-delegation.md).
+
+## Architecture and documentation
+
+ESS has a small set of Markdown policy modules, four declarative presets,
+reusable workflow Skill sources, a deterministic Make-based distribution
+build, and a CLI that installs generated files into user projects. The shared
+Core Policy applies to every preset; optional modules, such as delegation, are
+included only when enabled. This keeps common guarantees consistent while
+letting projects select only the guidance they need.
+
+For detailed design and behavior, see:
+
+- [Project vision and boundaries](VISION.md)
+- [Implemented architecture](docs/architecture/v0.2-architecture.md)
+- [Module composition design proposal](docs/architecture/module-composition.md)
+- [Module and Skill contracts](docs/architecture/module-contract.md) and [Skill contract](docs/architecture/skill-contract.md)
+- [Roadmap and release status](ROADMAP.md)
+- [Installation ownership and recovery](docs/development/installation-metadata.md)
+- [Evaluation plan](docs/development/evaluation-plan.md)
+
+## Project status
+
+**Current stable release: v0.3.0.** Its verified capabilities include four
+preset builds, published distribution and per-user installation, project
+installation and switching, managed policy and Skill ownership checks,
+optional per-project OpenCode delegation, and advisory model-preferences
+configuration. The v0.3.0 delegation experiment demonstrated functional
+integration of Codex, OpenCode, OpenAI, and DeepSeek: delegated components
+were completed and integrated, and their checks passed. This is functional
+evidence; comparative effectiveness has not been established.
+
+The v0.3.0 release is implemented, verified, and accepted. Delegation remains
+experimental as a workflow whose comparative effectiveness is unproven. ESS
+has not demonstrated improvements in development speed, code quality, cost,
+or reliability over baseline Codex.
+
+The **planned v0.4 phase** is evaluation, not implementation of new product
+capabilities. It is expected to examine engineering quality, Skill activation
+and effectiveness, comparison with baseline Codex, delegation effectiveness
+and overhead, and local LLM context windows. This phase has not started; its
+scope and milestones are not recorded as completed or approved. See the
+[evaluation plan](docs/development/evaluation-plan.md) for existing protocol
+and open questions.
+
+## Installation and updates
+
+`make install-user` builds and installs an immutable release under
+`${XDG_DATA_HOME:-$HOME/.local/share}/engineering-skillset/` and installs
+`ess` at `~/.local/bin/ess`. Add that directory to `PATH` yourself; the
+installer does not edit shell startup files. An unrelated existing `ess` file
+is preserved and causes installation to stop.
+
+Update the central checkout and install its newly built distribution:
 
 ```bash
 git -C /path/to/engineering-skillset pull
 make -C /path/to/engineering-skillset install-user
 ```
 
-The command stages a new immutable release and atomically selects it. Existing
-project Skill links use the stable `current` path and see the active release
-without being rewritten. Previous releases are retained. Future updates still
-require a source checkout to build from.
-The project `AGENTS.md` is a copy, so reinstall the selected preset to refresh
-it:
+Linked Skills follow the active release. Since project `AGENTS.md` is copied,
+reinstall the selected preset to refresh it. ESS does not fetch Git updates or
+automatically clean up prior releases.
+
+Remove ESS-managed project files with:
 
 ```bash
-ess install fast-development /path/to/your/project
+ess uninstall
 ```
 
-`ess` refuses to replace a project policy or Skill link that no longer matches
-its recorded ownership state. Review and resolve such changes before
-reinstalling. Git updates are performed explicitly by the user; `ess` does not
-fetch or update the checkout.
+Uninstall preserves unrelated project content and checks the recorded
+ownership state before removing managed files. For interrupted installs and
+other limitations, see [installation metadata and recovery](docs/development/installation-metadata.md).
 
-## Uninstall
+## License
 
-Remove the managed policy and Skill links while preserving unrelated project
-content:
-
-```bash
-ess uninstall /path/to/your/project
-```
-
-Uninstall requires a valid ownership state. It refuses if the managed policy or
-a present managed Skill link has been modified or replaced. Missing managed
-files are treated as already removed, so an interrupted uninstall can be
-retried. If the ownership state is absent or malformed, `ess` will not guess
-which files belong to it. Empty `.agents` directories are left in place because
-their ownership is not recorded. Repeating uninstall after a successful
-uninstall is safe.
-
-## Project Memory Lifecycle
-
-The Core Policy asks agents to preserve project intent, decisions, progress,
-verification evidence, and unresolved work. For meaningful development, use
-the project's `VISION.md`, `ROADMAP.md`, and `current.md` when present; record
-milestone results, significant decisions, and important failures in the
-project's established locations. Keep current state concise and truthful.
-The `project-handover` Skill helps prepare that record when work is handed off.
-
-## Symlinks and limitations
-
-The generated `AGENTS.md` is portable. Skill links point through the installed
-distribution's stable `current` path. The source checkout may be moved or
-removed after user installation. Previous immutable releases are retained;
-there is no automatic cleanup.
-
-The v0.2.0 checkout-based installation is not automatically migrated. Verify
-it is healthy, uninstall it using the original v0.2.0 checkout, then install
-the selected preset with the global CLI. If the old installation is damaged
-or managed files were modified, stop for manual review. Uninstall removes the
-managed policy and Skill links while preserving unrelated project files.
-
-Installation and uninstall perform several filesystem operations and are not
-atomic as a set. Concurrent changes to project files during those operations
-have not been qualified. Current evaluations do not establish a general
-quality or productivity advantage over baseline coding agents.
-
-## Development checks
-
-Run the build and applicable release checks from the repository root:
-
-```bash
-make build
-make check
-bash -n scripts/ess scripts/*.sh tests/*.sh
-```
-
-The product sources and maintained verification scripts are in `modules/`,
-`presets/`, `scripts/`, and `tests/`. See [`ROADMAP.md`](ROADMAP.md) for
-project status and [`docs/architecture/`](docs/architecture/) for design
-records.
+Apache License 2.0. See [`LICENSE`](LICENSE).

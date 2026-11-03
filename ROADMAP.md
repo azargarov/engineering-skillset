@@ -95,6 +95,8 @@ windows remain an investigation backlog item; see the evaluation plan. See
 
 ## v0.3.0 release closeout
 
+Current stable release: **v0.3.0**.
+
 Owner acceptance: the current ESS v0.3 implementation and release scope are
 accepted. The closeout commit and `v0.3.0` tag record this acceptance. The
 release includes four presets, published distribution and user installation,
@@ -102,3 +104,18 @@ optional OpenCode delegation, and advisory model-preferences configuration.
 Acceptance does not claim delegation is faster, cheaper, or more reliable than
 Codex working alone. Comparative effectiveness and other evaluation questions
 remain open in [`docs/development/evaluation-plan.md`](docs/development/evaluation-plan.md).
+
+## Planned v0.4 — Evaluation phase
+
+The next planned phase is to evaluate the existing Skillset and optional
+delegation workflow. This phase has not started; the focus below records
+planned topics, not approved or completed milestones:
+
+- Engineering quality and comparison with baseline Codex.
+- Skill activation and effectiveness.
+- Delegation effectiveness, including its overhead.
+- Local LLM context-window investigation.
+
+The evaluation plan contains existing methods, evidence limits, and open
+decisions. Work remains subject to a separately defined and authorized scope;
+this roadmap entry does not authorize v0.4 implementation.

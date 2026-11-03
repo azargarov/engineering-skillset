@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.0 — Accepted release
+## v0.3.0 — Current stable release
 
 - Added optional, skill-based OpenCode delegation with per-project opt-in.
 - Added advisory provider/model preferences and initialized the private

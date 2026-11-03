@@ -1,35 +1,20 @@
 # Current State
 
-- **Project:** Engineering Skillset. The v0.3.0 implementation and release
-  scope are owner-accepted; v0.2.1 remains the compatibility baseline.
-- **Release:** v0.3.0 closeout covers four presets, published distribution and
-  user installation, optional OpenCode delegation, and advisory preferences.
-- **Behavior:** Four normal preset builds omit delegation. `ess delegation
-  on|off` controls the setting through existing installer ownership and digest
-  checks; `ess status` is the single diagnostic command. Delegation policy is
-  `modules/optional/delegation-policy.md`; provider preferences use
-  `model-preferences.md` with deprecated `model-delegation.md` fallback. The
-  user installer initializes preferences from the installed template, preserves
-  existing new or legacy configuration, and reports the selected action. State
-  v2 remains compatible with v0.2.1/v0.3 inference.
-- **Evidence:** `make build`, `make check`, Bash syntax validation,
-  `git diff --check`, and a bounded local OpenCode run passed. The redundant
-  `delegation status` command was removed after practical testing; follow-up
-  `make check`, syntax, diff, CLI help, and direct command checks passed.
-  M0.5 `make check` passed with preference-guidance assertions for all four
-  presets. Follow-up user-install initialization checks and `make check` passed;
-  `git diff --check` passed. The template is published and installed with the
-  user release; no runtime selector or config parser was added. The accepted
-  HTTP API experiment used `deepseek/deepseek-flash` for store and
-  `openai/gpt-6-luna` for HTTP handler; Codex reviewed and integrated it. Both
-  delegations, final tests, race detector, vet, build, and HTTP smoke checks
-  passed. This is functional evidence only, not comparative effectiveness.
-  See [`docs/development/model-preferences.md`](docs/development/model-preferences.md)
-  and [`docs/development/m04-optional-opencode-delegation.md`](docs/development/m04-optional-opencode-delegation.md).
+- **Release:** v0.3.0 is the current stable release; its implementation and
+  scope are owner-accepted. The v0.2.1 compatibility baseline is preserved.
+- **Capabilities:** Four presets, published distribution and user
+  installation, project install/switch/status/uninstall, optional per-project
+  OpenCode delegation, and advisory provider/model preferences are verified.
+- **Delegation evidence:** The accepted Codex/OpenCode experiment integrated
+  OpenAI and DeepSeek models successfully and passed its recorded checks. It
+  establishes functional integration, not comparative effectiveness.
+- **Next phase:** v0.4 evaluation is planned but has not started. Topics are
+  engineering quality, Skill activation and effectiveness, comparison with
+  baseline Codex, delegation effectiveness and overhead, and local LLM context
+  windows. Scope and milestones are not approved or completed. See
+  [`ROADMAP.md`](ROADMAP.md) and
+  [`docs/development/evaluation-plan.md`](docs/development/evaluation-plan.md).
 
-## Next action
-
-The v0.3.0 closeout records and tags the accepted release. Context-window
-discovery and other evaluation questions remain deferred in the evaluation
-plan. Model selection is agent judgment; checks verify guidance,
-compatibility paths, and packaging, not model quality or an automated selector.
+No evidence establishes improvements in development speed, code quality,
+cost, or reliability over baseline Codex. Do not begin v0.4 implementation
+without a separately defined and authorized scope.
