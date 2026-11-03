@@ -73,7 +73,7 @@ mkdir "$current_target"
 )
 assert_policy_matches prototype "$current_target"
 assert_skill_links prototype "$current_target"
-[[ $(sed -n '1p' "$current_target/$state_name") == engineering-skillset-state-v1 ]] || \
+[[ $(sed -n '1p' "$current_target/$state_name") == engineering-skillset-state-v2 ]] || \
   fail 'state schema version is incorrect'
 grep -Fxq 'preset=prototype' "$current_target/$state_name" || fail 'state preset is incorrect'
 installed_sha=$(sha256sum "$current_target/AGENTS.md" | cut -c1-64)
@@ -85,6 +85,80 @@ invoke status "$current_target" > "$test_dir/healthy-status" || fail 'healthy st
 grep -Fq 'Source checkout revision (HEAD):' "$test_dir/healthy-status" || \
   fail 'source revision missing from status'
 grep -Fq 'Status: healthy' "$test_dir/healthy-status" || fail 'healthy status was not reported'
+
+# v0.3 state/policy is readable and upgrades without losing its enabled policy.
+legacy_v03=$test_dir/legacy-v03
+mkdir -p "$legacy_v03/.agents/skills"
+cp "$repo_root/dist/prototype/delegation/AGENTS.md" "$legacy_v03/AGENTS.md"
+for skill in software-design implementation-review verification-qa project-handover; do
+  ln -s "$repo_root/dist/prototype/skills/$skill" "$legacy_v03/.agents/skills/$skill"
+done
+legacy_digest=$(sha256sum "$legacy_v03/AGENTS.md" | cut -c1-64)
+printf 'engineering-skillset-state-v1\npreset=prototype\npolicy_sha256=%s\nskills=implementation-review,project-handover,software-design,verification-qa\n' \
+  "$legacy_digest" > "$legacy_v03/$state_name"
+invoke status "$legacy_v03" > "$test_dir/legacy-status" || fail 'v0.3 installation status was not healthy'
+grep -Fq 'Delegation: on' "$test_dir/legacy-status" || fail 'v0.3 delegation policy was not inferred'
+grep -Fq 'Delegation Skill: not installed' "$test_dir/legacy-status" || fail 'legacy status misreported delegation Skill'
+invoke install prototype "$legacy_v03" >/dev/null
+grep -Fxq 'engineering-skillset-state-v2' "$legacy_v03/$state_name" || fail 'v0.3 state was not upgraded'
+grep -Fxq 'delegation=on' "$legacy_v03/$state_name" || fail 'v0.3 upgrade did not preserve delegation'
+[[ -L $legacy_v03/.agents/skills/opencode-delegation ]] || fail 'v0.3 upgrade did not install delegation Skill'
+
+# v0.2.1 state without the policy section upgrades with delegation disabled.
+legacy_v021=$test_dir/legacy-v021
+mkdir -p "$legacy_v021/.agents/skills"
+cp "$repo_root/dist/reliable/AGENTS.md" "$legacy_v021/AGENTS.md"
+for skill in software-design implementation-review verification-qa project-handover; do
+  ln -s "$repo_root/dist/reliable/skills/$skill" "$legacy_v021/.agents/skills/$skill"
+done
+legacy_digest=$(sha256sum "$legacy_v021/AGENTS.md" | cut -c1-64)
+printf 'engineering-skillset-state-v1\npreset=reliable\npolicy_sha256=%s\nskills=implementation-review,project-handover,software-design,verification-qa\n' \
+  "$legacy_digest" > "$legacy_v021/$state_name"
+invoke install reliable "$legacy_v021" >/dev/null
+grep -Fxq 'delegation=off' "$legacy_v021/$state_name" || fail 'v0.2.1 upgrade unexpectedly enabled delegation'
+[[ ! -e $legacy_v021/.agents/skills/opencode-delegation && ! -L $legacy_v021/.agents/skills/opencode-delegation ]] || fail 'v0.2.1 upgrade installed delegation Skill'
+
+# Delegation toggles policy and one managed Skill while preserving the preset.
+mkdir -p "$current_target/.agents/skills/user-skill"
+printf 'user skill data\n' > "$current_target/.agents/skills/user-skill/SKILL.md"
+invoke delegation on "$current_target" >/dev/null
+cmp -s "$repo_root/dist/prototype/delegation/AGENTS.md" "$current_target/AGENTS.md" || fail 'delegation policy was not installed'
+[[ -L $current_target/.agents/skills/opencode-delegation && \
+  $(readlink -- "$current_target/.agents/skills/opencode-delegation") == "$repo_root/dist/prototype/delegation/skills/opencode-delegation" ]] || \
+  fail 'delegation Skill link was not installed through the managed mechanism'
+grep -Fxq 'preset=prototype' "$current_target/$state_name" || fail 'delegation on changed the preset'
+grep -Fxq 'delegation=on' "$current_target/$state_name" || fail 'delegation enabled state was not recorded'
+invoke delegation on "$current_target" >/dev/null
+invoke install reliable "$current_target" >/dev/null
+grep -Fxq 'delegation=on' "$current_target/$state_name" || fail 'preset switch did not preserve delegation'
+[[ -L $current_target/.agents/skills/opencode-delegation ]] || fail 'preset switch removed delegation Skill'
+invoke delegation off "$current_target" >/dev/null
+cmp -s "$repo_root/dist/reliable/AGENTS.md" "$current_target/AGENTS.md" || fail 'delegation policy remained after disabling'
+[[ ! -e $current_target/.agents/skills/opencode-delegation && ! -L $current_target/.agents/skills/opencode-delegation ]] || fail 'delegation Skill link remained after disabling'
+grep -Fxq 'preset=reliable' "$current_target/$state_name" || fail 'delegation off changed the preset'
+grep -Fxq 'delegation=off' "$current_target/$state_name" || fail 'delegation disabled state was not recorded'
+for skill in software-design implementation-review verification-qa project-handover; do
+  [[ -L $current_target/.agents/skills/$skill ]] || fail "delegation off removed standard Skill $skill"
+done
+[[ -f $current_target/.agents/skills/user-skill/SKILL.md ]] || fail 'delegation off removed unrelated user Skill'
+invoke delegation off "$current_target" >/dev/null
+invoke delegation status "$current_target" > "$test_dir/delegation-status"
+grep -Fq 'Delegation: off' "$test_dir/delegation-status" || fail 'delegation status omitted disabled state'
+PATH=/usr/bin:/bin "$ess_script" status "$current_target" > "$test_dir/no-opencode-status" || fail 'status required OpenCode to be installed'
+grep -Fq 'OpenCode: not available' "$test_dir/no-opencode-status" || fail 'status did not report missing OpenCode'
+invoke install prototype "$current_target" >/dev/null
+
+delegated_uninstall=$test_dir/delegated-uninstall-project
+mkdir "$delegated_uninstall"
+invoke install prototype "$delegated_uninstall" >/dev/null
+invoke delegation on "$delegated_uninstall" >/dev/null
+invoke status "$delegated_uninstall" > "$test_dir/delegated-installed-status" || fail 'status failed with delegation enabled'
+grep -Fq 'Delegation: on' "$test_dir/delegated-installed-status" || fail 'status omitted enabled delegation'
+grep -Fq 'Delegation Skill: installed' "$test_dir/delegated-installed-status" || fail 'status omitted installed delegation Skill'
+invoke uninstall "$delegated_uninstall" >/dev/null
+[[ ! -e $delegated_uninstall/.engineering-skillset-state && \
+  ! -e $delegated_uninstall/.agents/skills/opencode-delegation && \
+  ! -e $delegated_uninstall/.agents/skills/software-design ]] || fail 'uninstall left delegation or standard managed paths'
 
 # Explicit paths with spaces and the other built presets.
 spaced_target="$test_dir/project with spaces"
@@ -374,6 +448,9 @@ modified_uninstall_policy=$test_dir/modified-uninstall-policy
 mkdir "$modified_uninstall_policy"
 invoke install prototype "$modified_uninstall_policy" >/dev/null
 printf '\nuser edit\n' >> "$modified_uninstall_policy/AGENTS.md"
+expect_failure 'managed AGENTS.md was modified' delegation on "$modified_uninstall_policy"
+[[ ! -e $modified_uninstall_policy/.agents/skills/opencode-delegation && \
+  ! -L $modified_uninstall_policy/.agents/skills/opencode-delegation ]] || fail 'delegation toggle bypassed modified policy protection'
 edited_policy_sha=$(sha256sum "$modified_uninstall_policy/AGENTS.md")
 saved_state_sha=$(sha256sum "$modified_uninstall_policy/$state_name")
 expect_failure 'managed AGENTS.md was modified' uninstall "$modified_uninstall_policy"
@@ -434,7 +511,7 @@ malformed_uninstall=$test_dir/malformed-uninstall-project
 mkdir "$malformed_uninstall"
 printf 'owner policy\n' > "$malformed_uninstall/AGENTS.md"
 printf 'invalid state\n' > "$malformed_uninstall/$state_name"
-expect_failure 'state file must contain exactly four lines' uninstall "$malformed_uninstall"
+expect_failure 'state file must contain exactly four or five lines' uninstall "$malformed_uninstall"
 [[ $(cat "$malformed_uninstall/AGENTS.md") == 'owner policy' && \
   $(cat "$malformed_uninstall/$state_name") == 'invalid state' ]] || \
   fail 'uninstall changed a malformed installation'

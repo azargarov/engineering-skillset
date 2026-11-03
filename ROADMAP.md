@@ -50,3 +50,17 @@ of existing QA/Skills; the existing `make check` suite provides system-level
 regression evidence for CLI, install, and publication behavior. Checks remain
 proportional to this documentation-and-composition change and add no test
 framework or automation layer.
+
+## M0.4 — Optional OpenCode delegation
+
+Authorized scope: make delegation explicitly opt-in per project through
+`ess delegation on|off|status`, reuse preset composition and the existing
+installer ownership checks, and add one OpenCode Skill. Ordinary preset
+installations omit delegation. Preserve v0.2.1/v0.3 state compatibility and
+keep OpenCode optional. Do not add routing, adapters, or orchestration.
+
+Status: implemented and verified in the current worktree; owner acceptance is
+pending. Evidence and compatibility limitations are recorded in
+[`docs/development/m04-optional-opencode-delegation.md`](docs/development/m04-optional-opencode-delegation.md).
+Practical delegation evaluation beyond the bounded command smoke test is
+separate from M0.4 and is not a claimed outcome.

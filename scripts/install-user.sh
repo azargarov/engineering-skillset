@@ -18,6 +18,7 @@ for preset in "${presets[@]}"; do
   for skill in "${skills[@]}"; do
     [[ -d $dir/skills/$skill && ! -L $dir/skills/$skill && -f $dir/skills/$skill/SKILL.md && ! -L $dir/skills/$skill/SKILL.md && -r $dir/skills/$skill/SKILL.md ]] || fail "invalid Skill distribution: '$preset/$skill'"
   done
+  [[ -f $dir/delegation/AGENTS.md && ! -L $dir/delegation/AGENTS.md && -r $dir/delegation/AGENTS.md && -f $dir/delegation/skills/opencode-delegation/SKILL.md && ! -L $dir/delegation/skills/opencode-delegation/SKILL.md && -r $dir/delegation/skills/opencode-delegation/SKILL.md ]] || fail "invalid delegation distribution: '$preset'"
 done
 
 mkdir -p -- "$data_root/releases" "$bin_dir" || fail 'cannot create user installation directories'

@@ -1,14 +1,19 @@
-# Local Model Delegation Configuration
+# Local Model Delegation Configuration Example
 
-The compiled policy is provider-independent. Put machine-specific executor
-and model instructions in the user's private
+The compiled policy is provider-independent. Machine-specific executor
+preferences may be kept in the user's private
 `${XDG_CONFIG_HOME:-$HOME/.config}/engineering-skillset/model-delegation.md`.
-When considering delegation, read this file. If it is absent, continue
-directly unless another explicitly authorized delegation mechanism is
-available. Keep endpoint URLs, credentials, and private connection details in
-local configuration or a credential store; never copy credentials into
-project files or compiled artifacts. This is plain Markdown read by the
-operator/agent, not a parsed schema.
+When considering delegation, an agent using the OpenCode Delegation Skill may
+consult this file for preferences. Its absence does not prevent direct work or
+normal ESS use. Keep endpoint URLs, credentials, and private connection
+details in local configuration or a credential store; never copy credentials
+into project files or compiled artifacts. This is plain Markdown, not a parsed
+ESS schema.
+
+The repository-root `model-delegation.md` is a user-maintained local example
+and is not included in builds or installed projects. Its executor names and
+model preferences are illustrative and must be checked against the current
+OpenCode configuration. ESS does not import or overwrite it.
 
 An example local file:
 

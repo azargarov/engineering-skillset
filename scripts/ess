@@ -23,6 +23,7 @@ Usage:
   ess install PRESET [PATH] [--dry-run]
   ess status [PATH]
   ess uninstall [PATH]
+  ess delegation on|off|status
 
 Install a built preset into an existing project directory. The default PATH
 is the current directory. Managed Skills use the active distribution.
@@ -55,6 +56,8 @@ declare -a STATE_SKILLS=()
 declare -a TEMP_FILES=()
 STATE_PRESET=''
 STATE_POLICY_SHA256=''
+STATE_DELEGATION=off
+STATE_LEGACY=0
 
 read_preset_skills() {
   local preset_dir=$1
@@ -114,14 +117,16 @@ read_state() {
     return 1
   fi
   mapfile -t lines < "$state_file" || return 1
-  [[ ${#lines[@]} -eq 4 ]] || {
-    error 'state file must contain exactly four lines'
+  [[ ${#lines[@]} -eq 4 || ${#lines[@]} -eq 5 ]] || {
+    error 'state file must contain exactly four or five lines'
     return 1
   }
-  [[ ${lines[0]} == engineering-skillset-state-v1 ]] || {
+  [[ ${lines[0]} == engineering-skillset-state-v1 || ${lines[0]} == engineering-skillset-state-v2 ]] || {
     error 'unsupported state file schema'
     return 1
   }
+  STATE_LEGACY=0
+  [[ ${lines[0]} == engineering-skillset-state-v1 ]] && STATE_LEGACY=1
   [[ ${lines[1]} == preset=* ]] || {
     error 'state file has an invalid preset field'
     return 1
@@ -136,12 +141,27 @@ read_state() {
     return 1
   }
   STATE_POLICY_SHA256=${BASH_REMATCH[1]}
-  [[ ${lines[3]} == skills=* ]] || {
-    error 'state file has an invalid Skills field'
-    return 1
-  }
+  local skill_line
+  if [[ ${lines[0]} == engineering-skillset-state-v2 ]]; then
+    [[ ${#lines[@]} -eq 5 && ${lines[3]} =~ ^delegation=(on|off)$ && ${lines[4]} == skills=* ]] || {
+      error 'state file has an invalid delegation or Skills field'
+      return 1
+    }
+    STATE_DELEGATION=${lines[3]#delegation=}
+    skill_line=${lines[4]}
+  else
+    [[ ${#lines[@]} -eq 4 && ${lines[3]} == skills=* ]] || {
+      error 'state file has an invalid Skills field'
+      return 1
+    }
+    STATE_DELEGATION=off
+    if [[ -f ${state_file%/*}/AGENTS.md ]] && grep -Fq '# Model Delegation' "${state_file%/*}/AGENTS.md"; then
+      STATE_DELEGATION=on
+    fi
+    skill_line=${lines[3]}
+  fi
   STATE_SKILLS=()
-  local skill_list=${lines[3]#skills=}
+  local skill_list=${skill_line#skills=}
   if [[ -n $skill_list ]]; then
     IFS=, read -r -a STATE_SKILLS <<< "$skill_list"
     for skill in "${STATE_SKILLS[@]}"; do
@@ -173,11 +193,26 @@ skill_link_path() {
 }
 
 expected_skill_target() {
-  printf '%s/skills/%s' "$dist_root/$1" "$2"
+  if [[ $2 == opencode-delegation ]]; then
+    printf '%s/delegation/skills/%s' "$dist_root/$1" "$2"
+  else
+    printf '%s/skills/%s' "$dist_root/$1" "$2"
+  fi
 }
 
 skill_target_is_available() {
   [[ -d $1 && ! -L $1 && -f $1/SKILL.md && ! -L $1/SKILL.md && -r $1/SKILL.md ]]
+}
+
+load_preset_skills() {
+  local preset_dir=$1 delegation=$2
+  read_preset_skills "$preset_dir" || return 1
+  if [[ $delegation == on ]]; then
+    [[ -f $preset_dir/delegation/AGENTS.md && ! -L $preset_dir/delegation/AGENTS.md && -r $preset_dir/delegation/AGENTS.md ]] || return 1
+    skill_target_is_available "$preset_dir/delegation/skills/opencode-delegation" || return 1
+    PRESET_SKILLS+=(opencode-delegation)
+    mapfile -t PRESET_SKILLS < <(printf '%s\n' "${PRESET_SKILLS[@]}" | sort)
+  fi
 }
 
 validate_existing_layout() {
@@ -263,9 +298,10 @@ write_state_file() {
     joined+=$skill
   done
   {
-    printf 'engineering-skillset-state-v1\n'
+    printf 'engineering-skillset-state-v2\n'
     printf 'preset=%s\n' "$preset"
     printf 'policy_sha256=%s\n' "$digest"
+    printf 'delegation=%s\n' "$STATE_DELEGATION"
     printf 'skills=%s\n' "$joined"
   } > "$path"
 }
@@ -283,8 +319,8 @@ cleanup_temps() {
 trap cleanup_temps EXIT
 
 install_preset() {
-  local preset=$1 target_arg=$2 dry_run=$3
-  local target state_file policy_file preset_dir desired_sha mode state_present=0
+  local preset=$1 target_arg=$2 dry_run=$3 delegation_request=${4:-preserve}
+  local target state_file policy_file preset_dir desired_sha mode state_present=0 policy_source delegation
   local skill link_path target_path temp_policy temp_state temp_link old_skill
   local -a remove_skills=()
   local -a replace_skills=()
@@ -295,7 +331,6 @@ install_preset() {
     fail "preset '$preset' is not built or has invalid artifacts"
   fi
   preset_dir=$dist_root/$preset
-  desired_sha=$(file_sha256 "$preset_dir/AGENTS.md") || fail 'cannot calculate preset policy digest'
 
   [[ -d $target_arg ]] || fail "target directory does not exist: '$target_arg'"
   target=$(CDPATH='' cd -- "$target_arg" && pwd -P) || fail "cannot resolve target directory: '$target_arg'"
@@ -313,9 +348,21 @@ install_preset() {
     fi
   fi
 
+  if [[ $delegation_request == preserve ]]; then
+    delegation=$STATE_DELEGATION
+  else
+    delegation=$delegation_request
+  fi
+  [[ $delegation == on || $delegation == off ]] || fail 'invalid delegation configuration'
+  STATE_DELEGATION=$delegation
+  load_preset_skills "$preset_dir" "$delegation" || fail "preset '$preset' has invalid delegation artifacts"
+  policy_source=$preset_dir/AGENTS.md
+  [[ $delegation == off ]] || policy_source=$preset_dir/delegation/AGENTS.md
+  desired_sha=$(file_sha256 "$policy_source") || fail 'cannot calculate preset policy digest'
+
   validate_new_skill_paths "$target" "$state_present" || exit 2
 
-  if ((state_present)) && [[ $STATE_PRESET == "$preset" && $STATE_POLICY_SHA256 == "$desired_sha" && "${STATE_SKILLS[*]}" == "${PRESET_SKILLS[*]}" ]]; then
+  if ((state_present && STATE_LEGACY == 0)) && [[ $STATE_PRESET == "$preset" && $STATE_POLICY_SHA256 == "$desired_sha" && "${STATE_SKILLS[*]}" == "${PRESET_SKILLS[*]}" ]]; then
     printf 'Preset %s is already installed in %s; no changes needed.\n' "$preset" "$target"
     return 0
   fi
@@ -373,7 +420,7 @@ install_preset() {
   fi
   temp_policy=$(mktemp "$target/.ess-policy.XXXXXX") || fail 'cannot stage AGENTS.md'
   add_temp_file "$temp_policy"
-  cat -- "$preset_dir/AGENTS.md" > "$temp_policy" || fail 'cannot copy preset policy'
+  cat -- "$policy_source" > "$temp_policy" || fail 'cannot copy preset policy'
   chmod "$mode" -- "$temp_policy" || fail 'cannot set AGENTS.md permissions'
 
   temp_state=$(mktemp "$target/.ess-state.XXXXXX") || fail 'cannot stage ownership state'
@@ -506,6 +553,19 @@ status_target() {
     return 1
   fi
   printf 'Installed preset: %s\n' "$STATE_PRESET"
+  printf 'Delegation: %s\n' "$STATE_DELEGATION"
+  delegation_link=$(skill_link_path "$target" opencode-delegation)
+  expected_target=$(expected_skill_target "$STATE_PRESET" opencode-delegation)
+  if [[ -L $delegation_link && $(readlink -- "$delegation_link") == "$expected_target" ]] && skill_target_is_available "$expected_target"; then
+    printf 'Delegation Skill: installed\n'
+  else
+    printf 'Delegation Skill: not installed\n'
+  fi
+  if command -v opencode >/dev/null 2>&1; then
+    printf 'OpenCode: available (%s)\n' "$(command -v opencode)"
+  else
+    printf 'OpenCode: not available\n'
+  fi
 
   if ! validate_existing_layout "$target"; then
     printf 'Skill paths: target layout is inconsistent\nStatus: inconsistent\n'
@@ -515,9 +575,17 @@ status_target() {
   if ! validate_preset "$STATE_PRESET"; then
     printf 'Preset artifacts: unavailable or invalid\n'
     healthy=0
-  elif [[ "${PRESET_SKILLS[*]}" != "${STATE_SKILLS[*]}" ]]; then
-    printf 'Preset Skills: differ from installed state\n'
-    healthy=0
+  else
+    if ((STATE_LEGACY)); then
+      : # v1 records did not track the optional OpenCode Skill.
+    elif ! load_preset_skills "$dist_root/$STATE_PRESET" "$STATE_DELEGATION"; then
+      printf 'Preset delegation artifacts: unavailable or invalid\n'
+      healthy=0
+    fi
+    if [[ "${PRESET_SKILLS[*]}" != "${STATE_SKILLS[*]}" ]]; then
+      printf 'Preset Skills: differ from installed state\n'
+      healthy=0
+    fi
   fi
 
   if [[ -f $policy_file && ! -L $policy_file ]]; then
@@ -598,6 +666,22 @@ case $command in
     (($# <= 1)) || fail 'status accepts at most one PATH'
     target_arg=${1:-.}
     status_target "$target_arg"
+    ;;
+  delegation)
+    (($# >= 1 && $# <= 2)) || fail 'delegation requires on, off, or status [PATH]'
+    action=$1
+    shift
+    target_arg=${1:-.}
+    [[ -d $target_arg ]] || fail "target directory does not exist: '$target_arg'"
+    target=$(CDPATH='' cd -- "$target_arg" && pwd -P) || fail "cannot resolve target directory: '$target_arg'"
+    state_file=$target/$state_name
+    [[ -f $state_file && ! -L $state_file ]] || fail 'project is not managed by ess'
+    read_state "$state_file" || fail 'state file is malformed; delegation unchanged'
+    case $action in
+      on|off) install_preset "$STATE_PRESET" "$target" 0 "$action" ;;
+      status) status_target "$target" ;;
+      *) fail 'delegation requires on, off, or status' ;;
+    esac
     ;;
   uninstall)
     (($# <= 1)) || fail 'uninstall accepts at most one PATH'

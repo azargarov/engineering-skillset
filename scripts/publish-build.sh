@@ -42,11 +42,13 @@ for preset in "${presets[@]}"; do
   preset_dir=$staged_root/$preset
   agents_file=$preset_dir/AGENTS.md
   skills_dir=$preset_dir/skills
+  delegation_dir=$preset_dir/delegation
   [[ -d $preset_dir && ! -L $preset_dir ]] || fail "invalid staged preset directory: '$preset_dir'"
   [[ -f $agents_file && ! -L $agents_file && -r $agents_file ]] || fail "missing or unreadable AGENTS.md for '$preset'"
   [[ $(grep -Fxc '# Engineering Skillset Core Policy' "$agents_file") == 1 ]] || \
     fail "Core Policy must appear exactly once in '$agents_file'"
   [[ -d $skills_dir && ! -L $skills_dir ]] || fail "missing or invalid Skills directory for '$preset'"
+  [[ -d $delegation_dir && ! -L $delegation_dir && -f $delegation_dir/AGENTS.md && ! -L $delegation_dir/AGENTS.md && -r $delegation_dir/AGENTS.md ]] || fail "missing or invalid delegation policy for '$preset'"
 
   mapfile -t staged_skills < <(find "$skills_dir" -mindepth 1 -maxdepth 1 -printf '%f\n' | LC_ALL=C sort)
   expected_skills=$(printf '%s\n' "${skills[@]}" | LC_ALL=C sort)
@@ -75,7 +77,16 @@ for preset in "${presets[@]}"; do
   done
 
   mapfile -t preset_entries < <(find "$preset_dir" -mindepth 1 -maxdepth 1 -printf '%f\n' | LC_ALL=C sort)
-  [[ ${preset_entries[*]} == 'AGENTS.md skills' ]] || fail "unexpected staged files in preset '$preset'"
+  [[ ${preset_entries[*]} == 'AGENTS.md delegation skills' ]] || fail "unexpected staged files in preset '$preset'"
+  [[ -d $delegation_dir/skills/opencode-delegation && ! -L $delegation_dir/skills/opencode-delegation && -f $delegation_dir/skills/opencode-delegation/SKILL.md && ! -L $delegation_dir/skills/opencode-delegation/SKILL.md && -r $delegation_dir/skills/opencode-delegation/SKILL.md ]] || fail "missing OpenCode delegation Skill for '$preset'"
+  awk '
+    NR == 1 && $0 != "---" { exit 1 }
+    NR == 2 && $0 != "name: opencode-delegation" { exit 1 }
+    NR == 3 && $0 !~ /^description: .+/ { exit 1 }
+    NR == 4 && $0 != "---" { exit 1 }
+    NR == 4 { closed = 1; exit }
+    END { if (!closed) exit 1 }
+  ' "$delegation_dir/skills/opencode-delegation/SKILL.md" || fail "invalid Skill frontmatter in '$preset/opencode-delegation'"
 done
 
 check_directory() {
@@ -96,6 +107,11 @@ check_directory "$published_root"
 for preset in "${presets[@]}"; do
   check_directory "$published_root/$preset"
   check_directory "$published_root/$preset/skills"
+  check_directory "$published_root/$preset/delegation"
+  check_file "$published_root/$preset/delegation/AGENTS.md"
+  check_directory "$published_root/$preset/delegation/skills"
+  check_directory "$published_root/$preset/delegation/skills/opencode-delegation"
+  check_file "$published_root/$preset/delegation/skills/opencode-delegation/SKILL.md"
   check_file "$published_root/$preset/AGENTS.md"
   for skill in "${skills[@]}"; do
     check_directory "$published_root/$preset/skills/$skill"

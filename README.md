@@ -31,8 +31,18 @@ ess status /path/to/your/project
 ```
 
 Omit the project path to install into the current directory. `ess` copies the
-preset's `AGENTS.md` and creates links for its four Skills under
-`.agents/skills/`.
+preset's `AGENTS.md` and creates links for its four standard Skills under
+`.agents/skills/`. Optional OpenCode delegation can be enabled per project:
+
+```bash
+ess delegation on
+ess delegation status
+ess delegation off
+```
+
+Enabling it adds the provider-independent delegation policy and the
+`opencode-delegation` Skill. OpenCode itself is optional; `ess status` reports
+whether it is available, and ESS works normally without it.
 
 `make install-user` builds, validates, and stages a complete immutable release
 under `${XDG_DATA_HOME:-$HOME/.local/share}/engineering-skillset/`, then
@@ -82,8 +92,10 @@ Review the architecture of this API and propose the smallest change needed to
 support idempotent job submission. Do not edit files yet.
 ```
 
-The four Skills are `software-design`, `implementation-review`,
-`verification-qa`, and `project-handover`. Agents may use relevant Skills
+The standard Skills are `software-design`, `implementation-review`,
+`verification-qa`, and `project-handover`. When enabled, the optional
+`opencode-delegation` Skill describes bounded noninteractive delegation using
+the models already configured in OpenCode. Agents may use relevant Skills
 contextually, but automatic activation is not guaranteed.
 
 Check the installation at any time:

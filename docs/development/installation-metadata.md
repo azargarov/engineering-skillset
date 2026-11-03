@@ -7,16 +7,30 @@ Skills, and one plain-text ownership state file:
 - `.agents/skills/<skill-id>` links through
   `${XDG_DATA_HOME:-$HOME/.local/share}/engineering-skillset/current/<preset>/skills/<skill-id>`.
 - `.engineering-skillset-state` records the preset, the SHA-256 digest of
-  `AGENTS.md`, and the sorted Skill IDs managed by `ess`.
+  `AGENTS.md`, the delegation setting, and the sorted Skill IDs managed by
+  `ess`.
 
 The current state format is:
 
 ```text
-engineering-skillset-state-v1
+engineering-skillset-state-v2
 preset=<preset-id>
 policy_sha256=<SHA-256 of AGENTS.md>
+delegation=<on|off>
 skills=<comma-separated sorted skill IDs>
 ```
+
+The CLI also reads the four-line `engineering-skillset-state-v1` format from
+existing v0.2.1 and v0.3 projects. It infers the v0.3 delegation setting from
+the managed policy's `# Model Delegation` section, verifies the recorded
+policy digest and managed Skill links, then writes v2 on the next successful
+installation or delegation change. v0.2.1 projects without that section
+upgrade with delegation disabled.
+
+When enabled, the `opencode-delegation` Skill link targets the optional
+delegation payload for the selected preset. Disabling delegation validates
+the complete existing ownership state before removing that link and
+regenerating the policy; other Skills and unrelated paths are preserved.
 
 This state is an ownership and consistency record, not a signature or proof of
 authorship. Before switching or updating, `ess` checks that the existing policy

@@ -78,14 +78,14 @@ fi
 exec "$REAL_MV" "$@"
 EOF
 chmod +x "$bin_dir/mv"
-if output=$(PATH="$bin_dir:$PATH" REAL_MV="$real_mv" MV_COUNT_FILE="$test_dir/mv-count" MV_FAIL_AT=16 \
+if output=$(PATH="$bin_dir:$PATH" REAL_MV="$real_mv" MV_COUNT_FILE="$test_dir/mv-count" MV_FAIL_AT=24 \
   make -C "$repo_root" "DIST_ROOT=$published_root" \
     'SKILL_DESCRIPTION_verification-qa=Interrupted publication test description.' build 2>&1); then
   fail 'injected partial publication unexpectedly succeeded'
 fi
-[[ $output == *'injected publication rename failure at file 16'* ]] || \
+[[ $output == *'injected publication rename failure at file 24'* ]] || \
   fail "injected publication failure did not occur: $output"
-[[ $output == *'publication stopped after 15 files; outputs may contain mixed generations'* ]] || \
+[[ $output == *'publication stopped after 23 files; outputs may contain mixed generations'* ]] || \
   fail "partial publication was not reported clearly: $output"
 [[ $output != *'Build complete'* ]] || fail 'failed publication claimed success'
 [[ -r $link_path/SKILL.md ]] || fail 'partial publication broke an existing Skill link'

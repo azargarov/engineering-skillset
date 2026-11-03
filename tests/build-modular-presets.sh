@@ -20,7 +20,7 @@ for index in "${!presets[@]}"; do
   preset_dir=$repo_root/dist/$preset
   [[ -s $preset_dir/AGENTS.md ]] || fail "$preset AGENTS.md is missing or empty"
   read -r -a selected_priorities <<< "${priorities[$index]}"
-  args=(--level "$preset" --optional model-delegation)
+  args=(--level "$preset")
   for priority in "${selected_priorities[@]}"; do args+=(--priority "$priority"); done
   "$repo_root/scripts/compose-policy.sh" "${args[@]}" > "$test_dir/expected-$preset.md"
   cmp -s "$test_dir/expected-$preset.md" "$preset_dir/AGENTS.md" || \
@@ -35,10 +35,16 @@ for index in "${!presets[@]}"; do
     grep -Fq "$requirement" "$preset_dir/AGENTS.md" || \
       fail "$preset Core Policy is missing project-memory requirement: $requirement"
   done
-  grep -Fq 'Before distributing implementation work, the lead establishes a proportional' "$preset_dir/AGENTS.md" || \
+  grep -Fq '# Model Delegation' "$preset_dir/AGENTS.md" && fail "$preset unexpectedly includes delegation policy"
+  args+=(--optional model-delegation)
+  "$repo_root/scripts/compose-policy.sh" "${args[@]}" > "$test_dir/expected-delegation-$preset.md"
+  cmp -s "$test_dir/expected-delegation-$preset.md" "$preset_dir/delegation/AGENTS.md" || \
+    fail "$preset delegation policy does not match its composed modules"
+  grep -Fq 'Before distributing implementation work, the lead establishes a proportional' "$preset_dir/delegation/AGENTS.md" || \
     fail "$preset delegation module is missing"
-  grep -Fq 'Final QA checks the complete result against requirements' "$preset_dir/AGENTS.md" || \
+  grep -Fq 'Final QA checks the complete result against requirements' "$preset_dir/delegation/AGENTS.md" || \
     fail "$preset delegation QA requirements are missing"
+  [[ -s $preset_dir/delegation/skills/opencode-delegation/SKILL.md ]] || fail "$preset OpenCode Skill is missing"
 
   actual_skill_count=$(find "$preset_dir/skills" -mindepth 2 -maxdepth 2 -type f -name SKILL.md | wc -l)
   [[ $actual_skill_count -eq ${#skills[@]} ]] || fail "$preset has an incomplete workflow Skill set"
