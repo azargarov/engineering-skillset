@@ -187,6 +187,18 @@ shows incremental benefit.
 
 ### M0.7 — v0.4 evaluation preparation
 
+**Status:** Owner-accepted for one initial controlled pilot using procedural
+filesystem separation; enforced filesystem isolation is optional for this
+pilot. Preparation remains deterministically verified: reference passed all 11
+requirement IDs; starting snapshot passed health and failed the 10
+new-behavior IDs as expected. The accepted protocol requires a fresh
+snapshot-only candidate workspace, evaluator separation, integrity checks,
+contamination reporting, and runtime preflight. Authorization is limited to
+one case-04 Codex-without-ESS baseline run. See the [M0.7 evidence
+record](docs/development/evaluation-runs/m07-pilot/implementation-plan.md) and
+[accepted protocol](docs/development/evaluation-runs/m07-pilot/protocol.md).
+No candidate run or effectiveness finding is claimed by M0.7 closeout.
+
 **Objective:** Extend the existing [evaluation plan](docs/development/evaluation-plan.md)
 into a reproducible, bounded protocol before effectiveness runs begin.
 

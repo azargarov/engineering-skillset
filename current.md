@@ -1,25 +1,8 @@
 # Current State
 
-- **Release:** v0.3.0 is the current stable release; its implementation and
-  scope are owner-accepted. The v0.2.1 compatibility baseline is preserved.
-- **Capabilities:** Four presets, published distribution and user
-  installation, project install/switch/status/uninstall, optional per-project
-  OpenCode delegation, and advisory provider/model preferences are verified.
-- **Delegation evidence:** The accepted Codex/OpenCode experiment integrated
-  OpenAI and DeepSeek models successfully and passed its recorded checks. It
-  establishes functional integration, not comparative effectiveness.
-- **M0.6:** Skill hardening is implemented, deterministically verified, and
-  owner-accepted. Closeout `make check` and `git diff --check` passed (exit 0);
-  earlier `make build`, generated-output
-  inspection for all four presets, workflow inspection, and `git diff --check`
-  passed. Activation evidence does not establish Skill loading or compliance.
-  See [`docs/development/m06-skill-hardening.md`](docs/development/m06-skill-hardening.md).
-- **Next action:** Stop for operator review after M0.6 closeout. Do not begin
-  M0.7 until separately authorized. v0.3.0 remains the immutable comparison
-  baseline. Local LLM context-window investigation is deferred. See
-  [`ROADMAP.md`](ROADMAP.md) and
-  [`docs/development/evaluation-plan.md`](docs/development/evaluation-plan.md).
-
-No evidence establishes improvements in development speed, code quality,
-cost, or reliability over baseline Codex. Do not begin v0.4 implementation
-without a separately defined and authorized scope.
+- **Release:** v0.3.0 remains immutable at `7ea3d58c1c075663afd97f7bb3215339d8a050d3`.
+- **M0.6:** Completed and owner-accepted. Hardened comparison source is frozen at `677bbeb7ee71e6089e9798e864c979bd253f4b78`.
+- **M0.7:** Owner-accepted for one initial controlled pilot with procedural filesystem separation; enforced filesystem isolation is optional for this pilot. The accepted protocol requires a fresh snapshot-only candidate workspace, evaluator separation, pre/post integrity checks, contamination reporting, and runtime preflight. M0.7 closeout verification and push are in progress; no candidate run has started.
+- **Authorized M0.8 scope:** One case-04 baseline run, Codex without ESS, frozen public snapshot and task, existing independent 11-requirement evaluator. No comparisons, additional cases, or repetitions.
+- **Evidence:** [M0.7 record](docs/development/evaluation-runs/m07-pilot/implementation-plan.md), [protocol](docs/development/evaluation-runs/m07-pilot/protocol.md). Frozen input hashes are in the case's `INPUTS.sha256` manifests.
+- **Next action:** Finish M0.7 checksums/repository checks, commit and push, confirm GitHub Actions, then perform runtime preflight. If preflight passes, execute and report the single authorized run; otherwise stop with the blocker.
