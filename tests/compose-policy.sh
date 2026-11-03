@@ -12,14 +12,20 @@ expected_file_mode=$(printf '%o' "$((0666 & ~8#$file_umask))")
 duplicate_heading=$repo_root/modules/priorities/m01-4-duplicate-heading.md
 duplicate_content=$repo_root/modules/priorities/m01-4-duplicate-content.md
 symlink_module=$repo_root/modules/priorities/m01-4-symlink.md
+empty_optional=$repo_root/modules/optional/m01-4-empty.md
+whitespace_optional=$repo_root/modules/optional/m01-4-whitespace.md
 duplicate_heading_created=0
 duplicate_content_created=0
 symlink_module_created=0
+empty_optional_created=0
+whitespace_optional_created=0
 
 cleanup() {
   ((duplicate_heading_created)) && rm -f -- "$duplicate_heading"
   ((duplicate_content_created)) && rm -f -- "$duplicate_content"
   ((symlink_module_created)) && rm -f -- "$symlink_module"
+  ((empty_optional_created)) && rm -f -- "$empty_optional"
+  ((whitespace_optional_created)) && rm -f -- "$whitespace_optional"
   rm -rf -- "$test_dir"
 }
 trap cleanup EXIT
@@ -61,6 +67,18 @@ grep -Eq '^# Prototype$' "$test_dir/zero-priorities.md" || fail "level section m
 if grep -Eq '^# (Readability|Development Speed)$' "$test_dir/zero-priorities.md"; then
   fail "unselected priority appeared in output"
 fi
+
+# Empty and whitespace-only optional modules add no bytes or separators.
+[[ ! -e $empty_optional && ! -e $whitespace_optional ]] || \
+  fail "temporary empty-module fixture path already exists"
+: > "$empty_optional"
+empty_optional_created=1
+printf ' \t\n\r\n  ' > "$whitespace_optional"
+whitespace_optional_created=1
+"$composer" --level prototype --optional m01-4-empty \
+  --optional m01-4-whitespace > "$test_dir/empty-modules.md"
+cmp -s "$test_dir/zero-priorities.md" "$test_dir/empty-modules.md" || \
+  fail "empty optional modules changed content or added separators"
 
 "$composer" --level prototype --priority readability > "$test_dir/one-priority.md"
 assert_core_prefix "$test_dir/one-priority.md"

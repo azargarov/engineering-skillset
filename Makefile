@@ -86,7 +86,7 @@ build-one:
 	@if [ "$(abspath $(BUILD_ROOT))" = "$(abspath $(DIST_ROOT))" ]; then printf 'build-one is an internal staging target; use make build\n' >&2; exit 2; fi
 	rm -rf "$(DIST_DIR)"
 	mkdir -p "$(DIST_DIR)"
-	./scripts/compose-policy.sh --level $(PRESET_LEVEL) $(foreach priority,$(PRESET_PRIORITIES),--priority $(priority)) > "$(DIST_DIR)/AGENTS.md"
+	./scripts/compose-policy.sh --level $(PRESET_LEVEL) $(foreach priority,$(PRESET_PRIORITIES),--priority $(priority)) --optional model-delegation > "$(DIST_DIR)/AGENTS.md"
 	set -eu; \
 	for skill in $(PRESET_SKILLS); do \
 	  mkdir -p "$(DIST_DIR)/skills/$$skill"; \

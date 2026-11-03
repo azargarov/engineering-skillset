@@ -186,7 +186,13 @@ if [[ -n $sorted_ids ]]; then
   mapfile -t sorted_optional_ids <<< "$sorted_ids"
 fi
 for id in "${sorted_optional_ids[@]}"; do
-  module_files+=("$root_dir/modules/optional/$id.md")
+  file=$root_dir/modules/optional/$id.md
+  if grep -q '[^[:space:]]' "$file"; then
+    module_files+=("$file")
+  else
+    grep_status=$?
+    ((grep_status == 1)) || fail "failed while reading optional module '$id'"
+  fi
 done
 
 section_headings=()

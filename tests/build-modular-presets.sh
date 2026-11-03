@@ -20,7 +20,7 @@ for index in "${!presets[@]}"; do
   preset_dir=$repo_root/dist/$preset
   [[ -s $preset_dir/AGENTS.md ]] || fail "$preset AGENTS.md is missing or empty"
   read -r -a selected_priorities <<< "${priorities[$index]}"
-  args=(--level "$preset")
+  args=(--level "$preset" --optional model-delegation)
   for priority in "${selected_priorities[@]}"; do args+=(--priority "$priority"); done
   "$repo_root/scripts/compose-policy.sh" "${args[@]}" > "$test_dir/expected-$preset.md"
   cmp -s "$test_dir/expected-$preset.md" "$preset_dir/AGENTS.md" || \
@@ -35,6 +35,10 @@ for index in "${!presets[@]}"; do
     grep -Fq "$requirement" "$preset_dir/AGENTS.md" || \
       fail "$preset Core Policy is missing project-memory requirement: $requirement"
   done
+  grep -Fq 'Before distributing implementation work, the lead establishes a proportional' "$preset_dir/AGENTS.md" || \
+    fail "$preset delegation module is missing"
+  grep -Fq 'Final QA checks the complete result against requirements' "$preset_dir/AGENTS.md" || \
+    fail "$preset delegation QA requirements are missing"
 
   actual_skill_count=$(find "$preset_dir/skills" -mindepth 2 -maxdepth 2 -type f -name SKILL.md | wc -l)
   [[ $actual_skill_count -eq ${#skills[@]} ]] || fail "$preset has an incomplete workflow Skill set"
