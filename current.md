@@ -8,15 +8,18 @@
   on|off` controls the setting through existing installer ownership and digest
   checks; `ess status` is the single diagnostic command. Delegation policy is
   `modules/optional/delegation-policy.md`; provider preferences use
-  `model-preferences.md` with deprecated `model-delegation.md` fallback. State
+  `model-preferences.md` with deprecated `model-delegation.md` fallback. The
+  user installer initializes preferences from the installed template, preserves
+  existing new or legacy configuration, and reports the selected action. State
   v2 remains compatible with v0.2.1/v0.3 inference.
 - **Evidence:** `make build`, `make check`, Bash syntax validation,
   `git diff --check`, and a bounded local OpenCode run passed. The redundant
   `delegation status` command was removed after practical testing; follow-up
   `make check`, syntax, diff, CLI help, and direct command checks passed.
   M0.5 `make check` passed with preference-guidance assertions for all four
-  presets. The template is published and installed with the user release; no
-  runtime selector or config parser was added. See
+  presets. Follow-up user-install initialization checks and `make check` passed;
+  `git diff --check` passed. The template is published and installed with the
+  user release; no runtime selector or config parser was added. See
   [`docs/development/model-preferences.md`](docs/development/model-preferences.md).
 
 ## Next action

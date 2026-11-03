@@ -42,8 +42,12 @@ ess delegation off
 Enabling it adds the provider-independent delegation policy and the
 `opencode-delegation` Skill. OpenCode itself is optional; `ess status` reports
 whether it is available, and ESS works normally without it.
-Advisory provider-based model preferences can be added to the user's private
-configuration; see the [model preferences guide](docs/development/model-preferences.md).
+`make install-user` also initializes advisory model preferences in
+`${XDG_CONFIG_HOME:-$HOME/.config}/engineering-skillset/model-preferences.md`.
+Later installations preserve that file. If only the deprecated
+`model-delegation.md` exists, it is preserved and the new file is not created.
+Edit the file to customize preferences; see the
+[model preferences guide](docs/development/model-preferences.md).
 
 `make install-user` builds, validates, and stages a complete immutable release
 under `${XDG_DATA_HOME:-$HOME/.local/share}/engineering-skillset/`, then

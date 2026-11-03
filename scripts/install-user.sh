@@ -5,6 +5,7 @@ export LC_ALL=C
 repo_root=$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
 data_home=${XDG_DATA_HOME:-${HOME:?HOME is not set}/.local/share}
 data_root=$data_home/engineering-skillset
+config_root=${XDG_CONFIG_HOME:-$HOME/.config}/engineering-skillset
 bin_dir=${ESS_BIN_DIR:-$HOME/.local/bin}
 dist_root=${DIST_ROOT:-$repo_root/dist}
 presets=(prototype fast-development performance reliable)
@@ -74,4 +75,32 @@ fi
 mv -Tf -- "$link_tmp" "$data_root/current" || fail 'cannot activate release'
 trap - EXIT
 rm -f -- "$link_tmp"
+mkdir -p -- "$config_root" || fail "cannot create model preferences directory: '$config_root'"
+preferences=$config_root/model-preferences.md
+legacy_preferences=$config_root/model-delegation.md
+if [[ -e $preferences || -L $preferences ]]; then
+  preferences_status="Model preferences: existing configuration preserved at $preferences"
+elif [[ -e $legacy_preferences || -L $legacy_preferences ]]; then
+  preferences_status="Model preferences: legacy configuration preserved at $legacy_preferences"
+else
+  preferences_tmp=$(mktemp "$config_root/.model-preferences.XXXXXX") || fail "cannot stage model preferences in '$config_root'"
+  if ! cp -- "$data_root/current/config/model-preferences.md.example" "$preferences_tmp"; then
+    rm -f -- "$preferences_tmp"
+    fail "cannot initialize model preferences at '$preferences'"
+  fi
+  if ln -- "$preferences_tmp" "$preferences" 2>/dev/null; then
+    rm -f -- "$preferences_tmp"
+    preferences_status="Model preferences: initialized at $preferences"
+  else
+    rm -f -- "$preferences_tmp"
+    if [[ -e $preferences || -L $preferences ]]; then
+      preferences_status="Model preferences: existing configuration preserved at $preferences"
+    elif [[ -e $legacy_preferences || -L $legacy_preferences ]]; then
+      preferences_status="Model preferences: legacy configuration preserved at $legacy_preferences"
+    else
+      fail "cannot initialize model preferences at '$preferences'"
+    fi
+  fi
+fi
 printf 'Installed Engineering Skillset %s\nCLI: %s\nData: %s\n' "$release_id" "$wrapper" "$data_root"
+printf '%s\n' "$preferences_status"
