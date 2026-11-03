@@ -229,6 +229,20 @@ not become installer payload by default.
 
 ## Alignment and unresolved decisions
 
+### Deferred investigation: local LLM context windows
+
+**Discover and consider context windows of local LLMs.** Investigation only;
+no implementation is included in v0.3.0. Examine:
+
+- Model-advertised maximum context.
+- The actual context window configured in Ollama and OpenCode.
+- Effective usable context under available hardware resources.
+- How context limits influence task selection and delegation.
+- Whether context-window information belongs in model preferences or
+  delegation guidance.
+
+The other unresolved evaluation and release-policy questions below remain open.
+
 This plan follows the seven Engineering Principles: it evaluates authorized
 outcomes and scope; measures simplicity and justified complexity; tests
 component and emergent behavior at appropriate levels; checks implementation

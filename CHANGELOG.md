@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.3.0 — Accepted release
+
+- Added optional, skill-based OpenCode delegation with per-project opt-in.
+- Added advisory provider/model preferences and initialized the private
+  preferences file from the published template during user installation.
+- Verified the four presets, published distribution, installation workflow,
+  optional delegation, and model-preferences configuration behavior.
+- Accepted the HTTP API delegation experiment as functional evidence: separate
+  delegated models completed store and HTTP handler components and their tests;
+  Codex reviewed and integrated the results. Both delegations and final tests,
+  race detector, vet, build, and HTTP smoke checks passed.
+
+No claim is made that delegation is faster, cheaper, or more reliable than
+Codex working alone. Comparative effectiveness remains unverified. See the
+evaluation plan for deferred questions and known limitations.
+
 ## v0.2.1 — Release candidate, unpublished
 
 - Added per-user installation with `make install-user`, using

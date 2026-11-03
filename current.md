@@ -1,9 +1,9 @@
 # Current State
 
-- **Project:** Engineering Skillset. Published v0.2.1 remains the compatibility
-  baseline; accepted v0.3 delegation policy sources remain historical context.
-- **Active milestone:** M0.5, provider-based model preferences. Implemented
-  and verified in the worktree; owner acceptance is pending.
+- **Project:** Engineering Skillset. The v0.3.0 implementation and release
+  scope are owner-accepted; v0.2.1 remains the compatibility baseline.
+- **Release:** v0.3.0 closeout covers four presets, published distribution and
+  user installation, optional OpenCode delegation, and advisory preferences.
 - **Behavior:** Four normal preset builds omit delegation. `ess delegation
   on|off` controls the setting through existing installer ownership and digest
   checks; `ess status` is the single diagnostic command. Delegation policy is
@@ -19,11 +19,17 @@
   M0.5 `make check` passed with preference-guidance assertions for all four
   presets. Follow-up user-install initialization checks and `make check` passed;
   `git diff --check` passed. The template is published and installed with the
-  user release; no runtime selector or config parser was added. See
-  [`docs/development/model-preferences.md`](docs/development/model-preferences.md).
+  user release; no runtime selector or config parser was added. The accepted
+  HTTP API experiment used `deepseek/deepseek-flash` for store and
+  `openai/gpt-6-luna` for HTTP handler; Codex reviewed and integrated it. Both
+  delegations, final tests, race detector, vet, build, and HTTP smoke checks
+  passed. This is functional evidence only, not comparative effectiveness.
+  See [`docs/development/model-preferences.md`](docs/development/model-preferences.md)
+  and [`docs/development/m04-optional-opencode-delegation.md`](docs/development/m04-optional-opencode-delegation.md).
 
 ## Next action
 
-Review the M0.5 worktree and evidence for owner acceptance. Model selection is
-agent judgment; checks verify guidance, compatibility paths, and packaging,
-not model quality or an automated selector.
+The v0.3.0 closeout records and tags the accepted release. Context-window
+discovery and other evaluation questions remain deferred in the evaluation
+plan. Model selection is agent judgment; checks verify guidance,
+compatibility paths, and packaging, not model quality or an automated selector.

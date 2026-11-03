@@ -5,7 +5,7 @@ The product vision and initial preset model are described in
 evidence are in [`docs/development/roadmap-v0.2.md`](docs/development/roadmap-v0.2.md).
 
 V2-01 and V2-02 implementation evidence is preserved in Git history. V2-03
-(`ess`) is implemented and committed, with owner acceptance still pending.
+(`ess`) is implemented and committed.
 The v0.2.1 M02 local user installation is operator-accepted. M03 verification
 and release preparation are complete in the worktree and await operator
 review. See [`docs/development/release-v0.2.1.md`](docs/development/release-v0.2.1.md)
@@ -60,11 +60,15 @@ OpenCode Skill. Ordinary preset
 installations omit delegation. Preserve v0.2.1/v0.3 state compatibility and
 keep OpenCode optional. Do not add routing, adapters, or orchestration.
 
-Status: implemented and verified in the current worktree; owner acceptance is
-pending. Evidence and compatibility limitations are recorded in
+Status: implemented, verified, and owner-accepted for v0.3.0. The latest HTTP
+API delegation experiment is accepted as functional evidence: `deepseek/deepseek-flash`
+completed the store component and tests, `openai/gpt-6-luna` completed the HTTP
+handler component and tests, and Codex reviewed and integrated the results.
+Both delegations completed successfully; final tests, race detector, vet,
+build, and HTTP smoke checks passed. This does not establish comparative
+effectiveness versus Codex working alone. Evidence and compatibility
+limitations are recorded in
 [`docs/development/m04-optional-opencode-delegation.md`](docs/development/m04-optional-opencode-delegation.md).
-Practical delegation evaluation beyond the bounded command smoke test is
-separate from M0.4 and is not a claimed outcome.
 
 Follow-up: the practical installation test found that `ess delegation status`
 duplicated `ess status`. The redundant subcommand was removed; state format and
@@ -81,9 +85,20 @@ by task suitability without global provider ordering or allowlist behavior,
 and report its selected model and reason. Preserve delegation toggles, preset
 QA requirements, and existing installs.
 
-Status: implemented and verified in the worktree; owner acceptance is pending.
+Status: implemented, verified, and owner-accepted for v0.3.0.
 `make check` passed, including all four delegated preset builds, preference
 guidance, publication, user release installation, and CLI lifecycle checks.
 The check validates instructions and packaging; actual model choice remains
-agent judgment and is not an automated runtime selector. See
+agent judgment and is not an automated runtime selector. Local model context
+windows remain an investigation backlog item; see the evaluation plan. See
 [`docs/development/model-preferences.md`](docs/development/model-preferences.md).
+
+## v0.3.0 release closeout
+
+Owner acceptance: the current ESS v0.3 implementation and release scope are
+accepted. The closeout commit and `v0.3.0` tag record this acceptance. The
+release includes four presets, published distribution and user installation,
+optional OpenCode delegation, and advisory model-preferences configuration.
+Acceptance does not claim delegation is faster, cheaper, or more reliable than
+Codex working alone. Comparative effectiveness and other evaluation questions
+remain open in [`docs/development/evaluation-plan.md`](docs/development/evaluation-plan.md).

@@ -1,5 +1,9 @@
 # Delegation Model Preferences
 
+Implemented and verified for v0.3.0; owner-accepted as part of the release.
+Preferences remain advisory, and model selection is agent judgment rather
+than an automated selector.
+
 The checked-in template is [`config/model-preferences.md.example`](../../config/model-preferences.md.example).
 `make install-user` copies it to the private user configuration path on first
 installation:

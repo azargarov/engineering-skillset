@@ -2,8 +2,7 @@
 
 ## Outcome
 
-Implemented in the worktree; deterministic verification and one practical
-local OpenCode smoke task passed. Owner acceptance is pending. This extends the
+Implemented and verified; accepted as part of v0.3.0. This extends the
 accepted v0.3 policy module with explicit per-project opt-in and one reusable
 executor Skill; it adds no router, model adapter, or orchestration service.
 
@@ -61,3 +60,13 @@ policy containing the module's `# Model Delegation` heading. Existing modified
 policy or managed Skill paths still stop upgrade rather than being overwritten.
 The root local example is not read automatically by ESS; the Skill may consult
 the documented private Markdown preferences file when it exists.
+
+## Accepted HTTP API delegation evidence
+
+The owner accepts the latest HTTP API delegation experiment as functional
+evidence. `deepseek/deepseek-flash` completed the store component and tests;
+`openai/gpt-6-luna` completed the HTTP handler component and tests. Codex
+reviewed and integrated both results. Both delegations completed successfully,
+and the final tests, race detector, vet, build, and HTTP smoke checks passed.
+This does not establish that delegation is faster, cheaper, or more reliable
+than Codex working alone; comparative effectiveness remains unverified.
