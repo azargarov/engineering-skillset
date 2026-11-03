@@ -66,7 +66,10 @@ The closeout verification commands were:
 | `git diff --check` | 0 | No whitespace errors reported. |
 
 The workflow is configured for push and pull-request events and runs only
-`make check`. Remote Actions status is checked after the closeout push; local
-checks do not establish remote CI status. No behavioral effectiveness claim is
-made. The existing `v0.3.0` tag is unchanged, and no M0.7 implementation was
-started.
+`make check`. The push-triggered run for the closeout commit concluded
+**failure** at `Run make check`; the Actions API reports the job failed, while
+the log download returned HTTP 403, so the failing output could not be
+inspected. Run: [GitHub Actions #41689972432](https://github.com/azargarov/engineering-skillset/actions/runs/41689972432).
+Local `make check` passed, but does not explain or override the remote result.
+No behavioral effectiveness claim is made. The existing `v0.3.0` tag is
+unchanged, and no M0.7 implementation was started.
