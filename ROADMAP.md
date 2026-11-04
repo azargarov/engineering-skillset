@@ -248,6 +248,67 @@ into default ESS composition.
 
 ### M0.8 — Controlled v0.4 evaluation and decision
 
+**Status:** Complete and owner-accepted. Original A1 and the first replacement launch remain preserved as
+historical stopped attempts. Following owner authorization for a local-only
+initial Git commit, the fresh A1 replacement completed and the owner accepts it
+as a pilot observation: Condition A used the four catalog-visible bundled
+Codex Skills baseline, and all 11 final functional acceptance requirements
+passed. The first A1 evaluator invocation exposed global-hook interference
+with three candidate-authored parallel tests; the per-service adapter passed
+all requirements and candidate tests without changing candidate code or frozen
+assertions. Both invocations and the deviation remain preserved in the
+[A1 report](docs/development/evaluation-runs/m08-pilot/A1-candidate-20261103/report.md).
+
+The corrected `case04-corrected-evaluator-v1` is frozen with evaluator
+manifest SHA-256
+`627ff3b67ca78351086dda3eaae1e703706c2296eed847d02f39cfe616d99a7f`.
+Calibration passed: reference 11/11; the original snapshot had its 10 expected
+functional failures while `REG-01` passed; A1 compatibility passed 11/11 and
+the candidate-authored parallel tests passed. See the [evaluator validation
+record](docs/development/evaluation-runs/m08-pilot/evaluator-validation-20261103/report.md)
+and [frozen artifacts](docs/development/evaluation-runs/m08-pilot/evaluator-v1/README.md).
+At the owner's direction, evaluator v2 now evaluates implementations as
+ordinary HTTP services without candidate-specific source adapters. The
+finalized v2.1 uses a versioned task contract and deterministic fixture
+observations. Two repeated calibration blocks passed all 11 checks on the
+reference and sealed A1; the original snapshot had its ten expected behavior
+failures and REG-01 passed. RETRY-01 exhaustion and RETRY-02 numeric/date
+Retry-After caps, fallbacks, and sequences are observed at the provider
+boundary. See the [v2.1 validation record](docs/development/evaluation-runs/m08-pilot/evaluator-validation-v2-final-20261103/report.md).
+Evaluator v1 and its A1 result remain historical. The A1 candidate manifest
+now excludes mutable `.git` bookkeeping while retaining the root commit ID,
+source hashes, and patch hash. Following the operator's explicit authorization, A2 and A3 completed sequentially under the same
+versioned v2 task and v2.1 evaluator; both passed all 11 checks with full
+coverage. Resource use, interventions, implementation outcomes, cleanup, hashes,
+and A1 task-clarification comparability are recorded in the
+[matched pilot report](docs/development/evaluation-runs/m08-pilot/comparative-pilot-A2-A3-20261104.md)
+and individual run artifacts. The owner accepts A2/A3 as successful Condition
+A baseline observations; this does not accept M0.8 as a whole. The evaluator
+and candidates remain frozen. M0.8
+Condition B then completed three fresh original-v0.3.0 `reliable` runs under
+the frozen v2 task and v2.1 evaluator; B1–B3 each passed all 11 requirements
+with full coverage. B3 enumerated paths outside its workspace and is marked
+protocol-contaminated, so B1/B2 are the only clean B comparison observations.
+Candidate traces, Skills observations, resources, patches, integrity, and
+cleanup are recorded in the
+[Condition B report](docs/development/evaluation-runs/m08-pilot/condition-B-reliable-20261104.md)
+and per-run artifacts. B preflight reported inconsistent plugin Skill catalog
+visibility, which limits strict comparison with A2/A3 and is documented in the
+report. The owner then approved a catalog-variability amendment for the
+exploratory hardened ESS condition. C1–C3 completed from fresh snapshot-only
+workspaces using the frozen M0.6 hardened reliable policy, four ESS Skills,
+and unchanged v2 task/evaluator/runtime configuration. All three passed 11/11
+with full coverage. C1's trace records a candidate-created smoke script under
+`/tmp`; no disqualifying material access was evidenced. Catalog variability
+remains a comparison limitation and no causal effect is claimed. The six-
+dimension A/B/C analysis and per-run evidence are in the
+[Condition C report](docs/development/evaluation-runs/m08-pilot/condition-C-hardened-reliable-20261104.md).
+The owner accepts the completed Sol evaluation phase and Condition C. The
+final six-dimension synthesis, acceptance record, and retained limitations are
+in the [Sol closeout](docs/development/evaluation-runs/m08-pilot/sol-evaluation-closeout-20261104.md).
+The historical run records and frozen artifacts remain unchanged. No
+Condition D, delegation, external-Skill, or Luna comparison was started.
+
 **Objective:** Execute the prepared comparisons and make evidence-bounded
 recommendations about the hardened Skills and evaluation scope.
 
@@ -282,6 +343,39 @@ inconclusive evidence remains visible for operator decision.
 
 **Exclusions:** Implementation changes beyond approved hardening, broad claims
 of superiority, weighted aggregate scoring, and a generic benchmark suite.
+
+### M0.9 — GPT-6 Luna comparison
+
+**Status:** Planned; owner-approved to plan only. No Luna coding runs are
+authorized yet. The [experimental plan](docs/development/evaluation-runs/m09-luna/plan.md)
+freezes the comparison conditions, procedure, evidence, limits, and
+interpretation criteria before any run. Its model identifier was checked
+against the installed Codex CLI catalog on 2026-11-04: `gpt-6-luna`, with
+`high` reasoning supported.
+
+**Research question:** Does hardened ESS improve GPT-6 Luna's correctness,
+engineering quality, verification behavior, claim accuracy, reliability, or
+operational efficiency?
+
+**Conditions:** L-A is GPT-6 Luna without ESS (3 runs); L-C is GPT-6 Luna with
+the frozen M0.6 hardened reliable policy (3 runs). Both use the same model,
+high reasoning effort, runtime permissions, task, evaluator, and tool settings.
+Original ESS v0.3.0, delegation, and additional cases are excluded.
+
+**Controls and acceptance:** Reuse case-04 task v2, evaluator
+`case04-http-evaluator-v2.1`, deterministic provider fixture, fresh candidate
+workspace procedure, existing acceptance requirements, and six-dimensional
+methodology. Verify frozen input hashes and record each run's effective Skill
+catalog; use the same bundled-Skill baseline where practicable. Preserve all
+runs and deviations, make no post-evaluation repairs or assertion changes, and
+do not interpret this six-run pilot as statistically conclusive. Recheck model
+availability and exact identifier before launch. No ESS Skill/preset,
+baseline, task, evaluator, infrastructure, or case changes are in scope.
+
+**Resource requirement:** Six independent Luna coding sessions, each with a
+fresh workspace and full per-run evidence capture; separate Skill-catalog
+diagnostics as needed. Token quota and monetary cost are not guaranteed by this
+plan and must be recorded as available or unavailable during execution.
 
 ### External Skills and deferred questions
 
