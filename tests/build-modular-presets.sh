@@ -39,6 +39,15 @@ for index in "${!presets[@]}"; do
     '.agents/skills/verification-qa/SKILL.md' \
     'before selecting or' \
     'Load it earlier if verification work' \
+    'Verification is mandatory.' \
+    'before planning or executing' \
+    "Apply the active preset's verification requirements." \
+    'Execute' \
+    'checks and inspect their results.' \
+    'If a check is blocked, attempt a' \
+    'suitable alternative or report the requirement as unverified.' \
+    'Do not declare' \
+    'verification complete without sufficient evidence.' \
     '.agents/skills/project-handover/SKILL.md' \
     'before completing the task' \
     'do not claim to have executed that Skill' \

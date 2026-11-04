@@ -46,8 +46,13 @@ do not claim to have executed that Skill.
 - Check scope, design, implementation, verification, and acceptance at the
   meaningful stages for the task. Small changes may combine these checks; keep
   each check relevant to the change and its risk.
-- Tests and other checks during implementation are encouraged. Before reporting
-  an authorized task as complete, review the implementation against
+- Verification is mandatory. Read and follow
+  `.agents/skills/verification-qa/SKILL.md` before planning or executing
+  verification. Apply the active preset's verification requirements. Execute
+  required checks and inspect their results. If a check is blocked, attempt a
+  suitable alternative or report the requirement as unverified. Do not declare
+  verification complete without sufficient evidence. Before reporting an
+  authorized task as complete, review the implementation against
   requirements, design, quality, and scope; then run final relevant
   verification; then assess acceptance against the user's outcomes. This
   assessment does not constitute user approval. Correct failures and recheck

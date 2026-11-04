@@ -492,5 +492,9 @@ does not establish runtime Skill activation. The next manual experiment will
 inspect Codex session logs for actual Skill file reads.
 
 Status: implemented and locally verified with `make build`, `make check`,
-generated-artifact inspection, and `git diff --check`. Owner acceptance is
-pending.
+generated-artifact inspection, and `git diff --check`. The Core Policy also
+requires verification, following `verification-qa` before planning or executing
+verification, inspecting required check results, and reporting blocked
+requirements as unverified unless a suitable alternative is completed. The
+preset structural check asserts this contract while retaining staged Skill
+activation. Owner acceptance is pending.
