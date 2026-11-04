@@ -481,3 +481,16 @@ composition decision. The previously listed local LLM context-window
 investigation is deferred and remains separate from this bounded v0.4 scope.
 These questions do not block this roadmap update and must not be filled with
 invented outcomes.
+
+## M0.12 — Mandatory staged workflow Skill activation
+
+Authorized scope: add a concise mandatory four-Skill execution contract to
+Core Policy, preserve progressive stage loading and active-preset depth,
+update generated artifacts and build checks for all presets, and document the
+contract. This establishes instructions and structural packaging checks; it
+does not establish runtime Skill activation. The next manual experiment will
+inspect Codex session logs for actual Skill file reads.
+
+Status: implemented and locally verified with `make build`, `make check`,
+generated-artifact inspection, and `git diff --check`. Owner acceptance is
+pending.

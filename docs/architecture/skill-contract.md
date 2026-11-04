@@ -49,6 +49,14 @@ restart if a local Skill change is not picked up.
 These conventions follow the current
 [Codex Skill documentation](https://learn.chatgpt.com/docs/build-skills).
 
+For software development, all four workflow Skills (`software-design`,
+`implementation-review`, `verification-qa`, and `project-handover`) are
+mandatory. Core Policy controls their staged, progressive loading; load each
+at its corresponding stage rather than loading every Skill body at startup.
+The active preset determines each Skill's depth and verification
+requirements. If a required Skill is unavailable, report that and do not
+claim execution.
+
 ## Instruction quality
 
 - Keep a Skill focused on one workflow and concise enough to follow during

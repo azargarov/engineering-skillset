@@ -28,6 +28,20 @@ for index in "${!presets[@]}"; do
   [[ $(grep -Fxc '# Engineering Skillset Core Policy' "$preset_dir/AGENTS.md") == 1 ]] || \
     fail "$preset Core Policy is missing or duplicated"
   for requirement in \
+    'For software development tasks, execute all four workflow Skills' \
+    'progressively at its' \
+    'apply the active' \
+    "preset's requirements:" \
+    '.agents/skills/software-design/SKILL.md' \
+    'before planning, designing,' \
+    '.agents/skills/implementation-review/SKILL.md' \
+    'after implementation' \
+    '.agents/skills/verification-qa/SKILL.md' \
+    'before selecting or' \
+    'Load it earlier if verification work' \
+    '.agents/skills/project-handover/SKILL.md' \
+    'before completing the task' \
+    'do not claim to have executed that Skill' \
     '## Project memory' \
     'VISION.md' 'ROADMAP.md' 'current.md' 'milestones/' 'decisions/' 'errors/' \
     'explicit owner approval' 'next authorized incomplete milestone' \
@@ -73,6 +87,7 @@ for index in "${!presets[@]}"; do
   [[ $actual_skill_count -eq ${#skills[@]} ]] || fail "$preset has an incomplete workflow Skill set"
   for skill in "${skills[@]}"; do
     [[ -s $preset_dir/skills/$skill/SKILL.md ]] || fail "$preset/$skill is missing or empty"
+    [[ -r $preset_dir/skills/$skill/SKILL.md ]] || fail "$preset/$skill is unreadable"
     awk -v expected_name="$skill" '
       NR == 1 && $0 != "---" { exit 1 }
       NR == 2 && $0 != "name: " expected_name { exit 1 }

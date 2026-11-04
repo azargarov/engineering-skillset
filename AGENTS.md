@@ -25,6 +25,24 @@ repository's existing guidance and conventions.
 
 ## QA and testing
 
+For software development tasks, execute all four workflow Skills; do not skip
+one because the task appears simple. Load each Skill progressively at its
+stage, using the installed paths under `.agents/skills/`, and apply the active
+preset's requirements:
+
+1. Read `.agents/skills/software-design/SKILL.md` before planning, designing,
+   or implementing.
+2. Read `.agents/skills/implementation-review/SKILL.md` after implementation
+   and before final verification.
+3. Read `.agents/skills/verification-qa/SKILL.md` before selecting or
+   executing final verification checks. Load it earlier if verification work
+   is required during implementation.
+4. Read `.agents/skills/project-handover/SKILL.md` before completing the task
+   and reporting the result.
+
+If a required Skill file is missing or unreadable, report that explicitly and
+do not claim to have executed that Skill.
+
 - Check scope, design, implementation, verification, and acceptance at the
   meaningful stages for the task. Small changes may combine these checks; keep
   each check relevant to the change and its risk.
