@@ -382,6 +382,56 @@ explicitly instructed to build a prototype. This is a future experiment that
 requires separate owner approval and a frozen plan before any run. No changes
 to ESS and no additional runs are authorized by this proposal.
 
+### M0.10 — Luna maturity and prompt normalization comparison
+
+**Status:** Draft protocol and normalized task proposal prepared for owner
+review. No v3 task/snapshot or evaluator v2.2 is frozen; no Luna candidate
+runs have started. Pilot execution is not authorized until the owner approves
+the canonical task, candidate snapshot, evaluator delta, and protocol.
+
+**Research question:** Does hardened ESS improve engineering outcomes compared
+with giving GPT-6 Luna the same application requirements and a concise
+project-maturity declaration?
+
+**Conditions:** Four single-model, high-reasoning-effort conditions: P0 is the
+canonical application prompt plus “Build this application as a prototype”
+without ESS; P1 is the canonical prompt only with frozen hardened prototype
+ESS; R0 is the canonical prompt plus “Build this application to a reliable,
+maintainable engineering standard” without ESS; R1 is the canonical prompt
+only with frozen hardened reliable ESS. Three runs per condition are planned,
+starting with a four-condition, one-run-per-condition pilot. The pilot order is
+P0, P1, R0, R1. The remaining eight runs require separate owner approval after
+pilot review.
+
+**Normalization and compatibility:** The [M0.9 prompt-framing
+addendum](docs/development/m09-closeout-addendum-20261104.md) notes that the
+v2 baseline already received engineering-process instructions. M0.10 proposes
+one byte-identical application prompt, removes those process cues and starter
+project-status history from a new v3 workspace snapshot, and preserves all
+application behavior and external constraints. The [normalized task
+proposal](docs/development/evaluation-runs/m10-luna/normalized-task-proposal.md),
+[traceability/evaluator assessment](docs/development/evaluation-runs/m10-luna/requirement-traceability.md),
+[preset composition comparison](docs/development/evaluation-runs/m10-luna/preset-comparison.md),
+and [protocol](docs/development/evaluation-runs/m10-luna/plan.md) are drafts.
+The compatibility assessment proposes a new evaluator v2.2 while leaving
+v2.1 untouched: preserve its eleven assertion bodies and add checks for the
+existing process-local persistence and standard-library constraints. These
+are material task/evaluator version changes and require owner approval before
+freezing or any pilot run.
+
+**Controls and interpretation:** Use only GPT-6 Luna, high effort, identical
+runtime/tool/permission configuration, deterministic fixture, fresh workspace
+and session procedure, and the frozen M0.6 hardened prototype/reliable
+presets. Preserve each effective instruction/catalog record and all failures.
+Assess prototype and reliable pairs separately across the six established
+dimensions; do not aggregate quality or claim causal or statistical
+significance from three runs per condition. After the four-run pilot, stop for
+review; continue only after explicit owner approval.
+
+**Exclusions:** No ESS edits, historical evidence changes, delegation, external
+agents, other models, extra application cases, new benchmark framework, or
+candidate repairs.
+
 ### External Skills and deferred questions
 
 Superpowers (`obra/superpowers`) and similar agent-skill projects are candidate
