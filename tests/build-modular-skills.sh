@@ -12,8 +12,8 @@ from pathlib import Path
 
 presets = ("prototype", "fast-development", "performance", "reliable")
 descriptions = {
-    "software-design": "Design software systems and nontrivial changes by defining responsibilities, boundaries, trade-offs, and implementation steps.",
-    "verification-qa": "Select and assess verification checks appropriate to the task strategy and risks.",
+    "software-design": "Use when the user requests software design or implementation needs nontrivial architecture or interface decisions; define responsibilities, boundaries, trade-offs, and implementation steps. Keep routine localized changes lightweight.",
+    "verification-qa": "Use when planning substantial verification or assessing whether checks establish required behavior; select and assess checks appropriate to the active preset and task risks. Routine checks can follow project instructions without this workflow.",
 }
 titles = {"software-design": "Software Design", "verification-qa": "Verification QA"}
 module_lists = {
@@ -70,18 +70,19 @@ for skill in copied_skills:
         raise SystemExit(f"{skill}: identical shared guidance was copied inconsistently")
 
 checks = {
-    ("verification-qa", "prototype"): ("primary scenario", "manual smoke check"),
-    ("verification-qa", "fast-development"): ("common edge cases", "focused automated tests"),
-    ("verification-qa", "performance"): ("representative workload", "profiling", "race"),
-    ("verification-qa", "reliable"): ("invariants", "recovery", "remains\n   untested"),
+    ("verification-qa", "prototype"): ("scenario", "Inspect the actual result", "automated smoke check"),
+    ("verification-qa", "fast-development"): ("edge", "focused automated tests"),
+    ("verification-qa", "performance"): ("scenario", "equivalent conditions", "profiling", "race"),
+    ("verification-qa", "reliable"): ("invariants", "recovery", "critical check is missing", "100% coverage"),
     ("software-design", "prototype"): ("hypothesis", "minimal structure", "temporary limitations"),
     ("software-design", "fast-development"): ("readable", "maintainable", "Avoid concurrency"),
     ("software-design", "performance"): ("measurable workload", "profiling", "functional contracts"),
     ("software-design", "reliable"): ("contracts", "invariants", "module responsibilities", "failure behavior"),
 }
 for key, phrases in checks.items():
+    normalized = " ".join(compiled[key].split()).lower()
     for phrase in phrases:
-        if phrase not in compiled[key]:
+        if phrase.lower() not in normalized:
             raise SystemExit(f"{key[1]}/{key[0]}: expected strategy guidance is missing: {phrase}")
 for artifact in compiled.values():
     if "Engineering Skillset Core Policy" in artifact:

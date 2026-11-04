@@ -430,6 +430,38 @@ models, delegation, post-evaluation repairs, aggregate scores, or
 causal/statistical claims were made. No further runs are authorized in this
 execution; the eight originally planned follow-up runs remain unlaunched.
 
+### M0.11 — Preset behavioral compliance experiment
+
+**Status:** The five-condition experiment and consolidated report are complete
+and ready for owner review. The milestone is not owner-accepted.
+
+**Objective and conditions:** Compare B0 Codex without ESS with P1 Prototype,
+F1 Fast Development, M1 Performance, and R1 Reliable using one identical
+functionality-only Go prompt, a common starter, and frozen preset artifacts.
+The report preserves candidate outputs, traces, per-run Skill/instruction
+inventories, evaluator evidence, execution metrics, and deviations in the
+[M0.11 package](docs/development/evaluation-runs/m011/).
+
+**Observed results:** All five final candidates passed the 21-check independent
+post-run evaluator, including race-instrumented concurrent reservation checks.
+No functional correctness difference was observed. P1 was partially compliant;
+F1, M1, and R1 missed applicable verification obligations. Actual tool traces
+differed, but they did not show a consistent preset-specific verification
+pattern. Skill-body loading was not observable. No causal or statistical claim
+is made from one run per condition.
+
+**Protocol limits:** The behavioral matrix and prompt were frozen before
+execution. The evaluator script was materialized after candidates were sealed,
+then corrected during calibration and rerun against all conditions. A
+preliminary B0 attempt did not use the final strict isolation; a preliminary P1
+attempt wrote to a shared `/tmp` location and is marked contaminated. Both are
+preserved and excluded. Candidate sandboxes denied local listening sockets, so
+several candidate smoke attempts did not complete. The report details each
+deviation and its effect on interpretation.
+
+No ESS policy source changes or further candidate runs were made. The next
+action is owner review of the report; its recommendations remain proposals.
+
 ### External Skills and deferred questions
 
 Superpowers (`obra/superpowers`) and similar agent-skill projects are candidate

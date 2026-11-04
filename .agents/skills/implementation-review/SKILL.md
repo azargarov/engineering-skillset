@@ -3,7 +3,9 @@ name: implementation-review
 description: Review an implementation for correctness, scope, design quality, complexity, and maintainability when a code review or implementation review is requested.
 ---
 
-Review the implementation against the authorized outcome. Use the level of
+Review the implementation against both the requested behavior and the
+repository's applicable standards. Keep these perspectives distinct so
+conformance to one cannot conceal a gap in the other. Use the level of
 detail appropriate to its size and risk; a small change may need only its diff
 and directly related code.
 
