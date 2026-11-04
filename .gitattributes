@@ -1,0 +1,2 @@
+# Preserve candidate-generated diffs verbatim as evaluation evidence.
+docs/development/evaluation-runs/m09-luna/*/candidate.patch -diff

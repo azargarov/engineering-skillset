@@ -346,36 +346,41 @@ of superiority, weighted aggregate scoring, and a generic benchmark suite.
 
 ### M0.9 — GPT-6 Luna comparison
 
-**Status:** Planned; owner-approved to plan only. No Luna coding runs are
-authorized yet. The [experimental plan](docs/development/evaluation-runs/m09-luna/plan.md)
-freezes the comparison conditions, procedure, evidence, limits, and
-interpretation criteria before any run. Its model identifier was checked
-against the installed Codex CLI catalog on 2026-11-04: `gpt-6-luna`, with
-`high` reasoning supported.
+**Status:** Completed, deterministically verified, and owner-accepted on
+2026-11-04. All six L-A/L-C runs passed the frozen 11 requirements. No
+functional correctness improvement was observed with hardened ESS. Additional
+verification activities did not uncover frozen-requirement failures. Skill
+discovery, activation, and compliance were inconsistent. The descriptive mean
+elapsed time and input tokens for L-C were approximately 1.53× and 1.92× L-A,
+respectively. The small sample, catalog variability, and other documented
+limitations rule out causal or statistically conclusive claims. See the
+[accepted final report](docs/development/evaluation-runs/m09-luna/final-report.md),
+[first-pair report](docs/development/evaluation-runs/m09-luna/first-pair-report.md),
+and [per-run evidence](docs/development/evaluation-runs/m09-luna/).
 
-**Research question:** Does hardened ESS improve GPT-6 Luna's correctness,
-engineering quality, verification behavior, claim accuracy, reliability, or
-operational efficiency?
+**Conditions:** L-A was GPT-6 Luna without ESS (3 runs); L-C was GPT-6 Luna
+with the frozen M0.6 hardened reliable policy (3 runs). Both used high
+reasoning effort, the same runtime permissions, task, evaluator, and tool
+settings. Original ESS v0.3.0, delegation, and additional cases were excluded.
+All six candidates passed all 11 frozen evaluator requirements. No functional
+correctness difference was observed. Extra local checks provided additional
+operational evidence but did not discover frozen-assertion failures.
 
-**Conditions:** L-A is GPT-6 Luna without ESS (3 runs); L-C is GPT-6 Luna with
-the frozen M0.6 hardened reliable policy (3 runs). Both use the same model,
-high reasoning effort, runtime permissions, task, evaluator, and tool settings.
-Original ESS v0.3.0, delegation, and additional cases are excluded.
+**Interpretation limits:** Resource ratios are descriptive observations from
+three sessions per condition. Skill discovery, activation, and compliance
+varied. The selected Luna model alias had no immutable revision; there was no
+independent/blinded code review, and dollar-cost/retry telemetry was
+unavailable. Workspace separation was procedural under full-access
+permissions. Historical Sol results use `gpt-6.1-sol` and are context only,
+not a matched comparison with Luna. The six evaluation dimensions and all
+failures/deviations remain in the final report and run evidence. Owner
+acceptance does not extend beyond the bounded M0.9 findings.
 
-**Controls and acceptance:** Reuse case-04 task v2, evaluator
-`case04-http-evaluator-v2.1`, deterministic provider fixture, fresh candidate
-workspace procedure, existing acceptance requirements, and six-dimensional
-methodology. Verify frozen input hashes and record each run's effective Skill
-catalog; use the same bundled-Skill baseline where practicable. Preserve all
-runs and deviations, make no post-evaluation repairs or assertion changes, and
-do not interpret this six-run pilot as statistically conclusive. Recheck model
-availability and exact identifier before launch. No ESS Skill/preset,
-baseline, task, evaluator, infrastructure, or case changes are in scope.
-
-**Resource requirement:** Six independent Luna coding sessions, each with a
-fresh workspace and full per-run evidence capture; separate Skill-catalog
-diagnostics as needed. Token quota and monetary cost are not guaranteed by this
-plan and must be recorded as available or unavailable during execution.
+**Proposed next research direction (not authorized):** Compare GPT-6 Luna with
+the ESS prototype preset against Luna without ESS, with both conditions
+explicitly instructed to build a prototype. This is a future experiment that
+requires separate owner approval and a frozen plan before any run. No changes
+to ESS and no additional runs are authorized by this proposal.
 
 ### External Skills and deferred questions
 
