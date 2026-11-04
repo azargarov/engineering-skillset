@@ -1,2 +1,2 @@
-# Preserve candidate-generated diffs verbatim as evaluation evidence.
-docs/development/evaluation-runs/m09-luna/*/candidate.patch -diff
+docs/development/evaluation-runs/m10-luna/preflight-review-20261104/codex-exec-help.txt whitespace=-blank-at-eol
+docs/development/evaluation-runs/m10-luna/preflight-review-20261104/debug-prompt-input-help.txt whitespace=-blank-at-eol

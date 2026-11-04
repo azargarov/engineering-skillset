@@ -384,53 +384,51 @@ to ESS and no additional runs are authorized by this proposal.
 
 ### M0.10 — Luna maturity and prompt normalization comparison
 
-**Status:** Draft protocol and normalized task proposal prepared for owner
-review. No v3 task/snapshot or evaluator v2.2 is frozen; no Luna candidate
-runs have started. Pilot execution is not authorized until the owner approves
-the canonical task, candidate snapshot, evaluator delta, and protocol.
+**Status:** Completed and owner-accepted on 2026-11-04 as an exploratory
+pilot, without an ESS effectiveness or causal claim. The four-run pilot,
+focused diagnostic review, authorized supplementary prototype comparison, and
+evidence consolidation are complete. The consolidated assessment records
+exact per-run time, token, verification, Skill, and compliance evidence. P0-S1/P1-S1 both
+passed all twelve frozen evaluator v2.2 assertions after deterministic
+preflight; this is a descriptive one-run-per-condition comparison. Original
+P0 is excluded from matched inference because it inherited repository
+instructions; original R0/R1 remains qualified, with R1's genuine RETRY-02
+fallback-delay defect. Under `danger-full-access`, filesystem isolation was
+not enforced. Evaluator v2.2 remains correct and unchanged. No further
+candidate runs were launched. The remaining eight originally planned runs are
+deferred. Skill-body loading/named selection and behavioral compliance remain
+unresolved research questions. See the [consolidated report](docs/development/evaluation-runs/m10-luna/final-consolidated-pilot-report-20261104.md),
+[supplementary report](docs/development/evaluation-runs/m10-luna/pilot-supplementary-20261104-report.md),
+[original pilot report](docs/development/evaluation-runs/m10-luna/pilot-amended-20261104-report.md),
+[diagnostic review](docs/development/evaluation-runs/m10-luna/pilot-diagnostic-review-20261104.md),
+and [supplementary run evidence](docs/development/evaluation-runs/m10-luna/pilot-supplementary-20261104/).
 
-**Research question:** Does hardened ESS improve engineering outcomes compared
-with giving GPT-6 Luna the same application requirements and a concise
-project-maturity declaration?
+**Research question and conditions:** Compare `gpt-6-luna` at high reasoning
+effort across P0 (canonical application requirements plus the prototype
+declaration, no ESS), P1 (canonical requirements, hardened prototype ESS), R0
+(canonical requirements plus the reliable declaration, no ESS), and R1
+(canonical requirements, hardened reliable ESS). The pilot observed one run
+per condition in P0, P1, R0, R1 order. The eight originally planned follow-up
+runs are deferred and were not authorized by milestone closeout.
 
-**Conditions:** Four single-model, high-reasoning-effort conditions: P0 is the
-canonical application prompt plus “Build this application as a prototype”
-without ESS; P1 is the canonical prompt only with frozen hardened prototype
-ESS; R0 is the canonical prompt plus “Build this application to a reliable,
-maintainable engineering standard” without ESS; R1 is the canonical prompt
-only with frozen hardened reliable ESS. Three runs per condition are planned,
-starting with a four-condition, one-run-per-condition pilot. The pilot order is
-P0, P1, R0, R1. The remaining eight runs require separate owner approval after
-pilot review.
+**Frozen task and evaluator:** The byte-identical canonical task v3 and
+condition prompts, clean v3 starter snapshot, evaluator
+`case04-http-evaluator-v2.2`, and frozen M0.6 prototype/reliable preset copies
+are recorded under
+[the M0.10 package](docs/development/evaluation-runs/m10-luna/). Evaluator v2.2
+preserves the eleven v2.1 HTTP assertion bodies and adds only `CONST-01` for
+the stated Go standard-library/dependency constraint. The earlier `PERSIST-01`
+proposal was removed: task wording does not require jobs to disappear after a
+restart. v2.1 and historical task/results remain unchanged. The reference
+passed all twelve assertions; the v3 health-only snapshot passed `REG-01` and
+`CONST-01`, with its ten job-feature assertions failing as expected. Calibration
+outputs and chained input hashes are retained.
 
-**Normalization and compatibility:** The [M0.9 prompt-framing
-addendum](docs/development/m09-closeout-addendum-20261104.md) notes that the
-v2 baseline already received engineering-process instructions. M0.10 proposes
-one byte-identical application prompt, removes those process cues and starter
-project-status history from a new v3 workspace snapshot, and preserves all
-application behavior and external constraints. The [normalized task
-proposal](docs/development/evaluation-runs/m10-luna/normalized-task-proposal.md),
-[traceability/evaluator assessment](docs/development/evaluation-runs/m10-luna/requirement-traceability.md),
-[preset composition comparison](docs/development/evaluation-runs/m10-luna/preset-comparison.md),
-and [protocol](docs/development/evaluation-runs/m10-luna/plan.md) are drafts.
-The compatibility assessment proposes a new evaluator v2.2 while leaving
-v2.1 untouched: preserve its eleven assertion bodies and add checks for the
-existing process-local persistence and standard-library constraints. These
-are material task/evaluator version changes and require owner approval before
-freezing or any pilot run.
-
-**Controls and interpretation:** Use only GPT-6 Luna, high effort, identical
-runtime/tool/permission configuration, deterministic fixture, fresh workspace
-and session procedure, and the frozen M0.6 hardened prototype/reliable
-presets. Preserve each effective instruction/catalog record and all failures.
-Assess prototype and reliable pairs separately across the six established
-dimensions; do not aggregate quality or claim causal or statistical
-significance from three runs per condition. After the four-run pilot, stop for
-review; continue only after explicit owner approval.
-
-**Exclusions:** No ESS edits, historical evidence changes, delegation, external
-agents, other models, extra application cases, new benchmark framework, or
-candidate repairs.
+**Controls and limits:** The four original runs and two authorized supplementary
+runs are documented in the reports above. No ESS edits, extra cases, other
+models, delegation, post-evaluation repairs, aggregate scores, or
+causal/statistical claims were made. No further runs are authorized in this
+execution; the eight originally planned follow-up runs remain unlaunched.
 
 ### External Skills and deferred questions
 
