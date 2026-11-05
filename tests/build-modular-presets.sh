@@ -51,6 +51,8 @@ for index in "${!presets[@]}"; do
     '.agents/skills/project-handover/SKILL.md' \
     'before completing the task' \
     'do not claim to have executed that Skill' \
+    'When discovering installed Skills, account for symbolic links.' \
+    'resolve its path and attempt to read' \
     'Mandatory Skill activation and stage ordering do not require separate plans' \
     'depth warranted by the active preset, task scope, concrete risks, and existing' \
     '## Project memory' \

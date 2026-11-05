@@ -42,6 +42,9 @@ preset's requirements:
 
 If a required Skill file is missing or unreadable, report that explicitly and
 do not claim to have executed that Skill.
+When discovering installed Skills, account for symbolic links. Before
+reporting a required Skill as unavailable, resolve its path and attempt to read
+its `SKILL.md` directly.
 
 Mandatory Skill activation and stage ordering do not require separate plans,
 reports, other artifacts, or extensive ceremony. Apply each workflow at the
