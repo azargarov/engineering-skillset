@@ -7,7 +7,7 @@
 
 ## 1. Product goal
 
-Create a portable, modular, configurable engineering methodology for AI-assisted software development. Its purpose is to improve correctness, scope discipline, readability, maintainability, verification honesty, and development continuity at proportionate cost.
+Create a portable, modular, configurable engineering methodology for AI-assisted software development. Its purpose is to support correctness, scope discipline, readability, maintainability, verification honesty, and development continuity at proportionate cost.
 
 The end user selects a project level, engineering priorities, and optional capabilities. A lightweight **Bash installer** obtains a specified version of the module sources into a temporary directory, composes the selected instructions and Skills, installs only required artifacts into a new or existing project, and cleans up temporary data safely.
 
@@ -15,7 +15,7 @@ The end user selects a project level, engineering priorities, and optional capab
 
 `Core Policy + exactly one project-level module + zero or more priority modules + zero or more optional modules + selected reusable workflow Skills`
 
-Policy modules affect standards, priorities, and depth of engineering work. Skills provide reusable task procedures. A module does not have to correspond to one Skill. The exact number and boundaries of Skills, composition format (fixed sections vs. slots), and repository layout remain open pending experiment.
+Policy modules affect standards, priorities, and depth of engineering work. Skills provide reusable task procedures. A module does not have to correspond to one Skill. The exact number and boundaries of Skills, composition format (fixed sections vs. slots), and repository layout were resolved in later implementation work.
 
 The always-applicable Core Policy preserves scope, correctness, proportionate QA, compositional testing, truthful evidence, and continuity. No selected module may silently weaken those guarantees. Educational behavior is independent of project maturity; exact profile labels and their configuration semantics require validation.
 
@@ -34,11 +34,10 @@ The always-applicable Core Policy preserves scope, correctness, proportionate QA
 
 | Milestone | Objective | Current status |
 |---|---|---|
-| **M00 — Engineering Foundation** | Principles, Core Policy, modular composition requirements, and evaluation plan | **Completed** |
+| **M00 — Engineering Foundation** | Principles, Core Policy, and modular composition requirements | **Completed** |
 | **M01 — Module Composition** | Validate a minimal composable set of policy modules | **Completed (verified supported scope)** |
 | **M02 — Bash Installer** | Safe, repeatable local and remote installation and reconfiguration | **Completed (verified supported scope)** |
 | **M03 — Workflow Skills** | Implement and verify the selected task workflows | **Completed (verified supported scope)** |
-| **M04 — Evaluation & Qualification** | Evaluate modules and Skills against actual Codex behavior | **Completed for evaluation scope; behavioral effectiveness inconclusive** |
 | **M05 — Experimental v1 Release** | Package, document, verify, and publish the experimental system | **Completed** |
 
 **Status convention:** Planned / Next active / In progress / Blocked / Completed / Accepted. Completion requires evidence against milestone acceptance conditions; documentation deliverables alone do not establish behavioral effectiveness.
@@ -53,7 +52,7 @@ The always-applicable Core Policy preserves scope, correctness, proportionate QA
 **Artifact:** `docs/requirements/engineering-principles-v1.md`\
 **Reported commit:** `52cc28576acaf648eef3518729eea1bc7b9d27b5`
 
-Seven principles were documented. Subsequent review clarified QA independence, final-verification ordering, and distinct higher-level testing evidence. Formal evaluation of the rules' practical effectiveness remains open.
+Seven principles were documented. Subsequent review clarified QA independence, final-verification ordering, and distinct higher-level testing evidence. The principles are reflected in the current Core Policy and workflow Skills.
 
 ### M00.2 — Core Policy
 
@@ -73,19 +72,9 @@ Core Policy expresses durable, actionable instructions without binding the proje
 
 The design defines Core / one level / zero or more priorities / zero or more optional modules, keeps Skills separate, specifies conflict handling and module-quality requirements, and includes three example compositions. It recommends fixed-order named sections while retaining named slots as an evaluated alternative. Composition produces a standalone effective policy; integrating with existing repository instructions belongs to the installer, whose reconciliation behavior remains open.
 
-**Exit:** Examples, module responsibilities, conflict behavior, and structural acceptance criteria are documented without an implementation framework. The recommendation remains subject to M01 validation; behavioral effectiveness is not claimed.
+**Exit:** Examples, module responsibilities, conflict behavior, and structural acceptance criteria are documented without an implementation framework. The recommendation remains subject to M01 validation.
 
-### M00.4 — Minimal Evaluation Plan
-
-**Status:** Completed.\
-**Artifact:** `docs/development/evaluation-plan.md`\
-**Commit:** `dce458a88122fe7d225fc573b9422c23a2ac70eb`
-
-The plan defines baseline, Core-only, and composed comparisons; controlled conditions; independent criteria; hypothetical initial scenarios pending evidence of specific real-project incidents; and marginal-benefit review. Behavioral effectiveness has not been tested, and the final release policy remains open.
-
-**Exit:** A lightweight evaluation methodology is committed. It does not predetermine results, pass thresholds, or the final release policy.
-
-**M00 exit:** M00.1–M00.4 deliverables are committed and verified. The final release policy and other identified decisions remain open.
+**M00 exit:** M00.1–M00.3 deliverables are committed and verified. The final release policy and other identified decisions remain open.
 
 ## 5. M01 — Module Composition
 
@@ -99,7 +88,7 @@ The plan defines baseline, Core-only, and composed comparisons; controlled condi
 
 **Acceptance:** Accepted for the verified supported scope: standalone compositions using the Core Policy, the `personal` level, and zero or more of the `readability` and `development-speed` priorities. Representative outputs were rendered and reviewed; automated checks cover deterministic ordering, Core preservation, invalid selections, duplicate sections, and output failure handling. This structural verification does not establish behavioral effectiveness.
 
-**Limitations:** No optional modules are currently supplied, so successful optional-module composition is not demonstrated. No explicitly incompatible module pairs are defined; the composer does not implement pairwise incompatibility rules or semantic conflict detection. Only currently supported modules and selections were reviewed. Behavioral effectiveness remains untested and belongs to the evaluation milestone.
+**Limitations:** No optional modules are currently supplied, so successful optional-module composition is not demonstrated. No explicitly incompatible module pairs are defined; the composer does not implement pairwise incompatibility rules or semantic conflict detection. Only currently supported modules and selections were reviewed.
 
 **M01 exit:** M01.1–M01.5 are committed and verified for the scope above. Installer behavior, remote downloads, Skills, optional-module examples, and behavioral qualification are not part of this acceptance.
 
@@ -142,26 +131,6 @@ The plan defines baseline, Core-only, and composed comparisons; controlled condi
 
 **M03.8 extension:** The two controlled scenarios exercised a small CLI change and a larger webhook integration design. They support that the Skill can produce actionable, proportionate designs in those examples; they do not establish general behavioral effectiveness or superiority over baseline Codex. No independent assurance was performed.
 
-## 8. M04 — Evaluation & Qualification
-
-**Goal:** Establish whether Core, module composition, and Skills improve real engineering outcomes enough to justify their overhead.
-
-Evaluate at least:
-
-1. **Baseline:** Codex with ordinary existing project guidance.
-2. **Core-only:** Codex with the common Core Policy, without added workflow Skills.
-3. **Composed:** Codex with Core plus selected policy modules and candidate Skills.
-
-For isolating Skill effects, keep underlying policy and authorization comparable between paired runs. Fix model/effort, repository snapshot, tools, permissions, and task acceptance criteria as closely as practical. Use independent, preferably deterministic outcome checks; use human review for subjective judgments. A small number of repeated runs is a smoke signal, not statistical proof.
-
-- **M04.1 — Behavioral Evaluation Design:** Completed in commit `5f09a38`. Defined the three comparison configurations, controls, assessment criteria, validity limits, and a proposed manual pilot.
-- **M04.2 — Evaluation Case Preparation:** Completed in commit `ea65489`. Prepared three frozen cases with agent-facing tasks, separate evaluator criteria, deterministic checks where practical, and recorded provenance.
-- **M04.3 — Matched Pilot Comparison and Analysis:** Completed for the nine-run pilot and its provisional analysis. Evidence is recorded in `docs/development/evaluation-runs/m04.3/README.md` and `docs/development/evaluation-runs/m04.3-analysis.md` (pilot commit `8488a4f`; analysis commit `f83ef37`). One run per condition and case is not statistical evidence.
-- **M04.4 — Targeted Repeats and Ablation:** Completed as an evaluation activity for its bounded scope. The four planned follow-up runs are recorded in `docs/development/evaluation-runs/m04.4-follow-up/README.md`; the Case 2 Core-only/Baseline pair produced identical accepted patches, while the Case 3 pair preserved the expected integration failure and handover boundary. An additional explicit Project Handover activation check is recorded in `docs/development/evaluation-runs/m04.5-skill-activation/README.md` (evidence commit `fe3cd06`). Metadata discovery was observed, but the Skill body read and invocation were not established; this is an unresolved result, not proof of value or experimental failure. The follow-up evidence, analysis, and closeout are in commits `fe83bf3`, `7737040`, and `7ff432c`. Component effectiveness remains inconclusive.
-- **M04.5 — Final Evaluation Decisions:** Completed for the recorded evidence and evaluation scope. The prior self-reviewed assessment is preserved in `docs/development/evaluation-runs/m04.5-decision-review.md` (commit `7c141f8`); final provisional experimental-v1 decisions and release distinctions are in `docs/development/evaluation-runs/m04.5-final-decisions.md` (commit `6cb6b12`). The pilot, targeted follow-up, explicit Skill activation check, and one matched end-to-end comparison establish no general behavioral advantage over Baseline. Components are provisionally included for experimental inspection and trial; effectiveness remains inconclusive. No independent assurance was performed, and no further evaluation runs are planned for M04.
-
-**Acceptance:** The planned pilot, bounded follow-up, activation check, and focused end-to-end comparison are recorded; no known critical acceptance failures were concealed; provisional experimental inclusion decisions and observed costs are documented without claiming efficacy or statistical significance. M04 is closed as an evaluation activity, not as proof of behavioral effectiveness.
-
 ## 9. M05 — Experimental v1 Release
 
 **Goal:** Prepare a clearly labeled experimental distribution whose supported scope and limitations are explicit. Do not present it as a proven productivity improvement.
@@ -198,11 +167,7 @@ A fresh disposable-project installation produced a policy matching the selected 
 ## 10. Agreed future direction
 
 - **M06 — Dropped:** No implementation is planned.
-- **M07 — Postponed:** Retained as a future direction but not scheduled or active.
-- **M08 — Composed-policy duplication and context efficiency:** Completed. The largest supported composition is 833 words; overlap primarily serves distinct policy responsibilities. Estimated wording savings of 20–50 words had no demonstrated behavioral benefit, so policy and Skill wording remain unchanged. Actual Skill-loading overhead remains a separate runtime-observation question. Findings: `docs/development/evaluation-runs/m08-context-efficiency.md`.
-- **M09 — Roadmap Optimization Skill:** M09.1 (experimental Skill design and fixture evaluation) is complete and accepted. Its three synthetic cases retained the small and already-organized roadmaps and proposed outcome-oriented epochs for the disorganized roadmap. Independent review found preservation and link defects in the first proposal; these were corrected, the Case B preservation audit was repeated, and all 17 relative Markdown links resolved. The original first-pass failure and remaining limitations are recorded in `docs/development/evaluation-runs/m09.1-roadmap-optimization/README.md`. M09.2 (controlled migration experiment) is the next planned stage and has not begun; it remains subject to separate authorization. No production Skill installation or project roadmap migration is included in M09.1.
-
-No prior M06–M09 milestone definitions were present in this roadmap when these directions were recorded.
+- **M07 — Postponed:** Retained as a historical planning item; not scheduled or active.
 
 ## 11. Cross-milestone checkpoints
 
@@ -218,14 +183,14 @@ The underlying record layout is still an open implementation decision. Avoid man
 
 ## 12. Decisions retained and questions left open
 
-**Retained:** central proportionate QA; compositional testing; honest evidence; authoritative scope; readable code and KISS/YAGNI; meaningful stage history and compact current context; configurable level/priorities/options; modular assembly; Bash installer; safe updates; evaluation against baseline.
+**Retained:** central proportionate QA; compositional testing; honest evidence; authoritative scope; readable code and KISS/YAGNI; meaningful stage history and compact current context; configurable level/priorities/options; modular assembly; Bash installer; safe updates.
 
 **Open:** exact project-level taxonomy; profile and priority semantics; module section/slot format; conflicts beyond enforceable static rules; number of Skills; activation and independent-review thresholds; record formats; installer flags and metadata details; statistically meaningful Skill acceptance policy. These must be resolved through bounded design and tests rather than speculative framework-building.
 
 ## 13. Immediate next actions
 
-1. M08 and M09.1 are complete. Next planned work is M09.2: a separately authorized controlled migration experiment for the roadmap optimization workflow. M06 is dropped and M07 postponed.
+1. M06 is dropped and M07 is postponed. The current product roadmap is maintained in the root `ROADMAP.md`.
 2. Preserve the distinction between policy modules and reusable workflow Skills.
-3. Do not treat M01 structural, M02 installation, M05 qualification, or release publication as evidence of behavioral effectiveness. M04 evaluation is complete, but effectiveness remains unproven.
+3. Treat build, installation, and packaging checks as evidence for those product contracts only.
 
-**Roadmap change rule:** This document may be updated as evidence arrives. Preserve important decisions and explicitly revise future milestones when learning warrants it; do not expand approved scope silently.
+**Roadmap change rule:** Preserve applicable product and architecture decisions; do not expand approved scope silently.

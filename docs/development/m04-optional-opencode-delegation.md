@@ -24,7 +24,7 @@ configuration template and compatibility paths are documented in
 
 ### Status command follow-up
 
-Practical installation evaluation found that `ess delegation status` duplicated
+A CLI lifecycle review found that `ess delegation status` duplicated
 `ess status`. The CLI now uses `ess status` as the single diagnostic command;
 `ess delegation on|off` remains the opt-in control. This changes no installed
 project files or state format, so existing installations remain compatible.
@@ -60,13 +60,3 @@ policy containing the module's `# Model Delegation` heading. Existing modified
 policy or managed Skill paths still stop upgrade rather than being overwritten.
 The root local example is not read automatically by ESS; the Skill may consult
 the documented private Markdown preferences file when it exists.
-
-## Accepted HTTP API delegation evidence
-
-The owner accepts the latest HTTP API delegation experiment as functional
-evidence. `deepseek/deepseek-flash` completed the store component and tests;
-`openai/gpt-6-luna` completed the HTTP handler component and tests. Codex
-reviewed and integrated both results. Both delegations completed successfully,
-and the final tests, race detector, vet, build, and HTTP smoke checks passed.
-This does not establish that delegation is faster, cheaper, or more reliable
-than Codex working alone; comparative effectiveness remains unverified.

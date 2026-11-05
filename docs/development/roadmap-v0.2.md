@@ -5,8 +5,8 @@ qualification are complete. Stage 2A is operator-accepted. Stage 2B changes are
 implemented and verified; operator acceptance and release preparation remain
 pending. Behavioral effectiveness is not established.
 **Product intent:** [`../../VISION.md`](../../VISION.md)
-**Baseline:** Preserve the released `v0.1.0-experimental` history and evaluation
-evidence.
+**Baseline:** Preserve compatibility with the released `v0.1.0-experimental`
+product behavior where applicable.
 
 This roadmap aligns the v0.2 work with task strategies assembled from explicit
 source modules. It records implementation evidence separately from owner
@@ -18,12 +18,13 @@ authorization.
 The initial presets are `prototype`, `fast-development`, `performance`, and
 `reliable`.
 Each preset is a small declarative selection of Markdown modules. Modules may
-represent shared rules or a workflow variant. The accepted first workflow
-experiment is `verification-qa` for `prototype` and `reliable`. Complete
+represent shared rules or a workflow variant. The first workflow with
+preset-specific composition is `verification-qa` for `prototype` and
+`reliable`. Complete
 preset outputs now include all four strategies and the four existing workflow
 Skill names. Historical `personal` and `production` implementations have been
-removed from the active tree; their committed history and evaluation evidence
-remain available through Git.
+removed from the active tree; their committed history remains available
+through Git.
 
 Make orchestrates deterministic compilation into stable per-preset
 directories. A compiled Skill is a standalone `SKILL.md`; shared Core Policy
@@ -77,10 +78,7 @@ mark the milestone accepted.
 ### V2-04 — Define declarative modular presets and validate workflow composition
 
 **Implementation status:** `verification-qa` composition for all four presets
-is implemented. The Prototype/Reliable pilot received an independent PASS
-review and is accepted. Its review record, configuration limitations, and
-remaining integration limits are documented in
-[`verification-qa-modular-pilot.md`](verification-qa-modular-pilot.md).
+is implemented and covered by the current modular preset and Skill checks.
 The complete composition includes all four product presets and workflow
 Skills. `implementation-review` and `project-handover` reuse their existing
 standalone sources unchanged because their guidance does not need preset
@@ -110,7 +108,7 @@ Owner review is pending.
 Generated Skill structure and content distinctions are checked by
 `tests/build-modular-skills.sh` and `tests/build-modular-presets.sh`.
 
-No behavioral-effectiveness claim is made without suitable evaluation.
+
 
 ### V2-06 — Align build, `ess`, and publication behavior
 
@@ -132,13 +130,6 @@ link while copied project policy remained unchanged. An invalid build
 preserved published artifact hashes and left the installed project healthy.
 The publication test also exercised partial per-file publication and
 successful recovery. No integration defect was found.
-
-This evidence qualifies integration behavior only. It does not show that an
-agent discovers or invokes a Skill, follows a preset strategy, or produces
-better outcomes. A separate design for controlled cross-model behavioral
-evaluation is in
-[`evaluation-plan.md`](evaluation-plan.md);
-no OpenCode runs or model calls have been made.
 
 **Known limits:** interruption during per-file publication can leave mixed
 generations, and `make clean` removes targets of installed Skill links. Remote
@@ -168,18 +159,15 @@ accepted.
 
 **Stage 2A:** accepted by the operator. The active build and `ess` support only
 the four product presets; superseded installer/bootstrap code and their
-dedicated tests were removed. Project memory and historical evaluation
-evidence were preserved.
+dedicated tests were removed.
 
 **Stage 2B:** installer lifecycle, user documentation, architecture and
 roadmap reconciliation, and root `current.md` are implemented and verified in
 the current worktree. Operator acceptance remains pending.
 
-- Review the proposed v0.2 cross-model behavioral evaluation plan; prepare
-  task fixtures and run comparisons only after owner approval.
 - Review the final release diff and evidence. Stage 2C release preparation,
   tagging, and publishing require separate authorization.
-- Do not alter the v0.1 release tag or historical evaluation records.
+- Do not alter the v0.1 release tag.
 
 **Exit evidence:** release contents, build, installation route, and known
 limitations are reviewable. Publishing and tag creation require separate
@@ -190,15 +178,13 @@ authorization.
 No stage calls for a general package manager, custom templating language,
 dependency resolver, automatic code refactoring, whole-project level
 migration, or exhaustive tests unrelated to actual risks. Do not work in the
-M09.2 experimental archive as part of this roadmap. Avoid adding lifecycle
+unrelated archived material as part of this roadmap. Avoid adding lifecycle
 machinery without demonstrated value.
 
 ## Open release decisions
 
 1. Accept the completed Stage 2B installer and documentation changes.
-2. Decide separately whether to retain, archive, or remove untracked
-   experimental evaluation material; it is not part of Stage 2A or Stage 2B.
-3. Authorize Stage 2C release preparation only after reviewing the v0.2.0
+2. Authorize Stage 2C release preparation only after reviewing the v0.2.0
    contents and remaining limitations.
 
 ## v0.2.1 M02 — Local user installation

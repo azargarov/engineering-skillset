@@ -124,7 +124,6 @@ For detailed design and behavior, see:
 - [Module and Skill contracts](docs/architecture/module-contract.md) and [Skill contract](docs/architecture/skill-contract.md)
 - [Roadmap and release status](ROADMAP.md)
 - [Installation ownership and recovery](docs/development/installation-metadata.md)
-- [Evaluation plan](docs/development/evaluation-plan.md)
 
 ## Project status
 
@@ -132,23 +131,7 @@ For detailed design and behavior, see:
 preset builds, published distribution and per-user installation, project
 installation and switching, managed policy and Skill ownership checks,
 optional per-project OpenCode delegation, and advisory model-preferences
-configuration. The v0.3.0 delegation experiment demonstrated functional
-integration of Codex, OpenCode, OpenAI, and DeepSeek: delegated components
-were completed and integrated, and their checks passed. This is functional
-evidence; comparative effectiveness has not been established.
-
-The v0.3.0 release is implemented, verified, and accepted. Delegation remains
-experimental as a workflow whose comparative effectiveness is unproven. ESS
-has not demonstrated improvements in development speed, code quality, cost,
-or reliability over baseline Codex.
-
-The **planned v0.4 phase** is evaluation, not implementation of new product
-capabilities. It is expected to examine engineering quality, Skill activation
-and effectiveness, comparison with baseline Codex, delegation effectiveness
-and overhead, and local LLM context windows. This phase has not started; its
-scope and milestones are not recorded as completed or approved. See the
-[evaluation plan](docs/development/evaluation-plan.md) for existing protocol
-and open questions.
+configuration. The v0.3.0 release is implemented, verified, and accepted.
 
 ## Installation and updates
 

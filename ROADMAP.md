@@ -13,7 +13,7 @@ and the detailed roadmap.
 
 The v0.1 roadmap is preserved at
 [`docs/development/roadmap-v0.1.md`](docs/development/roadmap-v0.1.md). The
-`v0.1.0-experimental` tag and its evaluation records remain historical evidence.
+`v0.1.0-experimental` tag remains a historical release record.
 
 ## v0.3 — Skill-Based Model Delegation
 
@@ -60,14 +60,8 @@ OpenCode Skill. Ordinary preset
 installations omit delegation. Preserve v0.2.1/v0.3 state compatibility and
 keep OpenCode optional. Do not add routing, adapters, or orchestration.
 
-Status: implemented, verified, and owner-accepted for v0.3.0. The latest HTTP
-API delegation experiment is accepted as functional evidence: `deepseek/deepseek-flash`
-completed the store component and tests, `openai/gpt-6-luna` completed the HTTP
-handler component and tests, and Codex reviewed and integrated the results.
-Both delegations completed successfully; final tests, race detector, vet,
-build, and HTTP smoke checks passed. This does not establish comparative
-effectiveness versus Codex working alone. Evidence and compatibility
-limitations are recorded in
+Status: implemented, verified, and owner-accepted for v0.3.0. The optional
+delegation workflow and its compatibility limitations are documented in
 [`docs/development/m04-optional-opencode-delegation.md`](docs/development/m04-optional-opencode-delegation.md).
 
 Follow-up: the practical installation test found that `ess delegation status`
@@ -89,8 +83,8 @@ Status: implemented, verified, and owner-accepted for v0.3.0.
 `make check` passed, including all four delegated preset builds, preference
 guidance, publication, user release installation, and CLI lifecycle checks.
 The check validates instructions and packaging; actual model choice remains
-agent judgment and is not an automated runtime selector. Local model context
-windows remain an investigation backlog item; see the evaluation plan. See
+agent judgment and is not an automated runtime selector. Model-selection
+guidance is in
 [`docs/development/model-preferences.md`](docs/development/model-preferences.md).
 
 ## v0.3.0 release closeout
@@ -101,395 +95,22 @@ Owner acceptance: the current ESS v0.3 implementation and release scope are
 accepted. The closeout commit and `v0.3.0` tag record this acceptance. The
 release includes four presets, published distribution and user installation,
 optional OpenCode delegation, and advisory model-preferences configuration.
-Acceptance does not claim delegation is faster, cheaper, or more reliable than
-Codex working alone. Comparative effectiveness and other evaluation questions
-remain open in [`docs/development/evaluation-plan.md`](docs/development/evaluation-plan.md).
+Acceptance covers the implemented release scope.
 
-## Planned v0.4 — Skill hardening and evaluation
+## v0.4 — Skill hardening
 
-The v0.3.0 release remains the immutable comparison baseline. Its completed
-milestones and acceptance records above are unchanged. The v0.4 work below is
-planned, not implemented or behaviorally validated. This roadmap update
-records the approved direction; implementation remains subject to operator
-review after this planning stage.
-
-The sequence separates deterministic contract and repository checks from
-behavioral evaluation. Complete the bounded hardening work first, freeze its
-artifacts, then run the controlled evaluation and interpret results without
-converting structural compliance into an effectiveness claim.
-
-### M0.6 — Skill hardening
-
-**Status:** Implemented, deterministically verified, and owner-accepted. No
-behavioral effectiveness claim is made. Evidence is recorded in
-[`docs/development/m06-skill-hardening.md`](docs/development/m06-skill-hardening.md).
-
-**Objective:** Make existing workflow requirements more enforceable, observable,
-and auditable while preserving the modular Skill architecture, presets, and
-proportional QA.
-
-**Deliverables:**
-
-- Strengthen `verification-qa` with a traceable evidence record for every
-  claimed verified property: property/requirement, method, result, and evidence
-  reference. For executed checks, retain the exact command, exit code, and
-  relevant inspected output or artifact references. Require the method to fit
-  the property, inspected results, and evidence that supports the claim;
-  otherwise report `partially verified` or `unverified`. Match verification
-  level to the property and risk, including integration-level evidence for
-  integration properties. Include a concise table of common invalid
-  conclusions. Avoid duplicating `implementation-review` responsibilities.
-- Add a bounded red–green workflow for reproducible defects: establish and
-  record the failing condition, apply the fix, rerun relevant verification,
-  and record resolution evidence. Permit equivalent reproduction methods when
-  automated tests are unsuitable. Do not require test-first development for
-  every change; retain existing presets and proportional QA without weakening
-  correctness requirements.
-- Review `project-handover` metadata for provider-neutral wording (for example,
-  “between agent sessions”) while retaining intentional Codex integration
-  details.
-- Strengthen optional `opencode-delegation` result reporting with a minimal
-  structured return contract: completion status, changed files, commands,
-  exit codes/outcomes, and blockers or unresolved issues. Support no-change,
-  failed, and blocked results. Treat delegate self-reports as untrusted until
-  the coordinator checks relevant results and independently verifies
-  integration. Do not add a delegation framework.
-- Consider moving lengthy examples or optional procedures to `references/`
-  only where this measurably reduces instruction overhead; keep mandatory
-  behavioral gates in the main Skill or Core Policy. Do not restructure the
-  repository broadly.
-- Run a small Skill observability experiment distinguishing selection,
-  evidence of instruction loading, and compliance. A declaration or request
-  alone proves neither loading nor compliance. Measure added instruction and
-  token overhead; do not make activation announcements mandatory across Skills
-  before evidence supports that choice.
-- Add a minimal GitHub Actions workflow running `make check` on pushes and pull
-  requests, limited to existing deterministic checks.
-
-**Dependencies:** Existing v0.3.0 Skills, composition rules, and deterministic
-`make check`; the evaluation plan's distinction between structural validity
-and behavioral effectiveness.
-
-**Deterministic acceptance criteria:** Relevant Skills and metadata express
-these contracts without conflict or unnecessary duplication; references, if
-introduced, preserve access to mandatory gates; the workflow runs only
-`make check` for push and pull-request events; applicable repository checks
-pass. Record exact checks and outcomes.
-
-**Behavioral criteria:** Not a claim of effectiveness or a release gate for
-Skill utility. Observability and overhead are experimental findings to be
-assessed in M0.8.
-
-**Exclusions:** New default Skills, presets, adapters, routing, universal
-activation announcements, mandatory TDD, and generic frameworks. A dedicated
-defect-diagnosis Skill remains a possible future experiment only if evidence
-shows incremental benefit.
-
-### M0.7 — v0.4 evaluation preparation
-
-**Status:** Owner-accepted for one initial controlled pilot using procedural
-filesystem separation; enforced filesystem isolation is optional for this
-pilot. Preparation remains deterministically verified: reference passed all 11
-requirement IDs; starting snapshot passed health and failed the 10
-new-behavior IDs as expected. The accepted protocol requires a fresh
-snapshot-only candidate workspace, evaluator separation, integrity checks,
-contamination reporting, and runtime preflight. Authorization is limited to
-one case-04 Codex-without-ESS baseline run. See the [M0.7 evidence
-record](docs/development/evaluation-runs/m07-pilot/implementation-plan.md) and
-[accepted protocol](docs/development/evaluation-runs/m07-pilot/protocol.md).
-No candidate run or effectiveness finding is claimed by M0.7 closeout.
-
-**Objective:** Extend the existing [evaluation plan](docs/development/evaluation-plan.md)
-into a reproducible, bounded protocol before effectiveness runs begin.
-
-**Deliverables:**
-
-- Define matched conditions for Codex without ESS, Codex with ESS v0.3.0, and
-  Codex with hardened ESS. Selected external Skills, especially relevant
-  Superpowers workflows, may be optional comparison conditions; treat
-  Superpowers and similar projects as sources of candidate mechanisms and
-  experiments, not wholesale collections to import.
-- Preselect identical task snapshots, task text, and independent acceptance
-  checks; hold model/tool settings and other conditions constant where
-  practicable. Record unavoidable differences and confounders.
-- Specify traceable run evidence, controlled environment setup/teardown,
-  failure cleanup, and recording of deviations and inconclusive results.
-  Capture runtime, token usage, retries, and integration overhead where
-  measurable.
-- Assess whether repeated setup/teardown code across selected cases justifies
-  a small reusable fixture lifecycle wrapper. Introduce one only if that
-  repetition is demonstrated; do not build a generic evaluation framework.
-- Separate findings for (1) functional correctness and defect resolution,
-  (2) engineering quality and scope compliance, (3) verification quality,
-  (4) accuracy of verification claims, (5) Skill selection, activation, and
-  behavioral compliance, and (6) runtime and operational overhead. Preserve
-  observed evidence, interpretation, and unverified claims as distinct.
-  Critical failures remain visible and are never averaged away.
-- Predefine selected external mechanisms to investigate: systematic
-  debugging, verification-before-completion, focused red–green defect
-  workflows, behavioral counterexamples, progressive disclosure through
-  `references/`, and activation observability. Do not treat stars,
-  testimonials, or undocumented benchmark claims as effectiveness evidence.
-
-**Dependencies:** M0.6 artifacts frozen for comparison; existing evaluation
-cases, acceptance documents, and evaluation plan.
-
-**Acceptance criteria:** The protocol identifies frozen inputs, conditions,
-acceptance checks, evidence capture, environment lifecycle, analysis categories,
-and deviation handling before runs. It makes clear that increased activation
-announcements or documentation volume alone are not engineering outcomes.
-The initial run set and any external comparison Skills are selected before
-observing results.
-
-**Exclusions:** Generic benchmarking platform, broad model comparisons,
-weighted aggregate effectiveness scores, automated context-window management,
-and importing `brainstorming`, `writing-plans`, or general-purpose TDD Skills
-into default ESS composition.
-
-### M0.8 — Controlled v0.4 evaluation and decision
-
-**Status:** Complete and owner-accepted. Original A1 and the first replacement launch remain preserved as
-historical stopped attempts. Following owner authorization for a local-only
-initial Git commit, the fresh A1 replacement completed and the owner accepts it
-as a pilot observation: Condition A used the four catalog-visible bundled
-Codex Skills baseline, and all 11 final functional acceptance requirements
-passed. The first A1 evaluator invocation exposed global-hook interference
-with three candidate-authored parallel tests; the per-service adapter passed
-all requirements and candidate tests without changing candidate code or frozen
-assertions. Both invocations and the deviation remain preserved in the
-[A1 report](docs/development/evaluation-runs/m08-pilot/A1-candidate-20261103/report.md).
-
-The corrected `case04-corrected-evaluator-v1` is frozen with evaluator
-manifest SHA-256
-`627ff3b67ca78351086dda3eaae1e703706c2296eed847d02f39cfe616d99a7f`.
-Calibration passed: reference 11/11; the original snapshot had its 10 expected
-functional failures while `REG-01` passed; A1 compatibility passed 11/11 and
-the candidate-authored parallel tests passed. See the [evaluator validation
-record](docs/development/evaluation-runs/m08-pilot/evaluator-validation-20261103/report.md)
-and [frozen artifacts](docs/development/evaluation-runs/m08-pilot/evaluator-v1/README.md).
-At the owner's direction, evaluator v2 now evaluates implementations as
-ordinary HTTP services without candidate-specific source adapters. The
-finalized v2.1 uses a versioned task contract and deterministic fixture
-observations. Two repeated calibration blocks passed all 11 checks on the
-reference and sealed A1; the original snapshot had its ten expected behavior
-failures and REG-01 passed. RETRY-01 exhaustion and RETRY-02 numeric/date
-Retry-After caps, fallbacks, and sequences are observed at the provider
-boundary. See the [v2.1 validation record](docs/development/evaluation-runs/m08-pilot/evaluator-validation-v2-final-20261103/report.md).
-Evaluator v1 and its A1 result remain historical. The A1 candidate manifest
-now excludes mutable `.git` bookkeeping while retaining the root commit ID,
-source hashes, and patch hash. Following the operator's explicit authorization, A2 and A3 completed sequentially under the same
-versioned v2 task and v2.1 evaluator; both passed all 11 checks with full
-coverage. Resource use, interventions, implementation outcomes, cleanup, hashes,
-and A1 task-clarification comparability are recorded in the
-[matched pilot report](docs/development/evaluation-runs/m08-pilot/comparative-pilot-A2-A3-20261104.md)
-and individual run artifacts. The owner accepts A2/A3 as successful Condition
-A baseline observations; this does not accept M0.8 as a whole. The evaluator
-and candidates remain frozen. M0.8
-Condition B then completed three fresh original-v0.3.0 `reliable` runs under
-the frozen v2 task and v2.1 evaluator; B1–B3 each passed all 11 requirements
-with full coverage. B3 enumerated paths outside its workspace and is marked
-protocol-contaminated, so B1/B2 are the only clean B comparison observations.
-Candidate traces, Skills observations, resources, patches, integrity, and
-cleanup are recorded in the
-[Condition B report](docs/development/evaluation-runs/m08-pilot/condition-B-reliable-20261104.md)
-and per-run artifacts. B preflight reported inconsistent plugin Skill catalog
-visibility, which limits strict comparison with A2/A3 and is documented in the
-report. The owner then approved a catalog-variability amendment for the
-exploratory hardened ESS condition. C1–C3 completed from fresh snapshot-only
-workspaces using the frozen M0.6 hardened reliable policy, four ESS Skills,
-and unchanged v2 task/evaluator/runtime configuration. All three passed 11/11
-with full coverage. C1's trace records a candidate-created smoke script under
-`/tmp`; no disqualifying material access was evidenced. Catalog variability
-remains a comparison limitation and no causal effect is claimed. The six-
-dimension A/B/C analysis and per-run evidence are in the
-[Condition C report](docs/development/evaluation-runs/m08-pilot/condition-C-hardened-reliable-20261104.md).
-The owner accepts the completed Sol evaluation phase and Condition C. The
-final six-dimension synthesis, acceptance record, and retained limitations are
-in the [Sol closeout](docs/development/evaluation-runs/m08-pilot/sol-evaluation-closeout-20261104.md).
-The historical run records and frozen artifacts remain unchanged. No
-Condition D, delegation, external-Skill, or Luna comparison was started.
-
-**Objective:** Execute the prepared comparisons and make evidence-bounded
-recommendations about the hardened Skills and evaluation scope.
-
-**Deliverables:**
-
-- Run the preselected cases under the frozen conditions, preserving per-run
-  patches, commands/results, logs or artifacts needed to substantiate claims,
-  and measured operational overhead where available.
-- Evaluate all six M0.7 dimensions separately. Use independent acceptance
-  checks; conduct independent review where practical and identify self-review
-  accurately where it is not.
-- Record failures, setup problems, cleanup outcomes, deviations, mixed or
-  inconclusive results, and limitations. Do not exclude unfavorable runs
-  without a documented reason or infer broad effectiveness from a small sample.
-- Make explicit recommendations to retain, simplify, revise, defer, or
-  investigate further. Any dedicated defect-diagnosis Skill remains a future
-  experiment contingent on evidence of incremental benefit.
-
-**Dependencies:** M0.7 protocol accepted and M0.6 artifacts frozen.
-
-**Deterministic completion checks:** Each planned run has traceable inputs,
-conditions, acceptance results, command outcomes, and deviation/cleanup
-records; deterministic checks are run and reported; analysis distinguishes
-observations from interpretation and unverified claims. These checks establish
-that the evaluation was conducted and recorded, not that ESS is effective.
-
-**Behavioral effectiveness criteria:** Report outcome-by-outcome evidence and
-critical failures without an aggregate score. Any claim is bounded to the
-observed tasks, configurations, environment, and repeat count. No positive
-threshold or release conclusion is predeclared by this roadmap; unresolved or
-inconclusive evidence remains visible for operator decision.
-
-**Exclusions:** Implementation changes beyond approved hardening, broad claims
-of superiority, weighted aggregate scoring, and a generic benchmark suite.
-
-### M0.9 — GPT-6 Luna comparison
-
-**Status:** Completed, deterministically verified, and owner-accepted on
-2026-11-04. All six L-A/L-C runs passed the frozen 11 requirements. No
-functional correctness improvement was observed with hardened ESS. Additional
-verification activities did not uncover frozen-requirement failures. Skill
-discovery, activation, and compliance were inconsistent. The descriptive mean
-elapsed time and input tokens for L-C were approximately 1.53× and 1.92× L-A,
-respectively. The small sample, catalog variability, and other documented
-limitations rule out causal or statistically conclusive claims. See the
-[accepted final report](docs/development/evaluation-runs/m09-luna/final-report.md),
-[first-pair report](docs/development/evaluation-runs/m09-luna/first-pair-report.md),
-and [per-run evidence](docs/development/evaluation-runs/m09-luna/).
-
-**Conditions:** L-A was GPT-6 Luna without ESS (3 runs); L-C was GPT-6 Luna
-with the frozen M0.6 hardened reliable policy (3 runs). Both used high
-reasoning effort, the same runtime permissions, task, evaluator, and tool
-settings. Original ESS v0.3.0, delegation, and additional cases were excluded.
-All six candidates passed all 11 frozen evaluator requirements. No functional
-correctness difference was observed. Extra local checks provided additional
-operational evidence but did not discover frozen-assertion failures.
-
-**Interpretation limits:** Resource ratios are descriptive observations from
-three sessions per condition. Skill discovery, activation, and compliance
-varied. The selected Luna model alias had no immutable revision; there was no
-independent/blinded code review, and dollar-cost/retry telemetry was
-unavailable. Workspace separation was procedural under full-access
-permissions. Historical Sol results use `gpt-6.1-sol` and are context only,
-not a matched comparison with Luna. The six evaluation dimensions and all
-failures/deviations remain in the final report and run evidence. Owner
-acceptance does not extend beyond the bounded M0.9 findings.
-
-**Proposed next research direction (not authorized):** Compare GPT-6 Luna with
-the ESS prototype preset against Luna without ESS, with both conditions
-explicitly instructed to build a prototype. This is a future experiment that
-requires separate owner approval and a frozen plan before any run. No changes
-to ESS and no additional runs are authorized by this proposal.
-
-### M0.10 — Luna maturity and prompt normalization comparison
-
-**Status:** Completed and owner-accepted on 2026-11-04 as an exploratory
-pilot, without an ESS effectiveness or causal claim. The four-run pilot,
-focused diagnostic review, authorized supplementary prototype comparison, and
-evidence consolidation are complete. The consolidated assessment records
-exact per-run time, token, verification, Skill, and compliance evidence. P0-S1/P1-S1 both
-passed all twelve frozen evaluator v2.2 assertions after deterministic
-preflight; this is a descriptive one-run-per-condition comparison. Original
-P0 is excluded from matched inference because it inherited repository
-instructions; original R0/R1 remains qualified, with R1's genuine RETRY-02
-fallback-delay defect. Under `danger-full-access`, filesystem isolation was
-not enforced. Evaluator v2.2 remains correct and unchanged. No further
-candidate runs were launched. The remaining eight originally planned runs are
-deferred. Skill-body loading/named selection and behavioral compliance remain
-unresolved research questions. See the [consolidated report](docs/development/evaluation-runs/m10-luna/final-consolidated-pilot-report-20261104.md),
-[supplementary report](docs/development/evaluation-runs/m10-luna/pilot-supplementary-20261104-report.md),
-[original pilot report](docs/development/evaluation-runs/m10-luna/pilot-amended-20261104-report.md),
-[diagnostic review](docs/development/evaluation-runs/m10-luna/pilot-diagnostic-review-20261104.md),
-and [supplementary run evidence](docs/development/evaluation-runs/m10-luna/pilot-supplementary-20261104/).
-
-**Research question and conditions:** Compare `gpt-6-luna` at high reasoning
-effort across P0 (canonical application requirements plus the prototype
-declaration, no ESS), P1 (canonical requirements, hardened prototype ESS), R0
-(canonical requirements plus the reliable declaration, no ESS), and R1
-(canonical requirements, hardened reliable ESS). The pilot observed one run
-per condition in P0, P1, R0, R1 order. The eight originally planned follow-up
-runs are deferred and were not authorized by milestone closeout.
-
-**Frozen task and evaluator:** The byte-identical canonical task v3 and
-condition prompts, clean v3 starter snapshot, evaluator
-`case04-http-evaluator-v2.2`, and frozen M0.6 prototype/reliable preset copies
-are recorded under
-[the M0.10 package](docs/development/evaluation-runs/m10-luna/). Evaluator v2.2
-preserves the eleven v2.1 HTTP assertion bodies and adds only `CONST-01` for
-the stated Go standard-library/dependency constraint. The earlier `PERSIST-01`
-proposal was removed: task wording does not require jobs to disappear after a
-restart. v2.1 and historical task/results remain unchanged. The reference
-passed all twelve assertions; the v3 health-only snapshot passed `REG-01` and
-`CONST-01`, with its ten job-feature assertions failing as expected. Calibration
-outputs and chained input hashes are retained.
-
-**Controls and limits:** The four original runs and two authorized supplementary
-runs are documented in the reports above. No ESS edits, extra cases, other
-models, delegation, post-evaluation repairs, aggregate scores, or
-causal/statistical claims were made. No further runs are authorized in this
-execution; the eight originally planned follow-up runs remain unlaunched.
-
-### M0.11 — Preset behavioral compliance experiment
-
-**Status:** The five-condition experiment and consolidated report are complete
-and ready for owner review. The milestone is not owner-accepted.
-
-**Objective and conditions:** Compare B0 Codex without ESS with P1 Prototype,
-F1 Fast Development, M1 Performance, and R1 Reliable using one identical
-functionality-only Go prompt, a common starter, and frozen preset artifacts.
-The report preserves candidate outputs, traces, per-run Skill/instruction
-inventories, evaluator evidence, execution metrics, and deviations in the
-[M0.11 package](docs/development/evaluation-runs/m011/).
-
-**Observed results:** All five final candidates passed the 21-check independent
-post-run evaluator, including race-instrumented concurrent reservation checks.
-No functional correctness difference was observed. P1 was partially compliant;
-F1, M1, and R1 missed applicable verification obligations. Actual tool traces
-differed, but they did not show a consistent preset-specific verification
-pattern. Skill-body loading was not observable. No causal or statistical claim
-is made from one run per condition.
-
-**Protocol limits:** The behavioral matrix and prompt were frozen before
-execution. The evaluator script was materialized after candidates were sealed,
-then corrected during calibration and rerun against all conditions. A
-preliminary B0 attempt did not use the final strict isolation; a preliminary P1
-attempt wrote to a shared `/tmp` location and is marked contaminated. Both are
-preserved and excluded. Candidate sandboxes denied local listening sockets, so
-several candidate smoke attempts did not complete. The report details each
-deviation and its effect on interpretation.
-
-No ESS policy source changes or further candidate runs were made. The next
-action is owner review of the report; its recommendations remain proposals.
-
-### External Skills and deferred questions
-
-Superpowers (`obra/superpowers`) and similar agent-skill projects are candidate
-sources for selective mechanisms and optional experimental comparison. Do not
-adopt whole Skill collections or add default `brainstorming`,
-`writing-plans`, or general-purpose TDD Skills. Keep a dedicated
-defect-diagnosis Skill as a possible later experiment, not current scope.
-External popularity or testimonials do not establish effectiveness.
-
-The evaluation plan remains authoritative for detailed methods and unresolved
-decisions. Still open before execution: exact task snapshots and first case
-set; practical availability of independent reviewers; which external Skills
-are relevant and comparable under controlled settings; which runtime exposes
-sufficient Skill-load evidence; whether setup repetition warrants the fixture
-wrapper; and what evidence the owner will require for any release or
-composition decision. The previously listed local LLM context-window
-investigation is deferred and remains separate from this bounded v0.4 scope.
-These questions do not block this roadmap update and must not be filled with
-invented outcomes.
+M0.6 strengthened verification evidence, defect reproduction, handover guidance,
+and delegation result reporting while preserving the modular Skill architecture
+and proportional QA. The accepted implementation and deterministic checks are
+recorded in [`docs/development/m06-skill-hardening.md`](docs/development/m06-skill-hardening.md).
 
 ## M0.12 — Mandatory staged workflow Skill activation
 
 Authorized scope: add a concise mandatory four-Skill execution contract to
 Core Policy, preserve progressive stage loading and active-preset depth,
 update generated artifacts and build checks for all presets, and document the
-contract. This establishes instructions and structural packaging checks; it
-does not establish runtime Skill activation. The next manual experiment will
-inspect Codex session logs for actual Skill file reads.
+contract. This establishes instructions and structural packaging checks. Runtime Skill
+file reads are not part of the product contract or automated checks.
 
 Status: implemented and locally verified with `make build`, `make check`,
 generated-artifact inspection, and `git diff --check`. The Core Policy also
