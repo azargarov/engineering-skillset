@@ -141,3 +141,19 @@ Generated Skill content was checked against the source for every preset;
 existing install and activation lifecycle checks passed. These checks
 establish contract composition and packaging, not runtime compliance or
 behavioral effectiveness of agents using the Skills.
+
+**Reliable preset experiment — Inventory API (instruction adherence):** The
+experiment account reports independent discovery of the four installed Skills.
+It records an initial discovery failure followed by successful discovery via
+symbolic links; the original cause is unknown. The account also reports that
+`software-design` was read and a step-by-step implementation plan prepared,
+then implementation proceeded after operator approval. Automated behavioral
+tests were created for idempotency, concurrency, persistence, and HTTP
+behavior. Go tests, the race detector, `vet`, build, and formatting checks were
+reported successful, with final QA reported as **PASS**. These execution and QA
+results are Codex-reported and were not independently reproduced for this
+documentation update. The account identifies discovery of four Skills and
+reading `software-design`; activation of the other three workflow Skills is
+unverified. No cause for the initial discovery failure was established. This
+records instruction adherence only and does not assess application code
+quality.
