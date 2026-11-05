@@ -4,11 +4,12 @@
 and switching between sets of engineering Skills and policies for AI coding
 agents.** It is currently Codex-first, with optional OpenCode delegation.
 
-Different projects need different engineering practices. A quick prototype
-and a reliability-focused project should not necessarily use identical
-workflows. Maintaining agent instructions and Skills by hand across projects
-is inconvenient. ESS provides reusable configurations that you can install
-and switch as project requirements evolve.
+Different projects need different engineering practices. ESS configures
+engineering workflows to fit project needs, from lightweight prototypes to
+reliability-focused development, while preserving shared quality requirements.
+Maintaining agent instructions and Skills by hand across projects is
+inconvenient. ESS provides reusable configurations that you can install and
+switch as project requirements evolve.
 
 ## Quick start
 
@@ -69,10 +70,11 @@ from Markdown sources and preset definitions. The `ess` CLI installs built
 artifacts; it does not compile source modules or run an agent.
 
 Each preset includes the `software-design`, `implementation-review`,
-`verification-qa`, and `project-handover` Skills. Skill names stay the same
-across presets while relevant guidance varies. The generated project
-`AGENTS.md` is self-contained; linked Skills come from the active ESS user
-installation.
+`verification-qa`, and `project-handover` Skills. The Core Policy requires
+activating each Skill at its appropriate workflow stage, with effort
+proportional to the active preset and task. Skill names stay the same across
+presets while relevant guidance varies. The generated project `AGENTS.md` is
+self-contained; linked Skills come from the active ESS user installation.
 
 ## CLI commands
 
@@ -127,11 +129,12 @@ For detailed design and behavior, see:
 
 ## Project status
 
-**Current stable release: v0.3.0.** Its verified capabilities include four
-preset builds, published distribution and per-user installation, project
-installation and switching, managed policy and Skill ownership checks,
-optional per-project OpenCode delegation, and advisory model-preferences
-configuration. The v0.3.0 release is implemented, verified, and accepted.
+**Current stable release: v0.3.1.** It includes the completed QA-contract
+improvements, clearer Prototype workflow guidance, and symlink-aware Skill
+discovery instructions, alongside the v0.3.0 capabilities: four preset builds,
+published distribution and per-user installation, project installation and
+switching, managed policy and Skill ownership checks, optional per-project
+OpenCode delegation, and advisory model-preferences configuration.
 
 ## Installation and updates
 
