@@ -11,5 +11,12 @@
    does not establish.
 5. Record significant limitations and assumptions that remain unverified.
 
+An inspected primary-scenario smoke check normally satisfies verification for
+a prototype. Add checks when concrete risks, explicit requirements, or project
+contracts justify them. For a small prototype, concise verification evidence
+and completion notes are sufficient: identify the check, its observed result,
+and important guarantees it does not establish. A formal evidence matrix or
+separate report is not required.
+
 Keep verification focused on validating the hypothesis. Do not imply that
 untested edge cases or failure behavior have been established.

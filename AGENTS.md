@@ -43,6 +43,11 @@ preset's requirements:
 If a required Skill file is missing or unreadable, report that explicitly and
 do not claim to have executed that Skill.
 
+Mandatory Skill activation and stage ordering do not require separate plans,
+reports, other artifacts, or extensive ceremony. Apply each workflow at the
+depth warranted by the active preset, task scope, concrete risks, and existing
+project contracts. Combine stages when that is sufficient.
+
 - Check scope, design, implementation, verification, and acceptance at the
   meaningful stages for the task. Small changes may combine these checks; keep
   each check relevant to the change and its risk.

@@ -70,7 +70,15 @@ for skill in copied_skills:
         raise SystemExit(f"{skill}: identical shared guidance was copied inconsistently")
 
 checks = {
-    ("verification-qa", "prototype"): ("scenario", "Inspect the actual result", "automated smoke check"),
+    ("verification-qa", "prototype"): (
+        "scenario",
+        "Inspect the actual result",
+        "automated smoke check",
+        "primary-scenario smoke check normally satisfies verification",
+        "concrete risks, explicit requirements, or project contracts justify them",
+        "concise verification evidence and completion notes are sufficient",
+        "formal evidence matrix or separate report is not required",
+    ),
     ("verification-qa", "fast-development"): ("edge", "focused automated tests"),
     ("verification-qa", "performance"): ("scenario", "equivalent conditions", "profiling", "race"),
     ("verification-qa", "reliable"): (

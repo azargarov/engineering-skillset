@@ -51,6 +51,8 @@ for index in "${!presets[@]}"; do
     '.agents/skills/project-handover/SKILL.md' \
     'before completing the task' \
     'do not claim to have executed that Skill' \
+    'Mandatory Skill activation and stage ordering do not require separate plans' \
+    'depth warranted by the active preset, task scope, concrete risks, and existing' \
     '## Project memory' \
     'VISION.md' 'ROADMAP.md' 'current.md' 'milestones/' 'decisions/' 'errors/' \
     'explicit owner approval' 'next authorized incomplete milestone' \
