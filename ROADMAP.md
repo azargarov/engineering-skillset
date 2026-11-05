@@ -142,18 +142,32 @@ existing install and activation lifecycle checks passed. These checks
 establish contract composition and packaging, not runtime compliance or
 behavioral effectiveness of agents using the Skills.
 
-**Reliable preset experiment — Inventory API (instruction adherence):** The
-experiment account reports independent discovery of the four installed Skills.
-It records an initial discovery failure followed by successful discovery via
-symbolic links; the original cause is unknown. The account also reports that
-`software-design` was read and a step-by-step implementation plan prepared,
-then implementation proceeded after operator approval. Automated behavioral
-tests were created for idempotency, concurrency, persistence, and HTTP
-behavior. Go tests, the race detector, `vet`, build, and formatting checks were
-reported successful, with final QA reported as **PASS**. These execution and QA
-results are Codex-reported and were not independently reproduced for this
-documentation update. The account identifies discovery of four Skills and
-reading `software-design`; activation of the other three workflow Skills is
-unverified. No cause for the initial discovery failure was established. This
-records instruction adherence only and does not assess application code
-quality.
+**Inventory API preset experiments — instruction adherence:** Both
+implementations are reported complete with final QA **PASS**. These are
+process observations, not assessments of application code quality, and QA
+verification is distinct from owner acceptance.
+
+- **Codex-reported — Reliable:** The experiment account reports discovery of
+  all four installed Skills, an initial discovery failure, then successful
+  discovery after accounting for symbolic links. It reports reading
+  `software-design`, making an implementation plan, and proceeding after
+  operator approval. It reports automated behavioral verification for
+  idempotency, concurrency, persistence, and HTTP behavior, plus successful Go
+  tests, race detection, `vet`, build, and formatting checks. Final QA was
+  reported **PASS**. The initial Skill discovery issue is addressed in Core
+  Policy: discovery instructions now require accounting for symbolic links
+  and resolving a Skill path before declaring it unavailable.
+- **Codex-reported — Prototype:** The experiment account reports focused
+  automated tests for concurrency, idempotency, and persistence risks,
+  justified as concrete risks for the implementation, plus a live smoke
+  check. It reports final QA **PASS**. This is consistent with Prototype's
+  proportional verification guidance; the checks were risk-driven rather than
+  a broad automated suite.
+- **Observed:** Repository inspection confirms Core Policy instructs Skill
+  discovery to account for symbolic links and resolve a path before declaring
+  a Skill unavailable.
+- **Unverified:** Experiment artifacts and commands were not independently
+  reproduced during this documentation update. Independent confirmation of
+  final `implementation-review` and `project-handover` Skill activation was
+  not obtained for either experiment. No owner acceptance evidence is recorded;
+  acceptance remains separate from reported QA PASS.
