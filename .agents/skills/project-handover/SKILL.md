@@ -23,4 +23,26 @@ For the handover:
 4. State the next authorized action from the user's instructions or approved project plan. Do not turn a suggestion or backlog item into approval, a new task, or permission to proceed. If no next action is authorized, say so.
 5. Give a concise handover with pointers to durable records. Distinguish verified facts from assumptions, and name relevant failed or unrun checks and unresolved questions. Never invent work, commits, approvals, or results.
 
+Include a concise QA completion summary, scaled to task complexity, with:
+
+- QA status: **PASS**, **FAIL**, or **INCOMPLETE**.
+- Checks executed, with exact commands and observed results.
+- Behavioral guarantees those checks verified.
+- Checks omitted, blocked, or unsuccessful, with reasons.
+- Remaining risks or unresolved verification gaps.
+
+Use these status meanings:
+
+- **PASS** — required verification completed successfully with sufficient
+  evidence.
+- **FAIL** — executed checks revealed unresolved failures or requirement
+  violations.
+- **INCOMPLETE** — required verification was not performed or sufficient
+  evidence is unavailable.
+
+When QA is **FAIL** or **INCOMPLETE**, continue resolving issues when that
+work is authorized and feasible. Otherwise, report the unfinished
+verification accurately. Do not present the task as fully verified or
+accepted while required verification remains incomplete.
+
 Scale the record and report to the work. Trivial changes may need no separate history or backlog entry; preserve enough context for another session to resume meaningful work without reproducing the full conversation.

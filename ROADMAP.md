@@ -498,3 +498,25 @@ verification, inspecting required check results, and reporting blocked
 requirements as unverified unless a suitable alternative is completed. The
 preset structural check asserts this contract while retaining staged Skill
 activation. Owner acceptance is pending.
+
+## M0.13 — Behavioral verification and QA handover contracts
+
+**Status:** Implemented and deterministically verified. Owner review is
+pending.
+
+**Authorized scope:** Strengthen the existing `verification-qa` and
+`project-handover` source Skills, update directly affected structural tests,
+and preserve the four presets, staged activation, and current build/install
+architecture.
+
+**Acceptance:** Reliable requires executed automated tests for applicable
+behavioral risks; other presets retain proportional verification. Handover
+reports QA status, commands and results, verified guarantees, omitted or
+failed checks, and remaining gaps. Generated Skills in all presets reflect
+their sources and activation behavior remains unchanged.
+
+**Verification:** `make build`, `make check`, and `git diff --check` passed.
+Generated Skill content was checked against the source for every preset;
+existing install and activation lifecycle checks passed. These checks
+establish contract composition and packaging, not runtime compliance or
+behavioral effectiveness of agents using the Skills.

@@ -2,6 +2,8 @@
 
 - Identify the task's important expected behavior and concrete risks before
   choosing checks.
+- For changes to observable software behavior, name the behavioral guarantees
+  being changed or preserved and the risks relevant to those guarantees.
 - Prefer checks that establish the required behavior directly. Report what
   each check establishes and identify important gaps.
 - Preserve functional correctness and existing project contracts while
@@ -35,3 +37,6 @@
   equivalent reproducible manual check or other direct evidence. This bounded
   red–green check applies to reproducible defects and does not require
   test-first development for every change.
+
+Compilation, static analysis, and diff checks establish useful properties but
+cannot substitute for behavioral verification when behavior changes.

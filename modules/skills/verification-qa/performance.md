@@ -2,6 +2,8 @@
 
 1. For executable changes, run the primary scenario and inspect its actual
    result; a manual or automated smoke check is acceptable.
+   For observable behavior changes, use focused tests to establish the
+   relevant functional guarantees and regression risks.
 2. For optimization work, state the relevant performance requirement and
    measurement conditions, measure a baseline, and compare the changed version
    under equivalent conditions. Use profiling to explain observed changes.

@@ -73,7 +73,17 @@ checks = {
     ("verification-qa", "prototype"): ("scenario", "Inspect the actual result", "automated smoke check"),
     ("verification-qa", "fast-development"): ("edge", "focused automated tests"),
     ("verification-qa", "performance"): ("scenario", "equivalent conditions", "profiling", "race"),
-    ("verification-qa", "reliable"): ("invariants", "recovery", "critical check is missing", "100% coverage"),
+    ("verification-qa", "reliable"): (
+        "observable software behavior",
+        "require automated",
+        "execute them, and inspect their results",
+        "Compilation, static analysis, and diff checks do not satisfy",
+        "idempotency",
+        "residual risks",
+        "mark QA **INCOMPLETE**",
+        "critical check is missing",
+        "100% coverage",
+    ),
     ("software-design", "prototype"): ("hypothesis", "minimal structure", "temporary limitations"),
     ("software-design", "fast-development"): ("readable", "maintainable", "Avoid concurrency"),
     ("software-design", "performance"): ("measurable workload", "profiling", "functional contracts"),
@@ -84,6 +94,20 @@ for key, phrases in checks.items():
     for phrase in phrases:
         if phrase.lower() not in normalized:
             raise SystemExit(f"{key[1]}/{key[0]}: expected strategy guidance is missing: {phrase}")
+handover = compiled[("project-handover", "reliable")]
+for phrase in (
+    "QA status: **PASS**, **FAIL**, or **INCOMPLETE**",
+    "Checks executed, with exact commands and observed results",
+    "Behavioral guarantees those checks verified",
+    "Checks omitted, blocked, or unsuccessful, with reasons",
+    "Remaining risks or unresolved verification gaps",
+    "**PASS** — required verification completed successfully with sufficient",
+    "**FAIL** — executed checks revealed unresolved failures or requirement",
+    "**INCOMPLETE** — required verification was not performed or sufficient",
+    "Do not present the task as fully verified or",
+):
+    if phrase.lower() not in " ".join(handover.split()).lower():
+        raise SystemExit(f"project-handover: QA completion contract is missing: {phrase}")
 for artifact in compiled.values():
     if "Engineering Skillset Core Policy" in artifact:
         raise SystemExit("a compiled Skill duplicates the complete Core Policy")
